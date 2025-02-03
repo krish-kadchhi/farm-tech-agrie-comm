@@ -1,3 +1,4 @@
+//login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -17,7 +18,6 @@ import {
 } from "@mui/material";
 import { green } from "@mui/material/colors";
 
-
 export default function Login() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -36,14 +36,18 @@ export default function Login() {
       alert("Please fill in all required fields");
     } else {
       try {
-        const response = await axios.post("http://localhost:8080/auth/login", data, {
-          withCredentials: true, // Important for cookies
-        });
-
-        if (response.data.role === "Admin") {
-          navigate("/admin-dashboard");
+        const response = await axios.post(
+          "http://localhost:8080/auth/login",
+          data,
+          {
+            withCredentials: true, // Important for cookies
+          }
+        );
+        if (data.role === "Admin") {
+          // console.log("Admin login successful");
+          navigate("/addProduct");
         } else {
-          navigate("/productShow");
+          navigate("/products");
         }
       } catch (err) {
         alert(err.response?.data || "Login failed");

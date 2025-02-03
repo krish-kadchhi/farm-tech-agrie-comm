@@ -15,11 +15,12 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 const cookieParser = require("cookie-parser");
-app.use(bodyparser.json());
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  next();
-});
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Or an array of allowed origins
+    credentials: true, // This allows cookies to be sent with requests.
+  })
+);
 
 app.use(cookieParser());
 app.set("view engine", "ejs");
@@ -29,12 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
-app.use(
-  cors({
-    origin: "http://localhost:5173", // Or an array of allowed origins
-    credentials: true, // This allows cookies to be sent with requests.
-  })
-);
+
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/agri";
 
@@ -65,10 +61,12 @@ app.use(express.static("public")); // Serve static files
 const authRoutes = require("./routes/authRoutes");
 const itemRoutes = require("./routes/itemRoutes");
 const cartRoutes = require("./routes/cartRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 app.use("/auth", authRoutes);
 app.use("/item", itemRoutes);
 app.use("/cart", cartRoutes);
+app.use("/payment", paymentRoutes);
 
 app.listen(port, () => {
   console.log(`port is listing in ${port}`);

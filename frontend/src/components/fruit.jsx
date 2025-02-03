@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import SearchComponent from "./searchComponent";
 import {
   Container,
   Typography,
@@ -63,10 +63,13 @@ export default function Fruit() {
     );
 
   const fruits = myData.filter((item) => item.category === "fruit");
+  
 
   return (
+    
     <Container>
       {/* <Search /> */}
+      <SearchComponent />
       <Typography variant="h4" component="h2" gutterBottom>
         Fruits List
       </Typography>
@@ -82,9 +85,9 @@ export default function Fruit() {
                 <CardMedia
                   component="img"
                   height="140"
-                  image={`http://localhost:8080/images/${fruit.image
-                    .split("\\")
-                    .pop()}`}
+                  // image={`http://localhost:8080/images/${fruit.image
+                  //   .split("\\")
+                  //   .pop()}`}
                   alt={fruit.name}
                 />
                 <CardContent>

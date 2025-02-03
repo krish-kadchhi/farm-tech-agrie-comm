@@ -21,11 +21,13 @@ export default function ProductShow() {
   const addInCart = async (item) => {
     try {
       const data = {
-        cart_name: item.name,
-        cart_category: item.category,
-        cart_price: item.price,
+        item: item.name,  // Update key to "item"
+        category: item.category,  // Update key to "category"
+        price: item.price,  // Update key to "price"
+        image: item.image || "", // Ensure image field exists
+        quantity: 1,
       };
-      await axios.post("http://localhost:8080/item/addCart", data);
+      await axios.post("http://localhost:8080/cart/addCart", data);
       setCartMessage(`${item.name} added to cart`);
     } catch (error) {
       setCartMessage("Failed to add item to cart");
@@ -42,12 +44,15 @@ export default function ProductShow() {
 
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/item/showPro");
+        const response = await axios.get("http://localhost:8080/item/showPro", {
+          withCredentials: true, // Ensures cookies/session are sent
+        });
         setData(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
+    
 
     checkAuth();
     fetchProducts();
@@ -164,7 +169,7 @@ export default function ProductShow() {
         </Grid>
 
         {/* Dynamic Product Rendering */}
-        {myData.map((item) => (
+        {/* {myData.map((item) => (
           <Grid item xs={12} sm={6} md={4} key={item._id}>
             <Card sx={{ maxWidth: 345 }}>
               <CardMedia
@@ -199,7 +204,7 @@ export default function ProductShow() {
               </CardContent>
             </Card>
           </Grid>
-        ))}
+        ))} */}
       </Grid>
 
       <Snackbar

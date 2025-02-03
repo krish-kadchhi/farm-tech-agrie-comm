@@ -16,7 +16,7 @@ const cartController = {
         item: req.body.item,
         category: req.body.category,
         price: req.body.price,
-        image: req.body.image,
+        image: req.body.image || "",
         quantity: req.body.quantity || 1
       };
 

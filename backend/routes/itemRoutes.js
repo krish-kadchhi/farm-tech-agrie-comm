@@ -16,9 +16,11 @@ const upload = multer({ storage: storage });
 
 router.get("/search", itemController.searchItems);
 router.get("/items", itemController.getAllItems);
-router.get("/showPro", itemController.showProducts);
+router.get("/showPro", itemController.showPro);
 router.post("/add", upload.single("image"), itemController.addProduct);
 router.delete("/deleteProduct/:id", itemController.deleteProduct);
+router.get("/searchProduct", itemController.searchItems);
+router.post("/add", itemController.addProduct);
 
 module.exports = router;
 

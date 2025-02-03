@@ -36,7 +36,7 @@ const itemController = {
     }
   },
 
-  showProducts: async (req, res) => {
+  showPro: async (req, res) => {
     try {
       const items = await Item.find();
       console.log("a ready");
@@ -76,7 +76,47 @@ const itemController = {
     } catch (error) {
       res.status(500).send("Error deleting product");
     }
+  },
+
+  //controller
+ searchItems: async (req, res) => {
+  try {
+    let query = req.query.query;
+    const items = await Item.find({
+      name: { $regex: query, $options: "i" },
+    });
+    res.status(200).send(items);
+  } catch (error) {
+    console.error("Error searching items:", error);
+    res.status(500).send({ message: "Internal server error" });
   }
+},
+
+addProduct: async (req, res) => {
+  try {
+    const data = {
+      name: req.body.productName,
+      category: req.body.category,
+      price: req.body.price,
+      stock: req.body.stock,
+      description: req.body.description,
+      city: req.body.cityArray,
+      // image: req.file.path,
+    };
+    await Item.insertMany(data);
+    // res.status(201).json({
+    //   message: "Added successfully.",
+    //   imagePath: data.image,
+    // });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error uploading file",
+      error: error.message,
+    });
+  }
+},
 };
+
+
 
 module.exports = itemController;

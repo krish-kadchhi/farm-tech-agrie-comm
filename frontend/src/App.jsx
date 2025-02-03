@@ -7,6 +7,10 @@ import Signup from "./components/Signup.jsx";
 import ProductShow from "./components/showProducts.jsx";
 import Fruit from "./components/fruit.jsx";
 import Login from "./components/login.jsx";
+import Checkout from "./components/checkout.jsx";
+import OrderConfirm from "./components/orderConfirm.jsx";
+import AdminNavbar from "./components/admin.jsx";
+import AddProduct from "./components/addProducts.jsx";
 import "./index.css";
 import axios from "axios";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
@@ -26,6 +30,10 @@ export default function App() {
             <Route path="/products" element={<ProductShow />} />
             <Route path="/fruit" element={<Fruit />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-confirm" element={<OrderConfirm />} />
+            <Route path="/admin" element={<AdminNavbar />} />
+            <Route path="/addproduct" element={<AddProduct />} />
           </Routes>
       </BrowserRouter>
     </>

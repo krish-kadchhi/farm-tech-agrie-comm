@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -87,6 +88,7 @@ export default function Cart() {
       const response = await axios.get("http://localhost:8080/cart/showCart");
       const itemsWithQuantity = response.data.map((item) => ({
         ...item,
+        id: uuidv4(), // Ensure each item has a unique id
         quantity: item.quantity || 1,
       }));
       setCartItems(itemsWithQuantity);
@@ -94,8 +96,6 @@ export default function Cart() {
       console.error("Error fetching cart items:", error);
     }
   };
-
-
   const calculateTotal = () => {
     const newTotal = cartItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -112,18 +112,17 @@ export default function Cart() {
     );
   };
 
- const handleRemoveItem = async (item) => {
-   try {
-     await axios.post(`http://localhost:8080/cart/deleteCart`, {
-       item: item.item,
-     });
-     // Refresh cart after successful deletion
-     await fetchCartItems();
-   } catch (err) {
-     console.error("Error removing item:", err.message);
-   }
- };
- 
+  const handleRemoveItem = async (item) => {
+    try {
+      await axios.post(`http://localhost:8080/cart/deleteCart`, {
+        item: item.item,
+      });
+      await fetchCartItems();
+    } catch (err) {
+      console.error("Error removing item:", err.message);
+    }
+  };
+
   return (
     <div className={classes.cartContainer}>
       <section className={classes.cartHeader}>
@@ -146,7 +145,7 @@ export default function Cart() {
             </TableHead>
             <TableBody>
               {cartItems.map((item) => (
-                <TableRow key={item._id}>
+                <TableRow key={item.id}>
                   <TableCell>
                     <Button
                       variant="outlined"
@@ -157,13 +156,13 @@ export default function Cart() {
                     </Button>
                   </TableCell>
                   <TableCell>
-                    <img
+                    {/* <img
                       src={`http://localhost:8080/images/${item.image
                         .split("\\")
                         .pop()}`}
                       alt={item.name}
                       className={classes.productImage}
-                    />
+                    /> */}
                   </TableCell>
                   <TableCell>
                     <span className={classes.productName}>{item.item}</span>
@@ -226,6 +225,7 @@ export default function Cart() {
                 color="success"
                 fullWidth
                 style={{ marginTop: "16px" }}
+                onClick={() => navigate("/checkout")}
               >
                 Harvest & Checkout
               </Button>
