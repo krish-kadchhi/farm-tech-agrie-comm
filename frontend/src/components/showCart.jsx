@@ -156,13 +156,19 @@ export default function Cart() {
                     </Button>
                   </TableCell>
                   <TableCell>
-                    {/* <img
-                      src={`http://localhost:8080/images/${item.image
-                        .split("\\")
-                        .pop()}`}
-                      alt={item.name}
-                      className={classes.productImage}
-                    /> */}
+                    { item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.item}
+                        className={classes.productImage}
+                      />
+                    ) : (
+                      <img
+                        src="https://via.placeholder.com/50"
+                        alt={item.item}
+                        className={classes.productImage}
+                      />
+                    )}
                   </TableCell>
                   <TableCell>
                     <span className={classes.productName}>{item.item}</span>

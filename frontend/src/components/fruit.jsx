@@ -85,9 +85,7 @@ export default function Fruit() {
                 <CardMedia
                   component="img"
                   height="140"
-                  // image={`http://localhost:8080/images/${fruit.image
-                  //   .split("\\")
-                  //   .pop()}`}
+                  image={fruit.image}
                   alt={fruit.name}
                 />
                 <CardContent>

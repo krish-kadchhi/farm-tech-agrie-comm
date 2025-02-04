@@ -23,7 +23,7 @@ export default function Grain() {
       item: grain.name,
       category: grain.category,
       price: grain.price,
-      //   image: fruit.image,
+        image: grain.image,
     };
 
     try {
@@ -82,9 +82,7 @@ export default function Grain() {
                 <CardMedia
                   component="img"
                   height="140"
-                  // image={`http://localhost:8080/images/${fruit.image
-                  //   .split("\\")
-                  //   .pop()}`}
+                  image={grain.image}
                   alt={grain.name}
                 />
                 <CardContent>
