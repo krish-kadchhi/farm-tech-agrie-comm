@@ -62,7 +62,7 @@ export default function Fruit() {
       </Container>
     );
 
-  const fruits = myData.filter((item) => item.category === "fruit");
+  const fruits = myData.filter((item) => item.category === "fruit" && item.stock > 0);
   
 
   return (

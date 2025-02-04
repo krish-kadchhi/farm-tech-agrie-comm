@@ -16,14 +16,20 @@ const SearchComponent = () => {
 
   // Fetch search results from the backend
   const fetchResults = async (searchQuery) => {
-    try {
-      const response = await axios.get(
-       ` http://localhost:8080/item/searchProduct?query=${searchQuery}`
-      );
-      setResults(response.data);
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-    }
+   try {
+     const response = await axios.get(
+       `http://localhost:8080/item/searchProduct?query=${searchQuery}`
+     );
+
+     // Filter for "fruit" category (case-insensitive)
+     const filteredResults = response.data.filter(
+       (product) => product.category?.toLowerCase() === "fruit"
+     );
+
+     setResults(filteredResults);
+   } catch (error) {
+     console.error("Error fetching search results:", error);
+   }
   };
   const addToCart = async (product) => {
     const data = {
