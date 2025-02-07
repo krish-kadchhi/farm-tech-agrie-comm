@@ -63,6 +63,7 @@ const useStyles = makeStyles({
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
+  const[quantity,setQuantity]=useState(1);
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
   const classes = useStyles();
@@ -120,9 +121,11 @@ export default function Cart() {
   const handleQuantityChange = (id, newQuantity) => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item
+        item.id === id ? { ...item, quantity: newQuantity } : item
       )
     );
+    console.log(cartItems[0].quantity);
+    
   };
 
   const handleRemoveItem = async (item) => {
@@ -197,7 +200,7 @@ export default function Cart() {
                       min={1}
                       value={item.quantity}
                       onChange={(e) =>
-                        handleQuantityChange(item.id, parseInt(e.target.value))
+                        handleQuantityChange(item.id, e.target.value)
                       }
                       className={classes.quantityInput}
                     />
@@ -244,7 +247,7 @@ export default function Cart() {
                 color="success"
                 fullWidth
                 style={{ marginTop: "16px" }}
-                onClick={handleCheckoutClick}
+                onClick={() => navigate("/checkout",{state: {cartItems}})}
               >
                 Harvest & Checkout
               </Button>

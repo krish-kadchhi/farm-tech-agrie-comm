@@ -34,6 +34,15 @@ function Checkout() {
     }
   }, [navigate]);
 
+
+// function Checkout() {
+//     const [cartItems, setCartItems] = useState([]);
+//       const [total, setTotal] = useState(0);
+//         const [userData, setUserData] = useState({});  
+//     const navigate = useNavigate();
+//     const location = useLocation();
+ 
+
   useEffect(() => {
     fetchCartItems();
   }, []);
@@ -116,15 +125,21 @@ function Checkout() {
         theme: {
           color: green[700],
         },
-      };
+    
+  //   const calculateTotal = () => {
+  //       const newTotal = cartItems.reduce(
+  //         (sum, item) => sum + item.price * item.quantity,
+  //         0
+  //       );
+  //       setTotal(newTotal);
+  //     };
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
+  //     const rzp = new window.Razorpay(options);
+  //     rzp.open();
+  
+    }  } catch (error) {
       console.error("Error paying:", error);
     }
-  };
-
   return (
     <Container maxWidth="md">
       <Box sx={{ my: 5, p: 3, boxShadow: 3, borderRadius: 2, bgcolor: "white" }}>
@@ -196,6 +211,30 @@ function Checkout() {
       </Box>
     </Container>
   );
+}
+                   
+
+    return (
+      <div>
+        <h1>Checkout</h1>
+        <ul>
+          {cartItems.length > 0 ? (
+            cartItems.map((item, index) => (
+              <li key={index}>
+                {item?.item ?? "No Name"} - Quantity: {item?.quantity ?? 0} -
+                Price: {item?.price ?? 0} - Total:{" "}
+                {(item?.price ?? 0) * (item?.quantity ?? 0)}
+              </li>
+            ))
+          ) : (
+            <p>No items in cart.</p>
+          )}
+        </ul>
+
+        {userData && <p>Shipping Address: {userData.address}</p>}
+        <button onClick={handlePay}>Pay {total}</button>
+      </div>
+    );
 }
 
 export default Checkout;
