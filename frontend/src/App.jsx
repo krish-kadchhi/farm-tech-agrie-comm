@@ -13,6 +13,9 @@ import AdminNavbar from "./components/admin.jsx";
 import AddProduct from "./components/addProducts.jsx";
 import Grain from "./components/grains.jsx";
 import Vegetable from "./components/vegetable.jsx";
+import VerifyOtp from "./components/verifyOtp.jsx";
+import { Toaster } from 'sonner';
+
 import "./index.css";
 import axios from "axios";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
@@ -38,8 +41,11 @@ export default function App() {
             <Route path="/order-confirm" element={<OrderConfirm />} />
             <Route path="/admin" element={<AdminNavbar />} />
             <Route path="/addproduct" element={<AddProduct />} />
+            <Route path="/verifyOtp" element={<VerifyOtp />} />
           </Routes>
       </BrowserRouter>
+      <Toaster richColors position='top-right'/>
+
     </>
   );
 }

@@ -58,6 +58,7 @@ const authController = {
 
       const token = jwt.sign(
         {
+          _id: user._id,
           userId: user.user_id,
           name: user.name,
           email: user.email,
@@ -101,6 +102,7 @@ const authController = {
             email: data.email,
             role: data.role,
             address: admin.address,
+
           },
           "mysecret2"
         );
@@ -119,6 +121,8 @@ const authController = {
         } else {
           let token = jwt.sign(
             {
+              _id: user._id,
+              user_id: user.user_id,
               name: data.name,
               password: data.password,
               email: data.email,
@@ -129,8 +133,9 @@ const authController = {
           );
           res.cookie("loginCookie", token, { httpOnly: false });
           console.log(jwt.verify(token, "mysecret2").role);
+          console.log(user)
 
-          res.status(200).send("Login successful");
+          res.status(200).json({ message: "Login successful", user });
         }
       }
     } catch (error) {

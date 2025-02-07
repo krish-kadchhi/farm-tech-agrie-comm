@@ -47,14 +47,16 @@ export default function Signup() {
     ) {
       alert("All fields are required");
     } else {
-      navigate("/");
+
+      navigate("/verifyOtp");
       await axios
         .post("http://localhost:8080/auth/signup", data)
         .then((res) => {
           console.log(res.data);
+          // Cookies.set("userId", res.data.userId);
         })
         .catch((err) => console.log(err));
-      navigate("/products");
+      // navigate("/products");
     }
   };
 
