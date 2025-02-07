@@ -17,6 +17,19 @@ const itemSchema = new Schema({
     type: String,
     require: true,
   },
+  description: {
+    type: String,
+    require: true,
+  },
+  city: {
+    type: [String],
+    require: true,
+  },
+  stock: Number,
+  addedTime: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Item = mongoose.model("Item", itemSchema);
