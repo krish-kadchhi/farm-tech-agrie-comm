@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const Item = require("../models/item");
 const jwt = require("jsonwebtoken");
 
 const cartController = {
@@ -19,7 +20,21 @@ const cartController = {
         image: req.body.image || "",
         quantity: req.body.quantity || 1
       };
-
+      const product = await Item.findOne({ name: cartItem.item });
+      console.log(product); 
+      
+      if (!product) {
+         return res.status(404).json({ message: "Product not found" });
+      }
+      if(cartItem.quantity > product.stock){
+        return res.status(404).json({ message: "Product quantity not available" });
+      }
+      product.stock = product.stock - cartItem.quantity;
+    
+      console.log(product.stock);
+      
+      await product.save();
+        console.log(product.quantity);
       const updatedUser = await User.findOneAndUpdate(
         { email: userEmail },
         {

@@ -40,6 +40,8 @@ const itemController = {
   showPro: async (req, res) => {
     try {
       const items = await Item.find();
+      // const itemToDelete = await Item.findOne({ stock: 0 });
+      // await Item.deleteOne({ stock: 0 });
       console.log("a ready");
       
       res.send(items);
