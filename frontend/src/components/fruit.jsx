@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from 'sonner';
 import SearchComponent from "./searchComponent";
 import {
   Container,
@@ -27,9 +28,11 @@ export default function Fruit() {
     };
 
     try {
-      await axios.post("http://localhost:8080/cart/addCart", data, {
+      const res = await axios.post("http://localhost:8080/cart/addCart", data, {
         withCredentials: true, // For sending cookies
       });
+      toast.success(res.data.message);
+
       console.log("Item added to cart successfully");
     } catch (err) {
       console.error("Error adding to cart:", err);

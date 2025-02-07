@@ -47,7 +47,7 @@ const cartController = {
         return res.status(404).send("User not found");
       }
 
-      res.status(200).send("Item added successfully");
+      res.status(200).json({ message: "Item added to cart successfully" });
     } catch (error) {
       console.error("Add to cart error:", error);
       res.status(500).send("Error adding item to cart");

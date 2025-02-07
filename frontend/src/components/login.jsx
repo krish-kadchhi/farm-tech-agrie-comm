@@ -43,6 +43,7 @@ export default function Login() {
             withCredentials: true, // Important for cookies
           }
         );
+        console.log("Login response:", response.data);
         if (data.role === "Admin") {
           // console.log("Admin login successful");
           navigate("/addProduct");
