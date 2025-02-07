@@ -143,7 +143,7 @@ export default function Home() {
           className="rounded-lg p-8 text-center"
           sx={{ bgcolor: green[50], mt: "30px", mb: "30px" }}
         >
-          <Typography variant="h4" className="mb-4" sx={{ color: green[800],mt: "5px", mb: "5px" }}>
+          <Typography variant="h4" className="mb-4" sx={{ color: green[800],mt: "6px", mb: "6px" }}>
             Committed to Fresh & Sustainable Farming
           </Typography>
           <Typography sx={{ color: green[700] ,mt: "10px", mb: "10px"}} className="max-w-2xl mx-auto">
