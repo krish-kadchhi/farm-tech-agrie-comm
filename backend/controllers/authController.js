@@ -25,7 +25,7 @@ const authController = {
           email: user.email,
           role: user.role,
           password: user.password,
-          address: data.address,
+          address: user.address,
         },
         process.env.COOKIE_SECRET,
         { expiresIn: "24h" }

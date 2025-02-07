@@ -23,7 +23,7 @@ export default function vegetable() {
       item: vegetable.name,
       category: vegetable.category,
       price: vegetable.price,
-      //   image: fruit.image,
+      image: vegetable.image,
     };
 
     try {
@@ -82,10 +82,8 @@ export default function vegetable() {
                 <CardMedia
                   component="img"
                   height="140"
-                  // image={`http://localhost:8080/images/${fruit.image
-                  //   .split("\\")
-                  //   .pop()}`}
-                //   alt={vegetable.name}
+                  image={vegetable.image}
+                  alt={vegetable.name}
                 />
                 <CardContent>
                   <Typography variant="h6" component="div">

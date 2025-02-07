@@ -1,5 +1,6 @@
 const Item = require("../models/item");
 const multer = require("multer");
+const uploadOnCloudinary = require("../utils/cloudinary");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -49,26 +50,26 @@ const itemController = {
     }
   },
 
-  addProduct: async (req, res) => {
-    try {
-      const data = {
-        name: req.body.product_name,
-        category: req.body.product_category,
-        price: req.body.product_price,
-        image: req.file.path,
-      };
-      await Item.insertMany(data);
-      res.status(201).json({
-        message: "Added successfully.",
-        imagePath: data.image,
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: "Error uploading file",
-        error: error.message,
-      });
-    }
-  },
+  // addProduct: async (req, res) => {
+  //   try {
+  //     const data = {
+  //       name: req.body.product_name,
+  //       category: req.body.product_category,
+  //       price: req.body.product_price,
+  //       image: req.file.path,
+  //     };
+  //     await Item.insertMany(data);
+  //     res.status(201).json({
+  //       message: "Added successfully.",
+  //       imagePath: data.image,
+  //     });
+  //   } catch (error) {
+  //     res.status(500).json({
+  //       message: "Error uploading file",
+  //       error: error.message,
+  //     });
+  //   }
+  // },
 
   deleteProduct: async (req, res) => {
     try {
@@ -103,13 +104,43 @@ addProduct: async (req, res) => {
       stock: req.body.stock,
       description: req.body.description,
       city: req.body.cityArray,
-      // image: req.file.path,
     };
-    await Item.insertMany(data);
     // res.status(201).json({
-    //   message: "Added successfully.",
-    //   imagePath: data.image,
-    // });
+      //   message: "Added successfully.",
+      //   imagePath: data.image,
+      // });
+      
+      const imagelocalpath = req.files?.image[0].path;
+      
+      if(!imagelocalpath) {
+        return res.status(400).json({
+          message: "Image is required"
+        });
+      } 
+      
+      const image = await uploadOnCloudinary(imagelocalpath);
+
+      if(!image) {
+        return res.status(400).json({
+          message: "error uploading image on cloudinary"
+        });
+      }
+      const item = await Item.create({
+        ...data,
+        image: image.url,
+      })
+
+      if(!item) {
+        return res.status(400).json({
+          message: "Error adding product"
+        });
+      }
+
+      return res.status(201).json({
+        message: "Product added successfully",
+        item
+      });
+
   } catch (error) {
     res.status(500).json({
       message: "Error uploading file",
