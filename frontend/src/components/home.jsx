@@ -40,17 +40,31 @@ export default function Home() {
       <Box className="py-8">
         {/* Hero Section */}
         <Box className="relative w-full h-96 mb-12 rounded-lg overflow-hidden">
-          <img
-            src="/pexels-janetrangdoan-1132047.jpg"
-            alt="Fresh fruits and vegetables"
-            className="w-full h-full object-cover"
-          />
+          <Box
+            sx={{
+              width: "100%",
+              height: "100vh",
+              backgroundImage: "url('/pexels-janetrangdoan-1132047.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          ></Box>
           <Box className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <Box className="text-center">
-              <Typography variant="h2" className="text-white mb-4">
+              <Typography
+                variant="h2"
+                className="text-white mb-9"
+                mt={2}
+                mb={2}
+              >
                 Welcome to Farm-Tech
               </Typography>
-              <Typography variant="h5" className="text-white mb-8">
+              <Typography
+                variant="h5"
+                className="text-white mb-20"
+                mt={2}
+                mb={2}
+              >
                 Fresh vegetables and fruits, from farm to your table
               </Typography>
               <Button
@@ -58,13 +72,13 @@ export default function Home() {
                 sx={{
                   bgcolor: green[500],
                   "&:hover": {
-                    bgcolor: green[600],
+                    bgcolor: green[800],
                   },
                   px: 4,
-                  py: 1.5,
-                  borderRadius: "9999px",
+                  py: 1.0,
+                  borderRadius: "80px",
                   textTransform: "none",
-                  fontSize: "1.1rem",
+                  fontSize: "1.0rem",
                 }}
                 onClick={() => (window.location.href = "/products")}
               >
@@ -80,20 +94,25 @@ export default function Home() {
             variant="h3"
             className="text-center mb-8"
             sx={{ color: green[800] }}
+            mt={2}
+            mb={2}
           >
             Our Services
           </Typography>
-          <Grid container spacing={3}>
+          <Grid container spacing={3} alignItems="stretch"> {/* Ensures uniform height */}
             {services.map((service, index) => (
-              <Grid item xs={12} md={6} lg={3} key={index}>
+              <Grid item xs={12} sm={6} md={6} lg={3} key={index}>
                 <Card
                   className="h-full transition-shadow duration-300"
                   sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%", // Ensures all cards have the same height
                     "&:hover": {
                       boxShadow: 6,
                       borderColor: green[200],
                     },
-                    border: 1,
+                    border: 4,
                     borderColor: green[100],
                   }}
                 >
@@ -103,12 +122,12 @@ export default function Home() {
                       bgcolor: green[50],
                       "& .MuiCardHeader-title": {
                         color: green[800],
-                        fontSize: "1.25rem",
+                        fontSize: "1.50rem",
                         fontWeight: 600,
                       },
                     }}
                   />
-                  <CardContent>
+                  <CardContent sx={{ flexGrow: 1 }}> {/* Ensures text fills space evenly */}
                     <Typography color="text.secondary">
                       {service.description}
                     </Typography>
@@ -120,11 +139,14 @@ export default function Home() {
         </Box>
 
         {/* Banner Section */}
-        <Box className="rounded-lg p-8 text-center" sx={{ bgcolor: green[50] }}>
-          <Typography variant="h4" className="mb-4" sx={{ color: green[800] }}>
+        <Box
+          className="rounded-lg p-8 text-center"
+          sx={{ bgcolor: green[50], mt: "30px", mb: "30px" }}
+        >
+          <Typography variant="h4" className="mb-4" sx={{ color: green[800],mt: "5px", mb: "5px" }}>
             Committed to Fresh & Sustainable Farming
           </Typography>
-          <Typography sx={{ color: green[700] }} className="max-w-2xl mx-auto">
+          <Typography sx={{ color: green[700] ,mt: "10px", mb: "10px"}} className="max-w-2xl mx-auto">
             Join us in supporting local farmers while enjoying the freshest
             produce delivered right to your doorstep. Our commitment to
             sustainable agriculture ensures both quality for you and care for
@@ -132,6 +154,7 @@ export default function Home() {
           </Typography>
         </Box>
       </Box>
+      
     </Container>
   );
 }
