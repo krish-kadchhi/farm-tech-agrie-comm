@@ -22,7 +22,7 @@ export default function AddProduct() {
   const getData = async (e) => {
     e.preventDefault();
     let cityArray = city.split(",");
-    const data = { productName, price, category, stock, description, cityArray };
+    const data = { productName, price, category, stock, description, cityArray, image };
     console.log(cityArray);
     if (
       !data.productName ||
@@ -30,16 +30,29 @@ export default function AddProduct() {
       !data.category ||
       !data.stock ||
       !data.description ||
-      !data.cityArray
+      !data.cityArray ||
+      !data.image
     ) {
       alert("Please fill in all required fields");
     } else {
+
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("productName", productName);
+      formData.append("price", price);
+      formData.append("category", category);
+      formData.append("stock", stock);
+      formData.append("description", description);
+      formData.append("cityArray", cityArray);
       try {
         const response = await axios.post(
           "http://localhost:8080/item/add",
-          data,
+          formData,
           {
-            withCredentials: true, // Important for cookies
+            withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data", 
+            }, 
           }
         );
         alert("Product added successfully");
@@ -58,6 +71,13 @@ export default function AddProduct() {
   const [description, setDescription] = useState("");
   const [city, setCity] = useState("");
   const [category, setCategory] = useState("");
+  const [image, setImage] = useState(null);
+
+  const handleImageChange = (e) => {
+    if (e.target.files.length > 0) {
+      setImage(e.target.files[0]);
+    }
+  };
   return (
     <Container component="main" maxWidth="xs">
       <Paper elevation={3} sx={{ padding: 4 }}>
@@ -127,6 +147,8 @@ export default function AddProduct() {
               required
             />
           </Box>
+
+          <input type="file" accept="image/*" onChange={handleImageChange} required />
           <Button
             type="submit"
             fullWidth

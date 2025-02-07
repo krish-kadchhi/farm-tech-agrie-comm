@@ -15,7 +15,7 @@ const itemSchema = new Schema({
   price: Number,
   image: {
     type: String,
-    // require: true,
+    require: true,
   },
 });
 
