@@ -7,7 +7,7 @@ const cartController = {
     try {
       const token = req.cookies.loginCookie;
       if (!token) {
-        return res.status(401).send("No token provided");
+        return setTimeout(() => res.status(401).send("No token provided"), 100);
       }
 
       const decoded = jwt.verify(token, "mysecret2");
@@ -24,17 +24,17 @@ const cartController = {
       console.log(product); 
       
       if (!product) {
-         return res.status(404).json({ message: "Product not found" });
+         return setTimeout(() => res.status(404).json({ message: "Product not found" }), 100);
       }
       if(cartItem.quantity > product.stock){
-        return res.status(404).json({ message: "Product quantity not available" });
+        return setTimeout(() => res.status(404).json({ message: "Product quantity not available" }), 100);
       }
       product.stock = product.stock - cartItem.quantity;
     
       console.log(product.stock);
       
       await product.save();
-        console.log(product.quantity);
+      console.log(product.quantity);
       const updatedUser = await User.findOneAndUpdate(
         { email: userEmail },
         {
@@ -44,13 +44,13 @@ const cartController = {
       );
 
       if (!updatedUser) {
-        return res.status(404).send("User not found");
+        return setTimeout(() => res.status(404).send("User not found"), 100);
       }
 
-      res.status(200).json({ message: "Item added to cart successfully" });
+      setTimeout(() => res.status(200).json({ message: "Item added to cart successfully" }), 100);
     } catch (error) {
       console.error("Add to cart error:", error);
-      res.status(500).send("Error adding item to cart");
+      setTimeout(() => res.status(500).send("Error adding item to cart"), 100);
     }
   },
 
@@ -58,7 +58,7 @@ const cartController = {
     try {
       const token = req.cookies.loginCookie;
       if (!token) {
-        return res.status(401).send("No token provided");
+        return setTimeout(() => res.status(401).send("No token provided"), 100);
       }
 
       const decoded = jwt.verify(token, "mysecret2");
@@ -66,13 +66,13 @@ const cartController = {
 
       const user = await User.findOne({ email: userEmail });
       if (!user) {
-        return res.status(404).send("User not found");
+        return setTimeout(() => res.status(404).send("User not found"), 100);
       }
 
-      res.send(user.cart || []);
+      setTimeout(() => res.send(user.cart || []), 1000);
     } catch (error) {
       console.error("Show cart error:", error);
-      res.status(500).send("Error retrieving cart");
+      setTimeout(() => res.status(500).send("Error retrieving cart"), 100);
     }
   },
 
@@ -82,7 +82,7 @@ const cartController = {
       const token = req.cookies.loginCookie;
       
       if (!token) {
-        return res.status(401).send("No token provided");
+        return setTimeout(() => res.status(401).send("No token provided"), 100);
       }
 
       const decoded = jwt.verify(token, "mysecret2");
@@ -100,13 +100,13 @@ const cartController = {
       );
 
       if (!result) {
-        return res.status(404).send("User not found or item not in cart");
+        return setTimeout(() => res.status(404).send("User not found or item not in cart"), 100);
       }
 
-      res.status(200).send("Item removed successfully");
+      setTimeout(() => res.status(200).send("Item removed successfully"), 100);
     } catch (error) {
       console.error("Error removing item from cart:", error);
-      res.status(500).send("Error removing item from cart");
+      setTimeout(() => res.status(500).send("Error removing item from cart"), 100);
     }
   },
 };
