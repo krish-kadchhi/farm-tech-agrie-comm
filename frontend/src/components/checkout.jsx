@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
 
 function Checkout() {
@@ -9,7 +9,7 @@ function Checkout() {
       const [total, setTotal] = useState(0);
         const [userData, setUserData] = useState({});  
     const navigate = useNavigate();
-    const location = useLocation();
+
  
 
     useEffect(() => {
@@ -36,16 +36,14 @@ function Checkout() {
 
     const fetchCartItems = async () => {
         try {
-            // const response = await axios.get("http://localhost:8080/cart/showCart");
-            // console.log("API Response:", response.data); // Debugging line
-            const response = location.state.cartItems;
-            console.log(response);
-            setCartItems(response);
-            // if (Array.isArray(response.data)) {
-              
-            // } else {
-            //     console.error("Unexpected response format:", response.data);
-            // }
+            const response = await axios.get("http://localhost:8080/cart/showCart");
+            console.log("API Response:", response.data); // Debugging line
+
+            if (Array.isArray(response.data)) {
+                setCartItems(response.data);
+            } else {
+                console.error("Unexpected response format:", response.data);
+            }
         } catch (error) {
             console.error("Error fetching cart items:", error);
         }
@@ -119,25 +117,23 @@ function Checkout() {
       }
 
     return (
-      <div>
-        <h1>Checkout</h1>
-        <ul>
-          {cartItems.length > 0 ? (
-            cartItems.map((item, index) => (
-              <li key={index}>
-                {item?.item ?? "No Name"} - Quantity: {item?.quantity ?? 0} -
-                Price: {item?.price ?? 0} - Total:{" "}
-                {(item?.price ?? 0) * (item?.quantity ?? 0)}
-              </li>
-            ))
-          ) : (
-            <p>No items in cart.</p>
-          )}
-        </ul>
+        <div>
+            <h1>Checkout</h1>
+            <ul>
+                {cartItems.length > 0 ? (
+                    cartItems.map((item, index) => (
+                        <li key={index}>
+                            {item?.item ?? "No Name"} - Quantity: {item?.quantity ?? 0} price: {item?.price ?? 0} total: {item?.price * item?.quantity ?? 0} 
+                        </li>
+                    ))
+                ) : (
+                    <p>No items in cart.</p>
+                )}
+            </ul>
 
-        {userData && <p>Shipping Address: {userData.address}</p>}
-        <button onClick={handlePay}>Pay {total}</button>
-      </div>
+            {userData && <p>Shipping Address: {userData.address}</p>}
+            <button onClick={handlePay}>Pay {total}</button>
+        </div>
     );
 }
 

@@ -68,6 +68,19 @@ export default function Cart() {
   const navigate = useNavigate();
   const classes = useStyles();
 
+  const handleCheckoutClick = async()=>{
+    try{
+      const res = await axios.post("http://localhost:8080/cart/addCart",cartItems,{withCredentials:true});
+      if(res.status==200){
+        navigate("/checkout");
+      }
+
+    }catch(e){
+      console.log(e)
+    }
+
+  }
+
   useEffect(() => {
     const firstCookie = Cookies.get("cookie");
     const secondCookie = Cookies.get("loginCookie");

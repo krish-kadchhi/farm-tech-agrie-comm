@@ -45,7 +45,7 @@ function Navbar(props) {
         {navItems.map((item) => (
           <ListItem key={item.label} disablePadding>
             <ListItemButton
-              sx={{ textAlign: "center" }}
+              sx={{ textAlign: "left" }}
               component={Link}
               to={item.path}
             >
@@ -83,17 +83,19 @@ function Navbar(props) {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            sx={{ fontSize:45, flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
-            MUI
+            FarmTech
           </Typography>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          <Box sx={{ display: { xs: "none", sm: "block"} }}>
             {navItems.map((item) => (
               <Button
                 key={item.label}
                 sx={{
                   color: "white",
                   "&:hover": { backgroundColor: green[700] },
+                  fontSize: "18px",
+                  marginRight: "15px",
                 }}
                 component={Link}
                 to={item.path}
