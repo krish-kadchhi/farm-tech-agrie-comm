@@ -26,19 +26,23 @@ export default function AddProduct() {
   // Function to start the camera
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
 
-      // Ensure videoRef.current is available before setting srcObject
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setCameraActive(true);
-      } else {
-        console.error("Video element not found");
-      }
+        setCameraActive(true); // Ensure <video> is rendered before setting srcObject
+
+        setTimeout(() => {  // Give React time to update the DOM
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+            } else {
+                console.error("Video element not found");
+            }
+        }, 100); // Delay to allow video element to be available
+
     } catch (error) {
-      console.error("Error accessing camera:", error);
+        console.error("Error accessing camera:", error);
     }
-  };
+};
+
 
   // Function to capture an image from the camera
   const captureImage = () => {
@@ -116,27 +120,40 @@ export default function AddProduct() {
           <Box sx={{ mb: 2 }}>
             <TextField fullWidth label="City" type="text" value={city} onChange={(e) => setCity(e.target.value)} required />
           </Box>
-
+  
           {/* File Upload */}
           <input type="file" accept="image/*" onChange={handleImageChange} required />
-
+  
           {/* Camera Capture Section */}
           {!cameraActive && (
             <Button variant="contained" color="secondary" fullWidth onClick={startCamera} sx={{ my: 2 }}>
               Open Camera
             </Button>
           )}
-
-          {cameraActive && (
-            <Box>
-              <video ref={videoRef} autoPlay playsInline style={{ width: "100%" }} />
-              <canvas ref={canvasRef} style={{ display: "none" }} />
-              <Button variant="contained" color="primary" fullWidth onClick={captureImage} sx={{ my: 2 }}>
+  
+          {/* Always keep <video> in the DOM, but hide it when not active */}
+          <Box>
+            <video 
+              ref={videoRef} 
+              autoPlay 
+              playsInline 
+              style={{ width: "100%", display: cameraActive ? "block" : "none" }} 
+            />
+            <canvas ref={canvasRef} style={{ display: "none" }} />
+            
+            {cameraActive && (
+              <Button 
+                variant="contained" 
+                color="primary" 
+                fullWidth 
+                onClick={captureImage} 
+                sx={{ my: 2 }}
+              >
                 Capture Image
               </Button>
-            </Box>
-          )}
-
+            )}
+          </Box>
+  
           <Button type="submit" fullWidth variant="contained" sx={{ backgroundColor: green[600] }}>
             Add Product
           </Button>
@@ -144,4 +161,5 @@ export default function AddProduct() {
       </Paper>
     </Container>
   );
+  
 }
