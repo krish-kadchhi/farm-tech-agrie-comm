@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 
 const otpSchema = new Schema({
     userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+        type: String,
         required: true,
     },
     email: {
@@ -14,7 +13,6 @@ const otpSchema = new Schema({
     },
     otp: {
         type: Number,
-
     },
 },
 {

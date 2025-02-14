@@ -47,8 +47,8 @@ export default function Signup() {
     ) {
       alert("All fields are required");
     } else {
-
-      navigate("/verifyOtp");
+      setTimeout(() => {navigate("/verifyOtp");}, 1000);
+      
       await axios
         .post("http://localhost:8080/auth/signup", data)
         .then((res) => {

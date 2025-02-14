@@ -15,6 +15,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 const cookieParser = require("cookie-parser");
+const morgan = require("morgan");
 const dotenv = require("dotenv");
 dotenv.config();
 app.use(
@@ -31,6 +32,7 @@ app.set("views", path.join(__dirname, "views"));
 app.engine("ejs", ejsMate);
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
+app.use(morgan("dev"));
 app.use(bodyparser.urlencoded({ extended: true }));
 
 

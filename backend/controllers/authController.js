@@ -25,7 +25,7 @@ const authController = {
 
       const otpCode = Math.floor(100000 + Math.random() * 900000);
     let otp = new Otp({
-        userId: createdUser._id,
+        userId: createdUser.user_id,
         email: createdUser.email,
         otp: otpCode,
     });
@@ -149,24 +149,37 @@ const authController = {
     const { userId, otp } = req.body;
 
     try {
-      const user = await User.findOne({ _id: userId });
-      const otpData = await Otp.findOne({ userId: userId });
-      if (!otpData) {
-        res.status(400).send("Invalid OTP");
-      }
+        const user = await User.findOne({ user_id: userId });
+        if (!user) {
+            return res.status(400).json({ success: false, message: "User not found" });
+        }
 
-      if (otpData.otp === otp) {
-        res.status(200).send("OTP verified");
-      } else {
-        res.status(400).send("Invalid OTP");
-      }
+        const otpData = await Otp.findOne({ userId: userId });
+        console.log(otpData);
 
-      user.isVerified = true;
-      await user.save({ validateBeforeSave: false });
+        if (!otpData) {
+            return res.status(400).json({ success: false, message: "Invalid OTP" });
+        }
+
+        // Convert OTPs to the same type for comparison
+        if (parseInt(otpData.otp) === parseInt(otp)) {
+            user.isVerified = true;
+            await user.save({ validateBeforeSave: false });
+
+            // Remove OTP after successful verification (optional)
+            // await Otp.deleteOne({ userId: userId });
+
+            return res.status(200).json({ success: true, message: "OTP verified" });
+        } else {
+            return res.status(400).json({ success: false, message: "Invalid OTP" });
+        }
+
     } catch (error) {
-      console.error("Verify OTP error:", error);
+        console.error("Verify OTP error:", error);
+        return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-  },
+}
+
 };
 
 module.exports = authController;
