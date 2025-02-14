@@ -27,8 +27,14 @@ export default function AddProduct() {
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      videoRef.current.srcObject = stream;
-      setCameraActive(true);
+
+      // Ensure videoRef.current is available before setting srcObject
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        setCameraActive(true);
+      } else {
+        console.error("Video element not found");
+      }
     } catch (error) {
       console.error("Error accessing camera:", error);
     }
