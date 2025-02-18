@@ -122,7 +122,7 @@ export default function AddProduct() {
           </Box>
   
           {/* File Upload */}
-          <input type="file" accept="image/*" onChange={handleImageChange} required />
+          <input type="file" accept="image/*" onChange={handleImageChange}  />
   
           {/* Camera Capture Section */}
           {!cameraActive && (
