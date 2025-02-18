@@ -18,7 +18,7 @@ import Button from "@mui/material/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { green } from "@mui/material/colors";
 
-const drawerWidth = 240;
+const drawerWidth = 150;
 const navItems = [
   { label: "Home", path: "/" },
   { label: "products", path: "/products" },

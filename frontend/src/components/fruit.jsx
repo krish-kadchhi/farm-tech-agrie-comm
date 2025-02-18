@@ -299,9 +299,9 @@ export default function Fruit() {
                       variant="contained"
                       onClick={(e) => addToCart(fruit, e)}
                       sx={{
-                        bgcolor: '#008001',
+                        bgcolor: '#43a047',
                         '&:hover': {
-                          bgcolor: '#008010',
+                          bgcolor: '#66bb6a',
                         }
                       }}
                     >
@@ -346,15 +346,15 @@ export default function Fruit() {
                         marginBottom: '16px'
                       }}
                     />
-                    <Typography variant="h6" color="primary" gutterBottom>
+                    <Typography variant="h6" color="Black" gutterBottom>
                       ₹{selectedFruit.price} per kg
                     </Typography>
                     <Button
                       variant="contained"
                       fullWidth
                       sx={{
-                        bgcolor: '#008060',
-                        '&:hover': { bgcolor: '#006048' },
+                        bgcolor: '#43a047',
+                        '&:hover': { bgcolor: '#66bb6a' },
                         mt: 2
                       }}
                       onClick={(e) => addToCart(selectedFruit, e)}

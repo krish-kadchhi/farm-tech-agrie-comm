@@ -1,7 +1,8 @@
-//login.jsx
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+"use client"
+
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import axios from "axios"
 import {
   Button,
   TextField,
@@ -15,155 +16,274 @@ import {
   Typography,
   Paper,
   Container,
-} from "@mui/material";
-import { green } from "@mui/material/colors";
+  InputAdornment,
+  IconButton,
+  CircularProgress,
+  Alert,
+  Snackbar,
+} from "@mui/material"
+import { Visibility, VisibilityOff, Person, Email, Key } from "@mui/icons-material"
+import { ThemeProvider, createTheme } from "@mui/material/styles"
+
+// Custom theme (same as signup page)
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#388E3C",
+      light: "#4CAF50",
+      dark: "#1B5E20",
+    },
+    background: {
+      default: "#F5F5F5",
+    },
+  },
+  shape: {
+    borderRadius: 8,
+  },
+  components: {
+    MuiTextField: {
+      defaultProps: {
+        variant: "outlined",
+      },
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            "&:hover fieldset": {
+              borderColor: "#2E7D32",
+            },
+          },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          padding: "12px",
+        },
+      },
+    },
+  },
+})
 
 export default function Login() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPass] = useState("");
-  const [role, setRole] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    role: "",
+  })
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const navigate = useNavigate()
 
-  // Login.js component
-  const getData = async (e) => {
-    e.preventDefault();
-    const data = { username, email, role, password }; // Include role
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
 
-    if (!data.username || !data.email || !data.password || !data.role) {
-      alert("Please fill in all required fields");
-    } else {
-      try {
-        const response = await axios.post(
-          "http://localhost:8080/auth/login",
-          data,
-          {
-            withCredentials: true, // Important for cookies
-          }
-        );
-        console.log("Login response:", response.data);
-        if (data.role === "Admin") {
-          // console.log("Admin login successful");
-          navigate("/addProduct");
-        } else {
-          navigate("/products");
-        }
-      } catch (err) {
-        alert(err.response?.data || "Login failed");
-      }
+  const validateForm = () => {
+    if (!formData.username || !formData.email || !formData.password || !formData.role) {
+      setError("Please fill in all required fields")
+      return false
     }
-  };
+    if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      setError("Please enter a valid email address")
+      return false
+    }
+    return true
+  }
 
-  const showPass = () => {
-    const passwordInput = document.getElementById("password");
-    passwordInput.type =
-      passwordInput.type === "password" ? "text" : "password";
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!validateForm()) {
+      setOpenSnackbar(true)
+      return
+    }
+
+    setLoading(true)
+    try {
+      const response = await axios.post("http://localhost:8080/auth/login", formData, {
+        withCredentials: true,
+      })
+      console.log("Login response:", response.data)
+      if (formData.role === "Admin") {
+        navigate("/addProduct")
+      } else {
+        navigate("/products")
+      }
+    } catch (err) {
+      setError(err.response?.data || "Login failed")
+      setOpenSnackbar(true)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          mt: 8,
-          p: 4,
-          border: "1px solid #ccc",
-          borderRadius: 2,
-          boxShadow: 3,
-        }}
-      >
-        <Typography variant="h4" textAlign="center" gutterBottom>
-          Login Page
-        </Typography>
-        <form onSubmit={getData}>
-          <Box sx={{ mb: 3 }}>
-            <TextField
-              fullWidth
-              label="Username"
-              variant="outlined"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </Box>
-          <Box sx={{ mb: 3 }}>
-            <TextField
-              fullWidth
-              label="Email"
-              type="email"
-              variant="outlined"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </Box>
-          {/* <Box sx={{ mb: 3 }}>
-            <TextField
-              fullWidth
-              type="number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              label="Phone"
-              variant="outlined"
-              required
-            />
-          </Box>
-          <Box sx={{ mb: 3 }}>
-            <TextField
-              fullWidth
-              type="address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              label="Please Enter City only"
-              required
-            />
-          </Box> */}
-          <Box sx={{ mb: 2 }}>
-            <FormControl fullWidth required>
-              <InputLabel>Role</InputLabel>
-              <Select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                label="Role"
-              >
-                <MenuItem value="Customer">Customer</MenuItem>
-                <MenuItem value="Farmer">Farmer</MenuItem>
-                <MenuItem value="Admin">Admin</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-
-          <Box sx={{ mb: 3 }}>
-            <TextField
-              fullWidth
-              label="Password"
-              type="password"
-              id="password"
-              variant="outlined"
-              value={password}
-              onChange={(e) => setPass(e.target.value)}
-              required
-            />
-          </Box>
-          <FormControlLabel
-            control={<Checkbox onClick={showPass} />}
-            label="Show Password"
-          />
-          <Box sx={{ mt: 3 }}>
-            <Button
-              fullWidth
-              type="submit"
-              variant="contained"
-              color="primary"
-              size="large"
-              sx={{ backgroundColor: green[700] }}
+    <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="sm">
+        <Box
+          sx={{
+            marginTop: 1,
+            marginBottom: 5,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Paper
+            elevation={3}
+            sx={{
+              p: { xs: 3, md: 4 },
+              width: "100%",
+              borderRadius: "12px",
+              backgroundColor: "white",
+            }}
+          >
+            <Typography
+              component="h1"
+              variant="h4"
+              sx={{
+                mb: 4,
+                textAlign: "center",
+                fontWeight: 600,
+                color: "primary.main",
+              }}
             >
               Login
-            </Button>
-          </Box>
-        </form>
-      </Box>
-    </Container>
-  );
+            </Typography>
+
+            <form onSubmit={handleSubmit} noValidate>
+              <TextField
+                fullWidth
+                name="username"
+                label="Username"
+                value={formData.username}
+                onChange={handleChange}
+                margin="normal"
+                required
+                autoComplete="off"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Person color="primary" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <TextField
+                fullWidth
+                name="email"
+                label="Email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                margin="normal"
+                required
+                autoComplete="off"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email color="primary" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <FormControl fullWidth margin="normal" required>
+                <InputLabel>Role</InputLabel>
+                <Select name="role" value={formData.role} onChange={handleChange} label="Role">
+                  <MenuItem value="Customer">Customer</MenuItem>
+                  <MenuItem value="Farmer">Farmer</MenuItem>
+                  <MenuItem value="Admin">Admin</MenuItem>
+                </Select>
+              </FormControl>
+
+              <TextField
+                fullWidth
+                name="password"
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleChange}
+                margin="normal"
+                required
+                autoComplete="off"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Key color="primary" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {/* <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton> */}
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <FormControlLabel
+                control={
+                  <Checkbox checked={showPassword} onChange={() => setShowPassword(!showPassword)} color="primary" />
+                }
+                label="Show Password"
+                sx={{ mt: 1 }}
+              />
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                disabled={loading}
+                sx={{
+                  mt: 3,
+                  mb: 2,
+                  height: 48,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                }}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+              </Button>
+
+              <Typography variant="body1" align="center" sx={{ mt: 2 }}>
+                Don't have an account?{" "}
+                <Typography
+                  component="a"
+                  href="/signup"
+                  color="primary"
+                  sx={{
+                    textDecoration: "none",
+                    fontWeight: 600,
+                    "&:hover": {
+                      textDecoration: "underline",
+                    },
+                  }}
+                >
+                  Sign up here
+                </Typography>
+              </Typography>
+            </form>
+          </Paper>
+        </Box>
+
+        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
+          <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: "100%" }}>
+            {error}
+          </Alert>
+        </Snackbar>
+      </Container>
+    </ThemeProvider>
+  )
 }
+

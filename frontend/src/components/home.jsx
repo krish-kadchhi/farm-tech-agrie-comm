@@ -225,7 +225,7 @@ export default function Home() {
                 </Typography>
                 <Typography>
                   We work exclusively with farmers who follow sustainable and environmentally 
-                  friendly farming practices, ensuring a better future for our planet.
+                  friendly farming practices, ensuring a better future for us.
                 </Typography>
                 <Typography variant="h6" color={green[800]}>
                   🚚 Same Day Delivery
