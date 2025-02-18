@@ -28,7 +28,7 @@ export default function ProductShow() {
         quantity: 1,
       };
       await axios.post("http://localhost:8080/cart/addCart", data);
-      setCartMessage(`${item.name} added to cart`);
+      setCartMessage(`₹{item.name} added to cart`);
     } catch (error) {
       setCartMessage("Failed to add item to cart");
     }
