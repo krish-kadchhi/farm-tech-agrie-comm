@@ -1,7 +1,7 @@
 //addProducts.jsx
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import {
   Button,
   TextField,
@@ -17,6 +17,7 @@ import {
   Container,
 } from "@mui/material";
 import { green } from "@mui/material/colors";
+// const navigate= useNavigate();
 
 export default function AddProduct() {
   const getData = async (e) => {
@@ -56,7 +57,7 @@ export default function AddProduct() {
           }
         );
         alert("Product added successfully");
-        //       navigate("/products");
+              // navigate("/products");
         console.log("bapa sita ramx");
       } catch (error) {
         console.error("There was an error adding the product!", error);
@@ -77,6 +78,7 @@ export default function AddProduct() {
     if (e.target.files.length > 0) {
       setImage(e.target.files[0]);
     }
+    // Navigate("/products");
   };
   return (
     <Container component="main" maxWidth="xs">

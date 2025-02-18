@@ -103,7 +103,7 @@ export default function Signup() {
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              Lable="Address"
+              label="Address"
               required
             />
           </Box>

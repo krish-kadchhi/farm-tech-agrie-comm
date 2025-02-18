@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const Item = require("../models/item");
+const Item = require("../models/item"); 
 const jwt = require("jsonwebtoken");
 
 const cartController = {
@@ -18,27 +18,13 @@ const cartController = {
         category: req.body.category,
         price: req.body.price,
         image: req.body.image || "",
-        quantity: req.body.quantity || 1
+        quantity: req.body.quantity || 1,
       };
-      const product = await Item.findOne({ name: cartItem.item });
-      console.log(product); 
-      
-      if (!product) {
-         return res.status(404).json({ message: "Product not found" });
-      }
-      if(cartItem.quantity > product.stock){
-        return res.status(404).json({ message: "Product quantity not available" });
-      }
-      product.stock = product.stock - cartItem.quantity;
-    
-      console.log(product.stock);
-      
-      await product.save();
-        console.log(product.quantity);
+
       const updatedUser = await User.findOneAndUpdate(
         { email: userEmail },
         {
-          $push: { cart: cartItem }
+          $push: { cart: cartItem },
         },
         { new: true }
       );
@@ -47,7 +33,7 @@ const cartController = {
         return res.status(404).send("User not found");
       }
 
-      res.status(200).json({ message: "Item added to cart successfully" });
+      res.status(200).send("Item added successfully");
     } catch (error) {
       console.error("Add to cart error:", error);
       res.status(500).send("Error adding item to cart");
@@ -80,7 +66,7 @@ const cartController = {
     try {
       const { item } = req.body;
       const token = req.cookies.loginCookie;
-      
+
       if (!token) {
         return res.status(401).send("No token provided");
       }
@@ -91,10 +77,10 @@ const cartController = {
       // Use $pull operator to remove the item from the cart array
       const result = await User.findOneAndUpdate(
         { email: email },
-        { 
-          $pull: { 
-            cart: { item: item } 
-          } 
+        {
+          $pull: {
+            cart: { item: item },
+          },
         },
         { new: true }
       );
@@ -107,6 +93,35 @@ const cartController = {
     } catch (error) {
       console.error("Error removing item from cart:", error);
       res.status(500).send("Error removing item from cart");
+    }
+  },
+  showItem: async (req, res) => {
+    try {
+      const token = req.cookies.loginCookie;
+      if (!token) {
+        return res.status(401).send("No token provided");
+      }
+
+      const decoded = jwt.verify(token, "mysecret2");
+      const email = decoded.email;
+      const user = await User.findOne({ email: email });
+
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+
+      const stockInfo = {};
+      for (const cartItem of user.cart) {
+        const item = await Item.findOne({ name: cartItem.item });
+        if (item) {
+          stockInfo[cartItem.item] = item.stock;
+        }
+      }
+
+      res.json(stockInfo);
+    } catch (error) {
+      console.error("Error fetching stock info:", error);
+      res.status(500).send("Error fetching stock information");
     }
   },
 };
