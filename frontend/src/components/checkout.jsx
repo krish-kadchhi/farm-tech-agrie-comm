@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 function Checkout() {
@@ -9,12 +9,19 @@ function Checkout() {
   const [total, setTotal] = useState(0);
   const [userData, setUserData] = useState({});
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Set cart items from navigation state
+  useEffect(() => {
+    if (location.state?.cartItems) {
+      setCartItems(location.state.cartItems);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const token = Cookies.get("loginCookie");
     if (token) {
       const decoded = jwtDecode(token);
-      console.log("decoded token", decoded);
       setUserData(decoded);
     } else {
       navigate("/signup");
@@ -22,31 +29,12 @@ function Checkout() {
   }, [navigate]);
 
   useEffect(() => {
-    fetchCartItems();
-  }, []);
-
-  useEffect(() => {
     calculateTotal();
   }, [cartItems]);
 
-  const fetchCartItems = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/cart/showCart");
-      console.log("API Response:", response.data); 
-
-      if (Array.isArray(response.data)) {
-        setCartItems(response.data);
-      } else {
-        console.error("Unexpected response format:", response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching cart items:", error);
-    }
-  };
-
   const calculateTotal = () => {
     const newTotal = cartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+      (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
       0
     );
     setTotal(newTotal);
@@ -54,35 +42,35 @@ function Checkout() {
 
   const handlePay = async () => {
     try {
-      const userId = Cookies.get("userId");
-      console.log("User ID:", userId);
+      const user_id = Cookies.get("loginCookie");
+      if (!user_id) {
+        console.error("User ID not found!");
+        return;
+      }
+
       const orderResponse = await axios.post(
         "http://localhost:8080/payment/checkout",
         {
           amount: total,
           cartItems,
-          userId,
+          user_id,
         },
-        {
-          withCredentials: true, // For sending cookies
-        }
+        { withCredentials: true }
       );
 
-      // console.log("Order Response:", orderResponse.data);
       const { orderId, amount } = orderResponse.data;
 
       const options = {
-        key: "rzp_test_0vFqP0M0VZhbTj", // Replace with your Razorpay key_id
-        amount: amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        key: "rzp_test_0vFqP0M0VZhbTj",
+        amount: amount * 100,
         currency: "INR",
         name: "Farm Tech",
         description: "Test Transaction",
-        order_id: orderId, // This is the order_id created in the backend
-        callback_url: "http://localhost:3000/payment/verify-payment", // Your success URL
-
+        order_id: orderId,
+        callback_url: "http://localhost:3000/payment/verify-payment",
         handler: async function (response) {
           const totalQuantity = cartItems.reduce(
-            (sum, item) => sum + item.quantity,
+            (sum, item) => sum + (item.quantity || 0),
             0
           );
           const paymentData = {
@@ -92,7 +80,7 @@ function Checkout() {
             amount: amount,
             quantity: totalQuantity,
             cartItems,
-            userId,
+            userId: user_id,
           };
           const api = await axios.post(
             "http://localhost:8080/payment/verify-payment",
@@ -104,19 +92,17 @@ function Checkout() {
           }
         },
         prefill: {
-          name: "Dev Bhimani",
-          email: "devbhimani1111@gmail.com",
-          contact: "9265608316",
+          name: userData?.name || "User",
+          email: userData?.email || "user@example.com",
+          contact: userData?.phone || "0000000000",
         },
-        theme: {
-          color: "green",
-        },
+        theme: { color: "green" },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
-      console.error("Error paying:", error);
+      console.error("Error processing payment:", error);
     }
   };
 
@@ -127,8 +113,9 @@ function Checkout() {
         {cartItems.length > 0 ? (
           cartItems.map((item, index) => (
             <li key={index}>
-              {item?.item ?? "No Name"} - Quantity: {item?.quantity ?? 0} price:{" "}
-              {item?.price ?? 0} total: {item?.price * item?.quantity ?? 0}
+              {item?.item ?? "No Name"} - Quantity: {item?.quantity ?? 0} -
+              Price: {item?.price ?? 0} - Total:{" "}
+              {(item?.price || 0) * (item?.quantity || 0)}
             </li>
           ))
         ) : (
@@ -136,7 +123,7 @@ function Checkout() {
         )}
       </ul>
 
-      {userData && <p>Shipping Address: {userData.address}</p>}
+      {userData?.address && <p>Shipping Address: {userData.address}</p>}
       <button onClick={handlePay}>Pay {total}</button>
     </div>
   );
