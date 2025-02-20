@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.use(morgan("dev"));
 app.use(bodyparser.urlencoded({ extended: true }));
-
+//database url
 const MONGO_URL = process.env.MONGODB_URI;
 
 const storage = multer.diskStorage({
