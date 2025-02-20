@@ -11,7 +11,6 @@ function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Set cart items from navigation state
   useEffect(() => {
     if (location.state?.cartItems) {
       setCartItems(location.state.cartItems);
@@ -42,7 +41,7 @@ function Checkout() {
 
   const handlePay = async () => {
     try {
-      const user_id = Cookies.get("loginCookie");
+      const user_id = userData?._id;
       if (!user_id) {
         console.error("User ID not found!");
         return;
@@ -53,10 +52,15 @@ function Checkout() {
         {
           amount: total,
           cartItems,
-          user_id,
+          userId: user_id,
         },
         { withCredentials: true }
       );
+
+      if (!orderResponse.data.success) {
+        console.error("Error creating order:", orderResponse.data.message);
+        return;
+      }
 
       const { orderId, amount } = orderResponse.data;
 
@@ -67,28 +71,33 @@ function Checkout() {
         name: "Farm Tech",
         description: "Test Transaction",
         order_id: orderId,
-        callback_url: "http://localhost:3000/payment/verify-payment",
         handler: async function (response) {
+          console.log("Razorpay Response:", response);
+
           const totalQuantity = cartItems.reduce(
             (sum, item) => sum + (item.quantity || 0),
             0
           );
+
           const paymentData = {
             orderId: response.razorpay_order_id,
             paymentId: response.razorpay_payment_id,
             signature: response.razorpay_signature,
-            amount: amount,
+            amount,
             quantity: totalQuantity,
             cartItems,
             userId: user_id,
           };
-          const api = await axios.post(
-            "http://localhost:8080/payment/verify-payment",
+
+          const verifyResponse = await axios.post(
+            "http://localhost:8080/payment/verify",
             paymentData
           );
 
-          if (api.data.success) {
+          if (verifyResponse.data.success) {
             navigate("/order-confirm");
+          } else {
+            console.error("Payment verification failed!");
           }
         },
         prefill: {
