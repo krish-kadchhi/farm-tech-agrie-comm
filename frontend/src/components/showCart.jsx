@@ -32,6 +32,7 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import WarningIcon from "@mui/icons-material/Warning";
 import PaymentIcon from "@mui/icons-material/Payment";
 
+<<<<<<< HEAD
 // Styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: 500,
@@ -52,6 +53,42 @@ const ProductImage = styled("img")({
   objectFit: "cover",
   borderRadius: 8,
   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+=======
+const useStyles = makeStyles({
+  cartContainer: {
+    padding: "24px",
+    backgroundColor: "#F9FAFB",
+    minHeight: "100vh",
+  },
+  cartHeader: {
+    textAlign: "center",
+    marginBottom: "24px",
+  },
+  cartTable: {
+    marginBottom: "32px",
+  },
+  productImage: {
+    width: "50px",
+    height: "50px",
+    objectFit: "cover",
+  },
+  productName: {
+    fontWeight: "bold",
+  },
+  priceTag: {
+    fontWeight: "600",
+  },
+  quantityInput: {
+    width: "60px",
+    textAlign: "center",
+  },
+  footer: {
+    backgroundColor: "#333",
+    color: "#fff",
+    padding: "24px",
+    marginTop: "32px",
+  },
+>>>>>>> ed946b546c8c8684e58eb54f5b75401eae6f4b67
 });
 
 const QuantityControl = styled(Box)({
@@ -72,8 +109,12 @@ const API_BASE_URL = "http://localhost:8080";
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
+<<<<<<< HEAD
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+=======
+  const [maxItem, setMaxItem] = useState({});
+>>>>>>> ed946b546c8c8684e58eb54f5b75401eae6f4b67
   const [total, setTotal] = useState(0);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
   const navigate = useNavigate();
@@ -95,13 +136,33 @@ export default function Cart() {
     checkAuth();
   }, [navigate]);
 
+<<<<<<< HEAD
   // Calculate total whenever cart items change
+=======
+    }catch(e){
+      console.log(e)
+    }
+
+  }
+
+  useEffect(() => {
+    if (!Cookies.get("loginCookie")) {
+      navigate("/signup");
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
+
+>>>>>>> ed946b546c8c8684e58eb54f5b75401eae6f4b67
   useEffect(() => {
     calculateTotal();
   }, [cartItems]);
 
   const fetchCartItems = async () => {
     try {
+<<<<<<< HEAD
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/cart/showCart`, {
         withCredentials: true,
@@ -123,15 +184,30 @@ export default function Cart() {
       console.error("Error fetching cart items:", error);
     } finally {
       setLoading(false);
+=======
+      const response = await axios.get("http://localhost:8080/cart/showCart");
+      const itemsWithQuantity = response.data.map((item) => ({
+        ...item,
+        id: uuidv4(),
+        quantity: item.quantity || 1,
+      }));
+      setCartItems(itemsWithQuantity);
+
+      const response2 = await axios.get("http://localhost:8080/cart/showItem");
+      setMaxItem(response2.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+>>>>>>> ed946b546c8c8684e58eb54f5b75401eae6f4b67
     }
   };
 
   const calculateTotal = () => {
-    const newTotal = cartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
+    setTotal(
+      cartItems.reduce(
+        (sum, item) => sum + (item.price || 0) * (item.quantity || 1),
+        0
+      )
     );
-    setTotal(newTotal);
   };
 
   const handleQuantityChange = (id, newQuantity) => {
@@ -139,6 +215,7 @@ export default function Cart() {
     const validQuantity = Math.max(1, parseInt(newQuantity, 10));
     
     setCartItems((prevItems) =>
+<<<<<<< HEAD
       prevItems.map((item) =>
         item.id === id ? { ...item, quantity: validQuantity } : item
       )
@@ -160,20 +237,41 @@ export default function Cart() {
           ? { ...item, quantity: parseInt(item.quantity, 10) - 1 }
           : item
       )
+=======
+      prevItems.map((item) => {
+        if (item.id === id) {
+          const itemStock = maxItem[item.item] || 999999;
+          const parsedQuantity = parseInt(newQuantity) || 1;
+          return {
+            ...item,
+            quantity: Math.min(Math.max(1, parsedQuantity), itemStock),
+          };
+        }
+        return item;
+      })
+>>>>>>> ed946b546c8c8684e58eb54f5b75401eae6f4b67
     );
   };
 
   const handleRemoveItem = async (item) => {
     try {
+<<<<<<< HEAD
       setLoading(true);
       await axios.post(`${API_BASE_URL}/cart/deleteCart`, {
+=======
+      await axios.post("http://localhost:8080/cart/deleteCart", {
+>>>>>>> ed946b546c8c8684e58eb54f5b75401eae6f4b67
         item: item.item,
       }, {
         withCredentials: true
       });
+<<<<<<< HEAD
       
       await fetchCartItems();
       showSnackbar(`${item.item} removed from cart`, "success");
+=======
+      fetchCartItems();
+>>>>>>> ed946b546c8c8684e58eb54f5b75401eae6f4b67
     } catch (err) {
       setError("Failed to remove item");
       showSnackbar("Failed to remove item", "error");
@@ -250,6 +348,7 @@ export default function Cart() {
   }
 
   return (
+<<<<<<< HEAD
     <NarrowContainer sx={{ py: 4 }}>
       {/* Page Header */}
       <Box sx={{ mb: 6, textAlign: "center" }}>
@@ -549,5 +648,90 @@ export default function Cart() {
         </Alert>
       </Snackbar>
     </NarrowContainer>
+=======
+    <div className={classes.cartContainer}>
+      <Typography variant="h4" className={classes.cartHeader}>
+        Farm Fresh Cart
+      </Typography>
+      <TableContainer
+        component={Paper}
+        elevation={3}
+        className={classes.cartTable}
+      >
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Remove</TableCell>
+              <TableCell>Product</TableCell>
+              <TableCell>Item</TableCell>
+              <TableCell>Price/Kg</TableCell>
+              <TableCell>Quantity(Kg)</TableCell>
+              <TableCell>Total</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {cartItems.length > 0 ? (
+              cartItems.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleRemoveItem(item)}
+                    >
+                      Remove
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <img
+                      src={item.image || "https://via.placeholder.com/50"}
+                      alt={item.item}
+                      className={classes.productImage}
+                    />
+                  </TableCell>
+                  <TableCell>{item.item}</TableCell>
+                  <TableCell>₹{item.price}</TableCell>
+                  <TableCell>
+                    <TextField
+                      type="number"
+                      inputProps={{
+                        min: 1,
+                        max: maxItem[item.item],
+                      }}
+                      value={item.quantity}
+                      onChange={(e) =>
+                        handleQuantityChange(item.id, e.target.value)
+                      }
+                      className={classes.quantityInput}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    ₹{(item.price * item.quantity).toFixed(2)}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  No items in cart
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Typography variant="h6" align="right">
+        Total: ₹{total.toFixed(2)}
+      </Typography>
+      <Button
+        variant="contained"
+        color="success"
+        fullWidth
+        onClick={() => navigate("/checkout", { state: { cartItems } })}
+      >
+        Checkout
+      </Button>
+    </div>
+>>>>>>> ed946b546c8c8684e58eb54f5b75401eae6f4b67
   );
 }

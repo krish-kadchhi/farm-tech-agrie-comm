@@ -1,10 +1,71 @@
 import { useState, useRef } from "react";
 import axios from "axios";
-import { Container, Paper, TextField, Button, Box, Typography } from "@mui/material";
+import { Navigate, useNavigate } from "react-router-dom";
+import {
+  Button,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
+  Box,
+  Typography,
+  Paper,
+  Container,
+} from "@mui/material";
 import { green } from "@mui/material/colors";
+// const navigate= useNavigate();
 
 export default function AddProduct() {
-  const [productName, setProductName] = useState("");
+  const getData = async (e) => {
+    e.preventDefault();
+    let cityArray = city.split(",");
+    const data = { productName, price, category, stock, description, cityArray, image };
+    console.log(cityArray);
+    if (
+      !data.productName ||
+      !data.price ||
+      !data.category ||
+      !data.stock ||
+      !data.description ||
+      !data.cityArray ||
+      !data.image
+    ) {
+      alert("Please fill in all required fields");
+    } else {
+
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("productName", productName);
+      formData.append("price", price);
+      formData.append("category", category);
+      formData.append("stock", stock);
+      formData.append("description", description);
+      formData.append("cityArray", cityArray);
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/item/add",
+          formData,
+          {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data", 
+            }, 
+          }
+        );
+        alert("Product added successfully");
+              // navigate("/products");
+        console.log("bapa sita ramx");
+      } catch (error) {
+        console.error("There was an error adding the product!", error);
+        alert("Failed to add product");
+      }
+    }
+  };
+
+  const [productName, setproductName] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [description, setDescription] = useState("");
@@ -21,6 +82,7 @@ export default function AddProduct() {
     if (e.target.files.length > 0) {
       setImage(e.target.files[0]);
     }
+    // Navigate("/products");
   };
 
   // Function to start the camera

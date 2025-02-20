@@ -22,7 +22,7 @@ app.use(
   cors({
     origin: "http://localhost:5173", // Or an array of allowed origins
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "UPDATE"],   // This allows cookies to be sent with requests.
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "UPDATE"], // This allows cookies to be sent with requests.
   })
 );
 
@@ -34,8 +34,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.use(morgan("dev"));
 app.use(bodyparser.urlencoded({ extended: true }));
-
-
 
 const MONGO_URL = process.env.MONGODB_URI;
 
