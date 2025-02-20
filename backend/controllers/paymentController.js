@@ -57,7 +57,7 @@ const paymentController = {
         success: true,
         orderId: order.id,
         amount,
-        cartItems: validCartItems,
+        // cartItems: validCartItems,
       });
     } catch (error) {
       console.error("Checkout error:", error);
@@ -78,7 +78,6 @@ const paymentController = {
       userId,
     } = req.body;
 
-    log
     let orderConfirm = new Payment({
       orderId,
       paymentId,

@@ -90,7 +90,7 @@ function Checkout() {
           };
 
           const verifyResponse = await axios.post(
-            "http://localhost:8080/payment/verify",
+            "http://localhost:8080/payment//verify-payment",
             paymentData
           );
 
