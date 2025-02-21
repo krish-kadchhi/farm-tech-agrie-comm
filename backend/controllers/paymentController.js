@@ -2,6 +2,7 @@ const Razorpay = require("razorpay");
 const Payment = require("../models/payment");
 const User = require("../models/user");
 const Item = require("../models/item");
+const Order = require("../models/order");
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -98,6 +99,7 @@ const paymentController = {
         userId,
       } = req.body;
 
+      // Create payment record
       const orderConfirm = new Payment({
         orderId,
         paymentId,
@@ -108,9 +110,34 @@ const paymentController = {
         userId,
         payStatus: "paid",
       });
-
       await orderConfirm.save();
-      res.json({ message: "Payment success!", success: true, orderConfirm });
+
+      // Get user details for shipping address
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // Create order record
+      const newOrder = new Order({
+        userId,
+        items: cartItems,
+        totalAmount: amount,
+        paymentId,
+        orderId,
+        shippingAddress: user.address,
+      });
+      await newOrder.save();
+
+      // Clear user's cart after successful order
+      await User.findByIdAndUpdate(userId, { $set: { cart: [] } });
+
+      res.json({ 
+        message: "Payment and order created successfully!", 
+        success: true, 
+        orderConfirm,
+        order: newOrder 
+      });
     } catch (error) {
       console.error("Payment verification error:", error);
       res.status(500).send("Error verifying payment");
