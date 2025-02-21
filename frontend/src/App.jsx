@@ -8,7 +8,8 @@ import ProductShow from "./components/showProducts.jsx";
 import Fruit from "./components/fruit.jsx";
 import Login from "./components/login.jsx";
 import Checkout from "./components/checkout.jsx";
-import OrderConfirm from "./components/orderConfirm.jsx";
+import OrderConfirmation from "./components/orderConfirmation.jsx";
+import Orders from "./components/orders.jsx";
 import AdminNavbar from "./components/admin.jsx";
 import AddProduct from "./components/addProducts.jsx";
 import Grain from "./components/grains.jsx";
@@ -36,9 +37,11 @@ export default function App() {
             <Route path="/fruit" element={<Fruit />} />
             <Route path="/grain" element={<Grain />} />
             <Route path="/vegetable" element={<Vegetable />} />
+            <Route path="/order-confirm" element={<OrderConfirmation />} />
+            <Route path="/orders" element={<Orders />} />
             <Route path="/login" element={<Login />} />
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/order-confirm" element={<OrderConfirm />} />
+            {/* <Route path="/order-confirm" element={<OrderConfirm />} /> */}
             <Route path="/admin" element={<AdminNavbar />} />
             <Route path="/addproduct" element={<AddProduct />} />
             <Route path="/verifyOtp" element={<VerifyOtp />} />

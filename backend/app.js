@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const Item = require("./models/item.js");
 const Cart = require("./models/cart.js");
 const User = require("./models/user.js");
+const Order = require("./models/order.js");
 const ejsMate = require("ejs-mate");
 const path = require("path");
 const { render, cookie } = require("express/lib/response.js");
@@ -65,11 +66,13 @@ const authRoutes = require("./routes/authRoutes");
 const itemRoutes = require("./routes/itemRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 app.use("/auth", authRoutes);
 app.use("/item", itemRoutes);
 app.use("/cart", cartRoutes);
 app.use("/payment", paymentRoutes);
+app.use("/orders", orderRoutes);
 
 app.listen(port, () => {
   console.log(`port is listing in ${port}`);
