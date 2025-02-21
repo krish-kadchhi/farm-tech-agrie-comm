@@ -165,58 +165,113 @@ export default function AddProduct() {
         </Typography>
         <form onSubmit={handleSubmit}>
           <Box sx={{ mb: 2 }}>
-            <TextField fullWidth label="Product Name" value={productName} onChange={(e) => setProductName(e.target.value)} required />
+            <TextField
+              fullWidth
+              label="Product Name"
+              value={productName}
+              onChange={(e) => setproductName(e.target.value)}
+              required
+            />
           </Box>
           <Box sx={{ mb: 2 }}>
-            <TextField fullWidth label="Price" type="number" value={price} onChange={(e) => setPrice(e.target.value)} required />
+            <TextField
+              fullWidth
+              label="Price"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+            />
           </Box>
           <Box sx={{ mb: 2 }}>
-            <TextField fullWidth label="Category" type="text" value={category} onChange={(e) => setCategory(e.target.value)} required />
+            <TextField
+              fullWidth
+              label="Category"
+              type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            />
           </Box>
           <Box sx={{ mb: 2 }}>
-            <TextField fullWidth label="Stock" type="number" value={stock} onChange={(e) => setStock(e.target.value)} required />
+            <TextField
+              fullWidth
+              label="Stock"
+              type="number"
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              required
+            />
           </Box>
           <Box sx={{ mb: 2 }}>
-            <TextField fullWidth label="Description" type="text" value={description} onChange={(e) => setDescription(e.target.value)} required />
+            <TextField
+              fullWidth
+              label="Description"
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
           </Box>
           <Box sx={{ mb: 2 }}>
-            <TextField fullWidth label="City" type="text" value={city} onChange={(e) => setCity(e.target.value)} required />
+            <TextField
+              fullWidth
+              label="City"
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              required
+            />
           </Box>
-  
+
           {/* File Upload */}
-          <input type="file" accept="image/*" onChange={handleImageChange}  />
-  
+          <input type="file" accept="image/*" onChange={handleImageChange} />
+
           {/* Camera Capture Section */}
           {!cameraActive && (
-            <Button variant="contained" color="secondary" fullWidth onClick={startCamera} sx={{ my: 2 }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              fullWidth
+              onClick={startCamera}
+              sx={{ my: 2 }}
+            >
               Open Camera
             </Button>
           )}
-  
+
           {/* Always keep <video> in the DOM, but hide it when not active */}
           <Box>
-            <video 
-              ref={videoRef} 
-              autoPlay 
-              playsInline 
-              style={{ width: "100%", display: cameraActive ? "block" : "none" }} 
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              style={{
+                width: "100%",
+                display: cameraActive ? "block" : "none",
+              }}
             />
             <canvas ref={canvasRef} style={{ display: "none" }} />
-            
+
             {cameraActive && (
-              <Button 
-                variant="contained" 
-                color="primary" 
-                fullWidth 
-                onClick={captureImage} 
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={captureImage}
                 sx={{ my: 2 }}
               >
                 Capture Image
               </Button>
             )}
           </Box>
-  
-          <Button type="submit" fullWidth variant="contained" sx={{ backgroundColor: green[600] }}>
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ backgroundColor: green[600] }}
+          >
             Add Product
           </Button>
         </form>
