@@ -1,6 +1,6 @@
 import Navbar from "./components/navbarUser.jsx";
 import Layout from "./components/fixLayouUsert.jsx";
-import About from "./components/about.jsx";
+import Profile from "./components/profile.jsx";
 import Home from "./components/home.jsx";
 import ShowCart from "./components/showCart.jsx";
 import Signup from "./components/Signup.jsx";
@@ -28,7 +28,7 @@ export default function App() {
           {/* <Navbar /> */}
           <Routes>
             <Route path="/" element={<Home/>} />
-            <Route path="/about" element={<About />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/contact" element={<h1>Contact Page</h1>} />
             <Route path="/showcart" element={<ShowCart />} />
             <Route path="/signup" element={<Signup />} />
@@ -44,7 +44,7 @@ export default function App() {
             <Route path="/verifyOtp" element={<VerifyOtp />} />
           </Routes>
       </BrowserRouter>
-      <Toaster richColors position='top-right'/>
+      <Toaster richColors position='top-center' duration={1500} closeButton />
 
     </>
   );

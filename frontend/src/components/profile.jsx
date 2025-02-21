@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { green } from "@mui/material/colors";
 
-export default function About() {
+export default function Profile() {
   return (
     <div>
       <Typography sx={{ color: green[800] }}>

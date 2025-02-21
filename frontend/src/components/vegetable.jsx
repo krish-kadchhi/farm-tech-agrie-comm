@@ -73,7 +73,7 @@ export default function Vegetable() {
     };
     try {
       const res = await axios.post("http://localhost:8080/cart/addCart", data, { withCredentials: true });
-      toast.success(res.data.message);
+      toast.success("Item added to cart");
     } catch (err) {
       toast.error("Failed to add item to cart");
       console.error("Error adding to cart:", err);
