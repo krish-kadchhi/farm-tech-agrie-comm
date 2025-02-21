@@ -233,7 +233,7 @@ function Checkout() {
       
       <Paper elevation={3} sx={{ borderRadius: 2, overflow: 'hidden' }}>
         <Box sx={{ bgcolor: '#f8f9fa', py: 2, px: 3, display: 'flex', alignItems: 'center' }}>
-          <ShoppingCartIcon sx={{ mr: 2, color: 'primary.main' }} />
+          <ShoppingCartIcon sx={{ mr: 2, color: 'success.light' }} />
           <Typography variant="h5" component="h1" fontWeight="500">
             Complete Your Purchase
           </Typography>
@@ -274,7 +274,7 @@ function Checkout() {
                               ) : (
                                 <Avatar 
                                   variant="rounded"
-                                  sx={{ width: 50, height: 50, mr: 2, bgcolor: 'primary.light' }}
+                                  sx={{ width: 50, height: 50, mr: 2, bgcolor: 'success.light' }}
                                 >
                                   {item.item?.charAt(0) || '?'}
                                 </Avatar>
@@ -289,10 +289,11 @@ function Checkout() {
                               label={`Qty: ${item?.quantity || 0}`} 
                               size="small" 
                               variant="outlined"
+                              sx={{ borderColor: 'success.main' }}
                             />
                           </Grid>
                           <Grid item xs={4} sm={2} sx={{ textAlign: { xs: 'left', sm: 'center' } }}>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" color="success.main">
                               {formatPrice(item?.price || 0)} each
                             </Typography>
                           </Grid>
@@ -364,8 +365,8 @@ function Checkout() {
                         <Divider sx={{ my: 2 }} />
                         
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                          <Typography variant="subtitle1" fontWeight="bold">Total:</Typography>
-                          <Typography variant="subtitle1" fontWeight="bold">
+                          <Typography variant="subtitle1" fontWeight="bold" color="success.main">Total:</Typography>
+                          <Typography variant="subtitle1" fontWeight="bold" color="success.main">
                             {formatPrice(total)}
                           </Typography>
                         </Box>
@@ -377,7 +378,7 @@ function Checkout() {
                           onClick={handlePay}
                           disabled={processingPayment || cartItems.length === 0}
                           sx={{ 
-                            py: 1.5, 
+                            py: 0.8, 
                             bgcolor: 'success.main',
                             '&:hover': { bgcolor: 'success.dark' },
                             fontWeight: 'medium'
