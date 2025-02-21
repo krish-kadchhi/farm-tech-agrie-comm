@@ -24,36 +24,36 @@ const authController = {
       const createdUser = await user.save();
 
       const otpCode = Math.floor(100000 + Math.random() * 900000);
-    let otp = new Otp({
+      let otp = new Otp({
         userId: createdUser.user_id,
         email: createdUser.email,
         otp: otpCode,
-    });
-    otp = await otp.save();
+      });
+      otp = await otp.save();
 
       const auth = nodemailer.createTransport({
-              service: "gmail",
-              secure: true,
-              port: 465,
-              auth: {
-                  user: process.env.MAILER_MAIL,
-                  pass: process.env.MAILER_SECRET,
-              },  
-          })
+        service: "gmail",
+        secure: true,
+        port: 465,
+        auth: {
+          user: process.env.MAILER_MAIL,
+          pass: process.env.MAILER_SECRET,
+        },
+      });
 
-          const reciever = {
-            from: process.env.MAILER_MAIL,
-            to: createdUser.email,
-            subject: "Test",
-            text: `Hello ${createdUser.name}, Welcome to our website otp is ${otpCode}`,
+      const reciever = {
+        from: process.env.MAILER_MAIL,
+        to: createdUser.email,
+        subject: "Test",
+        text: `Hello ${createdUser.name}, Welcome to our website otp is ${otpCode}`,
+      };
+
+      auth.sendMail(reciever, (error, info) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
         }
-
-        auth.sendMail(reciever, (error, info) => {
-          if(error) {
-              console.log(error);
-          } else {
-              console.log("Email sent: " + info.response);
-          }
       });
 
       const token = jwt.sign(
@@ -102,11 +102,10 @@ const authController = {
             email: data.email,
             role: data.role,
             address: admin.address,
-
           },
           "mysecret2"
         );
-        res.cookie("loginCookie", token, { httpOnly: false });
+        res.cookie("loginCookie", token, { httpOnly: true });
         console.log(jwt.verify(token, "mysecret2").role);
 
         res.status(200).send("Login successful");
@@ -131,9 +130,9 @@ const authController = {
             },
             "mysecret2"
           );
-          res.cookie("loginCookie", token, { httpOnly: false });
+          res.cookie("loginCookie", token, { httpOnly: true });
           console.log(jwt.verify(token, "mysecret2").role);
-          console.log(user)
+          console.log(user);
 
           res.status(200).json({ message: "Login successful", user });
         }
@@ -143,43 +142,43 @@ const authController = {
     }
   },
 
-  
-
   verifyOtp: async (req, res) => {
     const { userId, otp } = req.body;
 
     try {
-        const user = await User.findOne({ user_id: userId });
-        if (!user) {
-            return res.status(400).json({ success: false, message: "User not found" });
-        }
+      const user = await User.findOne({ user_id: userId });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ success: false, message: "User not found" });
+      }
 
-        const otpData = await Otp.findOne({ userId: userId });
-        console.log(otpData);
+      const otpData = await Otp.findOne({ userId: userId });
+      console.log(otpData);
 
-        if (!otpData) {
-            return res.status(400).json({ success: false, message: "Invalid OTP" });
-        }
+      if (!otpData) {
+        return res.status(400).json({ success: false, message: "Invalid OTP" });
+      }
 
-        // Convert OTPs to the same type for comparison
-        if (parseInt(otpData.otp) === parseInt(otp)) {
-            user.isVerified = true;
-            await user.save({ validateBeforeSave: false });
+      // Convert OTPs to the same type for comparison
+      if (parseInt(otpData.otp) === parseInt(otp)) {
+        user.isVerified = true;
+        await user.save({ validateBeforeSave: false });
 
-            // Remove OTP after successful verification (optional)
-            // await Otp.deleteOne({ userId: userId });
+        // Remove OTP after successful verification (optional)
+        // await Otp.deleteOne({ userId: userId });
 
-            return res.status(200).json({ success: true, message: "OTP verified" });
-        } else {
-            return res.status(400).json({ success: false, message: "Invalid OTP" });
-        }
-
+        return res.status(200).json({ success: true, message: "OTP verified" });
+      } else {
+        return res.status(400).json({ success: false, message: "Invalid OTP" });
+      }
     } catch (error) {
-        console.error("Verify OTP error:", error);
-        return res.status(500).json({ success: false, message: "Internal Server Error" });
+      console.error("Verify OTP error:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
     }
-}
-
+  },
 };
 
 module.exports = authController;

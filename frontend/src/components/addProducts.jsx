@@ -165,13 +165,7 @@ export default function AddProduct() {
         </Typography>
         <form onSubmit={handleSubmit}>
           <Box sx={{ mb: 2 }}>
-            <TextField
-              fullWidth
-              label="Product Name"
-              value={productName}
-              onChange={(e) => setproductName(e.target.value)}
-              required
-            />
+            <TextField fullWidth label="Product Name" value={productName} onChange={(e) => setproductName(e.target.value)} required />
           </Box>
           <Box sx={{ mb: 2 }}>
             <TextField

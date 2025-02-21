@@ -18,11 +18,12 @@ import Button from "@mui/material/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { green } from "@mui/material/colors";
 
-const drawerWidth = 240;
+const drawerWidth = 150;
 const navItems = [
   { label: "Home", path: "/" },
   { label: "products", path: "/products" },
-  // { label: "About", path: "/about" },
+  { label: "Profile", path: "/profile" },
+  // { label: "Sign Up", path: "/signup" },
   // { label: "Contact", path: "/contact" },
   { label: "Cart", path: "/showcart" },
 ];
@@ -51,7 +52,7 @@ function Navbar(props) {
             >
               <ListItemText
                 primary={item.label}
-                primaryTypographyProps={{ style: { color: green[800] } }}
+                primaryTypographyProps={{ style: { color: green[600] } }}
               />
             </ListItemButton>
           </ListItem>
@@ -64,7 +65,7 @@ function Navbar(props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", mb: 0 }}>
       <CssBaseline />
       <AppBar
         component="nav"
