@@ -1,7 +1,8 @@
 const Item = require("../models/item");
 const multer = require("multer");
 const uploadOnCloudinary = require("../utils/cloudinary");
-
+const { cookie } = require("express/lib/response");
+const jwt= require("jsonwebtoken");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/images");
@@ -30,6 +31,7 @@ const itemController = {
   getAllItems: async (req, res) => {
     try {
       const items = await Item.find();
+      
       // res.render("item.ejs", { items });
       
     } catch (error) {
@@ -39,38 +41,48 @@ const itemController = {
 
   showPro: async (req, res) => {
     try {
-      const items = await Item.find();
-      // const itemToDelete = await Item.findOne({ stock: 0 });
-      // await Item.deleteOne({ stock: 0 });
-      console.log("a ready");
-      
-      res.send(items);
+      const loginCookie = req.cookies.loginCookie;
+      if (!loginCookie) {
+        return res.status(401).json({ message: "No authentication token found" });
+      }
+
+      // Decode the JWT token
+      const decoded = jwt.verify(loginCookie, "mysecret2");
+      if (!decoded.address) {
+        return res.status(400).json({ message: "User address not found in token" });
+      }
+
+      // Get user's city from the address
+      const userCity = decoded.address.split(',').pop().trim();
+
+      // Find items where the user's city matches any city in the item's city array (case insensitive)
+      const items = await Item.find({
+        city: { 
+          $regex: new RegExp('^' + userCity + '$', 'i') 
+        }
+      });
+
+      if (items.length === 0) {
+        return res.status(200).json({ 
+          message: "No items found in your city", 
+          userCity: userCity 
+        });
+      }
+
+      res.status(200).json({
+        message: "Items found successfully",
+        userCity: userCity,
+        items: items
+      });
+
     } catch (error) {
-      res.status(500).send({ message: "Error fetching products" });
+      console.error("Error in showPro:", error);
+      if (error.name === 'JsonWebTokenError') {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+      res.status(500).json({ message: "Error fetching products", error: error.message });
     }
   },
-
-  // addProduct: async (req, res) => {
-  //   try {
-  //     const data = {
-  //       name: req.body.product_name,
-  //       category: req.body.product_category,
-  //       price: req.body.product_price,
-  //       image: req.file.path,
-  //     };
-  //     await Item.insertMany(data);
-  //     res.status(201).json({
-  //       message: "Added successfully.",
-  //       imagePath: data.image,
-  //     });
-  //   } catch (error) {
-  //     res.status(500).json({
-  //       message: "Error uploading file",
-  //       error: error.message,
-  //     });
-  //   }
-  // },
-
   deleteProduct: async (req, res) => {
     try {
       const { id } = req.params;

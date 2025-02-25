@@ -505,10 +505,9 @@ export default function Cart() {
                   variant="contained"
                   color="success"
                   fullWidth
-                  style={{ marginTop: "16px" }}
-                  onClick={handleCheckoutClick}
-                >
-                  Harvest & Checkout
+                  onClick={() => navigate("/checkout", { state: { cartItems } })}
+                  >
+                    Harwest & Chackout
                 </Button>
                 
                 <Box sx={{ mt: 3, bgcolor: "#f8f8f8", p: 2, borderRadius: 1 }}>

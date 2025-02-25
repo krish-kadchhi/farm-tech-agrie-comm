@@ -16,53 +16,37 @@ const paymentController = {
   checkout: async (req, res) => {
     try {
       const { amount, cartItems, quantity, userId } = req.body;
-      console.log("cartItems", cartItems);
 
-      // Fetch all valid items from the item database
+      if (!userId) {
+        return res
+          .status(400)
+          .json({ success: false, message: "User ID is required" });
+      }
+
+      // Fetch all valid items from DB
       const validItems = await Item.find({}, "name stock");
       const validItemNames = new Set(validItems.map((item) => item.name));
 
-      // Filter out invalid items from the cart
       const validCartItems = cartItems.filter((cartItem) =>
         validItemNames.has(cartItem.item)
       );
 
-      console.log("Valid Cart Items:", validCartItems);
-
-      // Check if valid cart is empty
-     if (validCartItems.length === 0) {
+      if (validCartItems.length === 0) {
         return res.status(400).json({
           success: false,
-          message:
-            "Cannot proceed with payment: Cart is empty or contains invalid items",
+          message: "No valid items in cart",
         });
-      } 
+      }
 
-      // Update stock for valid items (only if cart is valid)
-      for (let i = 0; i < validCartItems.length; i++) {
-        const product = await Item.findOne({ name: validCartItems[i].item });
+      for (let item of validCartItems) {
+        const product = await Item.findOne({ name: item.item });
         if (product) {
-          product.stock -= validCartItems[i].quantity;
-
-          // If stock reaches 0, delete the item from the Item schema
-          if (product.stock <= 0) {
-            await Item.deleteOne({ name: product.name });
-
-            // Remove the item from the user's cart
-            // await User.updateOne(
-            //   { _id: userId },
-            //   { $pull: { cart: { item: product.name } } }
-            // );
-
-            console.log(`Deleted ${product.name} from items and user's cart`);
-          } else {
-            await product.save();
-            console.log(`Updated stock for ${product.name}:`, product.stock);
-          }
+          product.stock -= item.quantity;
+          if (product.stock <= 0) await Item.deleteOne({ name: product.name });
+          else await product.save();
         }
       }
 
-      // Create a Razorpay order
       const options = {
         amount: amount * 100,
         currency: "INR",
@@ -73,31 +57,28 @@ const paymentController = {
       res.json({
         success: true,
         orderId: order.id,
-        amount: amount,
-        cartItems: validCartItems,
-        payStatus: "created",
-        quantity,
+        amount,
+        // cartItems: validCartItems,
       });
     } catch (error) {
       console.error("Checkout error:", error);
-      res.status(500).json({
-        success: false,
-        message: "Error during checkout",
-      });
+      res
+        .status(500)
+        .json({ success: false, message: "Error during checkout" });
     }
   },
 
   verify: async (req, res) => {
     try {
-      const {
-        orderId,
-        paymentId,
-        signature,
-        amount,
-        quantity,
-        cartItems,
-        userId,
-      } = req.body;
+    const {
+      orderId,
+      paymentId,
+      signature,
+      amount,
+      quantity,
+      cartItems,
+      userId,
+    } = req.body;
 
       // Create payment record
       const orderConfirm = new Payment({

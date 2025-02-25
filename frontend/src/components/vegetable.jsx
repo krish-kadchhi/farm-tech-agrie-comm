@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import {
   Container,
   Typography,
@@ -26,15 +26,16 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import SortIcon from '@mui/icons-material/Sort';
-import CloseIcon from '@mui/icons-material/Close';
-import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import SearchIcon from "@mui/icons-material/Search";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import SortIcon from "@mui/icons-material/Sort";
+import CloseIcon from "@mui/icons-material/Close";
+import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 export default function Vegetable() {
   const [myData, setMyData] = useState([]);
+  const [userCity, setUserCity] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,7 +56,8 @@ export default function Vegetable() {
         fat: "0.1g",
         vitamins: ["Vitamin A", "Vitamin C", "Folate"],
       },
-      description: "Fresh and organic vegetables sourced directly from trusted farmers. High-quality, pesticide-free, and rich in nutrients.",
+      description:
+        "Fresh and organic vegetables sourced directly from trusted farmers. High-quality, pesticide-free, and rich in nutrients.",
       storage: "Keep refrigerated for freshness.",
       origin: "Local Farms, Gujarat",
       seasonality: "Available year-round",
@@ -72,7 +74,9 @@ export default function Vegetable() {
       image: vegetable.image,
     };
     try {
-      const res = await axios.post("http://localhost:8080/cart/addCart", data, { withCredentials: true });
+      await axios.post("http://localhost:8080/cart/addCart", data, {
+        withCredentials: true,
+      });
       toast.success("Item added to cart");
     } catch (err) {
       toast.error("Failed to add item to cart");
@@ -82,38 +86,56 @@ export default function Vegetable() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/item/showPro")
+      .get("http://localhost:8080/item/showPro", {
+        withCredentials: true,
+      })
       .then((response) => {
-        setMyData(response.data);
-        setFilteredVegetables(response.data.filter(item => item.category === "vegetable" && item.stock > 0));
+        const { items, userCity } = response.data;
+        setMyData(items || []);
+        setUserCity(userCity);
+        if (items && Array.isArray(items)) {
+          setFilteredVegetables(
+            items.filter(
+              (item) => item.category === "vegetable" && item.stock > 0
+            )
+          );
+        }
         setIsLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
+        setError(err.response?.data?.message || err.message);
         setIsLoading(false);
       });
   }, []);
 
   useEffect(() => {
-    const vegetables = myData.filter(item => 
-      item.category === "vegetable" && 
-      item.stock > 0 &&
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    if (!Array.isArray(myData)) {
+      setFilteredVegetables([]);
+      return;
+    }
+    const vegetables = myData.filter(
+      (item) =>
+        item.category === "vegetable" &&
+        item.stock > 0 &&
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
     let sortedVegetables = [...vegetables];
     if (sortBy === "price-low") {
       sortedVegetables.sort((a, b) => a.price - b.price);
     } else if (sortBy === "price-high") {
       sortedVegetables.sort((a, b) => b.price - a.price);
     }
-
     setFilteredVegetables(sortedVegetables);
   }, [searchQuery, sortBy, myData]);
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="60vh"
+      >
         <CircularProgress size={40} />
       </Box>
     );
@@ -130,28 +152,28 @@ export default function Vegetable() {
   }
 
   return (
-    <Box sx={{ bgcolor: '#fff', minHeight: '100vh', py: 3 }}>
+    <Box sx={{ bgcolor: "#fff", minHeight: "100vh", py: 3 }}>
       <Container maxWidth="xl">
         {/* Enhanced Search Section */}
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: 2, 
-            mb: 4, 
-            backgroundColor: '#f8f9fa',
-            borderRadius: 2
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            mb: 4,
+            backgroundColor: "#f8f9fa",
+            borderRadius: 2,
           }}
         >
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={6}>
               <Paper
                 sx={{
-                  p: '2px 4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  width: '100%',
-                  border: '1px solid #e0e0e0',
-                  borderRadius: 2
+                  p: "2px 4px",
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  border: "1px solid #e0e0e0",
+                  borderRadius: 2,
                 }}
               >
                 <InputBase
@@ -161,14 +183,14 @@ export default function Vegetable() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   startAdornment={
                     <InputAdornment position="start">
-                      <SearchIcon sx={{ color: 'text.secondary' }} />
+                      <SearchIcon sx={{ color: "text.secondary" }} />
                     </InputAdornment>
                   }
                 />
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                 <FormControl size="small" sx={{ minWidth: 150 }}>
                   <Select
                     value={sortBy}
@@ -176,7 +198,7 @@ export default function Vegetable() {
                     displayEmpty
                     startAdornment={
                       <InputAdornment position="start">
-                        <SortIcon sx={{ color: 'text.secondary' }} />
+                        <SortIcon sx={{ color: "text.secondary" }} />
                       </InputAdornment>
                     }
                   >
@@ -195,7 +217,7 @@ export default function Vegetable() {
 
         {/* Product Grid */}
         {filteredVegetables.length === 0 ? (
-          <Paper sx={{ p: 4, textAlign: 'center', bgcolor: '#f8f9fa' }}>
+          <Paper sx={{ p: 4, textAlign: "center", bgcolor: "#f8f9fa" }}>
             <Typography variant="h6" color="textSecondary">
               No vegetables found matching your search
             </Typography>
@@ -209,35 +231,35 @@ export default function Vegetable() {
                   onClick={() => handleCardClick(vegetable)}
                   sx={{
                     p: 2,
-                    height: '100%',
-                    border: '1px solid #f0f0f0',
+                    height: "100%",
+                    border: "1px solid #f0f0f0",
                     borderRadius: 2,
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                      transform: 'translateY(-4px)'
-                    }
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                      transform: "translateY(-4px)",
+                    },
                   }}
                 >
-                  <Box sx={{ position: 'relative' }}>
-                    <Box 
-                      sx={{ 
-                        position: 'absolute', 
-                        top: 8, 
-                        left: 8, 
+                  <Box sx={{ position: "relative" }}>
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 8,
+                        left: 8,
                         zIndex: 1,
-                        display: 'flex',
-                        gap: 0.5
+                        display: "flex",
+                        gap: 0.5,
                       }}
                     >
                       <Chip
                         icon={<AccessTimeIcon sx={{ fontSize: 16 }} />}
                         label="30 min"
                         size="small"
-                        sx={{ 
-                          bgcolor: 'rgba(255,255,255,0.9)',
-                          fontSize: '0.75rem'
+                        sx={{
+                          bgcolor: "rgba(255,255,255,0.9)",
+                          fontSize: "0.75rem",
                         }}
                       />
                     </Box>
@@ -245,42 +267,42 @@ export default function Vegetable() {
                       src={vegetable.image}
                       alt={vegetable.name}
                       style={{
-                        width: '100%',
-                        height: '220px',
-                        objectFit: 'contain',
-                        marginBottom: '16px'
+                        width: "100%",
+                        height: "220px",
+                        objectFit: "contain",
+                        marginBottom: "16px",
                       }}
                     />
                   </Box>
 
-                  <Typography 
-                    variant="h6" 
+                  <Typography
+                    variant="h6"
                     sx={{
                       fontWeight: 600,
-                      mb: 1
+                      mb: 1,
                     }}
                   >
                     {vegetable.name}
                   </Typography>
 
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      color: 'text.secondary',
-                      mb: 1
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      mb: 1,
                     }}
                   >
                     1 Kg
                   </Typography>
 
                   <Box sx={{ mb: 2 }}>
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
-                        color: 'text.secondary',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 0.5
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.5,
                       }}
                     >
                       <LocalShippingOutlinedIcon sx={{ fontSize: 16 }} />
@@ -288,7 +310,14 @@ export default function Vegetable() {
                     </Typography>
                   </Box>
 
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 'auto' }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mt: "auto",
+                    }}
+                  >
                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
                       ₹{vegetable.price}
                     </Typography>
@@ -296,10 +325,10 @@ export default function Vegetable() {
                       variant="contained"
                       onClick={(e) => addToCart(vegetable, e)}
                       sx={{
-                        bgcolor: '#43a047',
-                        '&:hover': {
-                          bgcolor: '#66bb6a',
-                        }
+                        bgcolor: "#43a047",
+                        "&:hover": {
+                          bgcolor: "#66bb6a",
+                        },
                       }}
                     >
                       Add to Cart
@@ -321,7 +350,11 @@ export default function Vegetable() {
           {selectedVegetable && (
             <>
               <DialogTitle>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
                   <Typography variant="h5" component="h2">
                     {selectedVegetable.name}
                   </Typography>
@@ -337,10 +370,10 @@ export default function Vegetable() {
                       src={selectedVegetable.image}
                       alt={selectedVegetable.name}
                       style={{
-                        width: '100%',
-                        height: 'auto',
-                        borderRadius: '8px',
-                        marginBottom: '16px'
+                        width: "100%",
+                        height: "auto",
+                        borderRadius: "8px",
+                        marginBottom: "16px",
                       }}
                     />
                     <Typography variant="h6" color="Black" gutterBottom>
@@ -350,9 +383,9 @@ export default function Vegetable() {
                       variant="contained"
                       fullWidth
                       sx={{
-                        bgcolor: '#43a047',
-                        '&:hover': { bgcolor: '#66bb6a' },
-                        mt: 2
+                        bgcolor: "#43a047",
+                        "&:hover": { bgcolor: "#66bb6a" },
+                        mt: 2,
                       }}
                       onClick={(e) => addToCart(selectedVegetable, e)}
                     >
@@ -360,27 +393,44 @@ export default function Vegetable() {
                     </Button>
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <Typography variant="h6" gutterBottom>Product Details</Typography>
-                    <Typography paragraph>{selectedVegetable.description}</Typography>
-                    
-                    <Typography variant="h6" gutterBottom>Nutritional Information</Typography>
+                    <Typography variant="h6" gutterBottom>
+                      Product Details
+                    </Typography>
+                    <Typography paragraph>
+                      {selectedVegetable.description}
+                    </Typography>
+
+                    <Typography variant="h6" gutterBottom>
+                      Nutritional Information
+                    </Typography>
                     <Table size="small">
                       <TableBody>
-                        {Object.entries(selectedVegetable.nutritionalInfo).map(([key, value]) => (
-                          key !== 'vitamins' && (
-                            <TableRow key={key}>
-                              <TableCell component="th" scope="row" sx={{ border: 'none', pl: 0 }}>
-                                {key.charAt(0).toUpperCase() + key.slice(1)}
-                              </TableCell>
-                              <TableCell align="right" sx={{ border: 'none' }}>{value}</TableCell>
-                            </TableRow>
-                          )
-                        ))}
+                        {Object.entries(selectedVegetable.nutritionalInfo).map(
+                          ([key, value]) =>
+                            key !== "vitamins" && (
+                              <TableRow key={key}>
+                                <TableCell
+                                  component="th"
+                                  scope="row"
+                                  sx={{ border: "none", pl: 0 }}
+                                >
+                                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  sx={{ border: "none" }}
+                                >
+                                  {value}
+                                </TableCell>
+                              </TableRow>
+                            )
+                        )}
                       </TableBody>
                     </Table>
 
                     <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
-                      Key Vitamins: {selectedVegetable.nutritionalInfo.vitamins.join(", ")}
+                      Key Vitamins:{" "}
+                      {selectedVegetable.nutritionalInfo.vitamins.join(", ")}
                     </Typography>
 
                     <Divider sx={{ my: 2 }} />
@@ -392,7 +442,8 @@ export default function Vegetable() {
                       <strong>Origin:</strong> {selectedVegetable.origin}
                     </Typography>
                     <Typography variant="subtitle1" gutterBottom>
-                      <strong>Seasonality:</strong> {selectedVegetable.seasonality}
+                      <strong>Seasonality:</strong>{" "}
+                      {selectedVegetable.seasonality}
                     </Typography>
                   </Grid>
                 </Grid>

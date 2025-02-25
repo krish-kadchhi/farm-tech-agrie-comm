@@ -199,198 +199,107 @@ export default function AddProduct() {
         <Divider sx={{ mb: 3 }} />
         
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField 
-                fullWidth 
-                label="Product Name" 
-                value={productName} 
-                onChange={(e) => setProductName(e.target.value)} 
-                required 
-              />
-            </Grid>
-            
-            <Grid item xs={6}>
-              <TextField 
-                fullWidth 
-                label="Price" 
-                type="number" 
-                value={price} 
-                onChange={(e) => setPrice(e.target.value)} 
-                required 
-              />
-            </Grid>
-            
-            <Grid item xs={6}>
-              <TextField 
-                fullWidth 
-                label="Stock" 
-                type="number" 
-                value={stock} 
-                onChange={(e) => setStock(e.target.value)} 
-                required 
-              />
-            </Grid>
-            
-            <Grid item xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel id="category-label">Category</InputLabel>
-                <Select
-                  labelId="category-label"
-                  value={category}
-                  label="Category"
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  {categoryOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12}>
-              <TextField 
-                fullWidth 
-                label="City (comma separated)" 
-                value={city} 
-                onChange={(e) => setCity(e.target.value)} 
-                required 
-                
-              />
-            </Grid>
-            
-            <Grid item xs={12}>
-              <TextField 
-                fullWidth 
-                label="Description" 
-                multiline 
-                rows={3} 
-                value={description} 
-                onChange={(e) => setDescription(e.target.value)} 
-                required 
-              />
-            </Grid>
-            
-            {/* Image Preview Section */}
-            <Grid item xs={12}>
-              <Typography variant="subtitle1" gutterBottom>
-                Product Image
-              </Typography>
-              
-              {imageBase64 ? (
-                <Box sx={{ position: 'relative', mt: 2, mb: 2, textAlign: 'center' }}>
-                  <img 
-                    src={imageBase64} 
-                    alt="Product preview" 
-                    style={{ 
-                      maxWidth: '100%', 
-                      maxHeight: '200px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px'
-                    }} 
-                  />
-                  <IconButton 
-                    sx={{ 
-                      position: 'absolute', 
-                      top: -8, 
-                      right: -8,
-                      backgroundColor: red[50],
-                      '&:hover': { backgroundColor: red[100] }
-                    }}
-                    onClick={deleteImage}
-                  >
-                    <DeleteIcon color="error" />
-                  </IconButton>
-                </Box>
-              ) : (
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-                  {cameraActive ? (
-                    <Box sx={{ position: 'relative' }}>
-                      <video 
-                        ref={videoRef} 
-                        autoPlay 
-                        playsInline 
-                        style={{ 
-                          width: "100%", 
-                          border: '1px solid #ddd',
-                          borderRadius: '4px' 
-                        }} 
-                      />
-                      <Box sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
-                        mt: 1 
-                      }}>
-                        <Button 
-                          variant="contained" 
-                          color="primary" 
-                          onClick={captureImage}
-                          startIcon={<CameraAltIcon />}
-                        >
-                          Capture
-                        </Button>
-                        <Button 
-                          variant="outlined" 
-                          color="error" 
-                          onClick={cancelCamera}
-                          startIcon={<CancelIcon />}
-                        >
-                          Cancel
-                        </Button>
-                      </Box>
-                    </Box>
-                  ) : (
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      gap: 2 
-                    }}>
-                      <Button 
-                        variant="outlined" 
-                        component="label" 
-                        fullWidth
-                        startIcon={<ImageIcon />}
-                      >
-                        Choose File
-                        <input 
-                          type="file" 
-                          hidden 
-                          accept="image/*" 
-                          onChange={handleImageChange} 
-                          ref={fileInputRef}
-                        />
-                      </Button>
-                      <Button 
-                        variant="outlined" 
-                        color="secondary" 
-                        fullWidth
-                        onClick={startCamera}
-                        startIcon={<CameraAltIcon />}
-                      >
-                        Open Camera
-                      </Button>
-                    </Box>
-                  )}
-                </Box>
-              )}
-              <canvas ref={canvasRef} style={{ display: "none" }} />
-            </Grid>
-          </Grid>
+          <Box sx={{ mb: 2 }}>
+            <TextField fullWidth label="Product Name" value={productName} onChange={(e) => setproductName(e.target.value)} required />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              fullWidth
+              label="Price"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+            />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              fullWidth
+              label="Category"
+              type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              fullWidth
+              label="Stock"
+              type="number"
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              required
+            />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              fullWidth
+              label="Description"
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              fullWidth
+              label="City"
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              required
+            />
+          </Box>
 
-          <Button 
-            type="submit" 
-            fullWidth 
-            variant="contained" 
-            sx={{ 
-              mt: 4, 
-              mb: 2, 
-              py: 1.5,
-              backgroundColor: green[600],
-              '&:hover': { backgroundColor: green[700] },
-              fontWeight: 'bold'
-            }}
+          {/* File Upload */}
+          <input type="file" accept="image/*" onChange={handleImageChange} />
+
+          {/* Camera Capture Section */}
+          {!cameraActive && (
+            <Button
+              variant="contained"
+              color="secondary"
+              fullWidth
+              onClick={startCamera}
+              sx={{ my: 2 }}
+            >
+              Open Camera
+            </Button>
+          )}
+
+          {/* Always keep <video> in the DOM, but hide it when not active */}
+          <Box>
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              style={{
+                width: "100%",
+                display: cameraActive ? "block" : "none",
+              }}
+            />
+            <canvas ref={canvasRef} style={{ display: "none" }} />
+
+            {cameraActive && (
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={captureImage}
+                sx={{ my: 2 }}
+              >
+                Capture Image
+              </Button>
+            )}
+          </Box>
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ backgroundColor: green[600] }}
           >
             Add Product
           </Button>
