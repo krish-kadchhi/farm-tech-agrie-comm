@@ -105,7 +105,7 @@ const authController = {
           },
           "mysecret2"
         );
-        res.cookie("loginCookie", token, { httpOnly: true });
+        res.cookie("loginCookie", token, { httpOnly: false });
         console.log(jwt.verify(token, "mysecret2").role);
 
         res.status(200).send("Login successful");
@@ -130,7 +130,7 @@ const authController = {
             },
             "mysecret2"
           );
-          res.cookie("loginCookie", token, { httpOnly: true });
+          res.cookie("loginCookie", token, { httpOnly: false });
           console.log(jwt.verify(token, "mysecret2").role);
           console.log(user);
 
@@ -174,6 +174,144 @@ const authController = {
       }
     } catch (error) {
       console.error("Verify OTP error:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
+    }
+  },
+  forgotPassword: async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      // Find user by email
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({
+            success: false,
+            message: "User with this email does not exist",
+          });
+      }
+
+      // Generate reset token (valid for 1 hour)
+      const resetToken = jwt.sign(
+        { userId: user.user_id },
+        process.env.COOKIE_SECRET,
+        { expiresIn: "1h" }
+      );
+
+      // Save reset token to user (you might need to add this field to your user model)
+      user.resetPasswordToken = resetToken;
+      user.resetPasswordExpires = Date.now() + 3600000; // 1 hour in milliseconds
+      await user.save({ validateBeforeSave: false });
+
+      // Create reset URL
+      const resetUrl = `${"http://localhost:5173"}/reset-password/${resetToken}`;
+
+      // Send email with reset link
+      const auth = nodemailer.createTransport({
+        service: "gmail",
+        secure: true,
+        port: 465,
+        auth: {
+          user: process.env.MAILER_MAIL,
+          pass: process.env.MAILER_SECRET,
+        },
+      });
+
+      const receiver = {
+        from: process.env.MAILER_MAIL,
+        to: user.email,
+        subject: "Password Reset",
+        text: `Hello ${user.name},
+      
+You requested a password reset. Please click on the following link or paste it into your browser to reset your password:
+      
+${resetUrl}
+      
+This link is valid for 1 hour.
+      
+If you did not request this, please ignore this email and your password will remain unchanged.`,
+        html: `
+        <h2>Password Reset</h2>
+        <p>Hello ${user.name},</p>
+        <p>You requested a password reset. Please click on the button below to reset your password:</p>
+        <p>
+          <a href="${resetUrl}" style="display: inline-block; background-color: #388E3C; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a>
+        </p>
+        <p>Or copy and paste this link into your browser:</p>
+        <p>${resetUrl}</p>
+        <p>This link is valid for 1 hour.</p>
+        <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+      `,
+      };
+
+      auth.sendMail(receiver, (error, info) => {
+        if (error) {
+          console.log(error);
+          return res
+            .status(500)
+            .json({ success: false, message: "Error sending email" });
+        } else {
+          console.log("Email sent: " + info.response);
+          return res.status(200).json({
+            success: true,
+            message: "Password reset link sent to your email",
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
+    }
+  },
+  resetPassword: async (req, res) => {
+    try {
+      const { newPassword } = req.body;
+      const token = req.params.token;
+      console.log("Token received:", token);
+      console.log("Secret used:", process.env.COOKIE_SECRET);
+      // Verify token
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.COOKIE_SECRET);
+      } catch (err) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid or expired token1" });
+      }
+
+      // Find user with the token
+      const user = await User.findOne({
+        user_id: decoded.userId,
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() },
+      });
+
+      if (!user) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid or expired token2" });
+      }
+
+      // Update password
+      user.password = newPassword;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+
+      return res
+        .status(200)
+        .json({
+          success: true,
+          message: "Password has been reset successfully",
+        });
+    } catch (error) {
+      console.error("Reset password error:", error);
       return res
         .status(500)
         .json({ success: false, message: "Internal Server Error" });

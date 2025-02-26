@@ -232,6 +232,24 @@ export default function Login() {
                 }}
               />
 
+              <Typography 
+                component="a" 
+                href="/forgot-password" 
+                color="primary" 
+                sx={{ 
+                  display: 'block',
+                  textAlign: 'right',
+                  mt: 1,
+                  mb: 2,
+                  textDecoration: "none", 
+                  "&:hover": { 
+                    textDecoration: "underline" 
+                  } 
+                }}
+              >
+                Forgot Password?
+              </Typography>
+
               <FormControlLabel
                 control={
                   <Checkbox checked={showPassword} onChange={() => setShowPassword(!showPassword)} color="primary" />

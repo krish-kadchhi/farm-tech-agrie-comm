@@ -1,8 +1,7 @@
 const Item = require("../models/item");
 const multer = require("multer");
 const uploadOnCloudinary = require("../utils/cloudinary");
-const { cookie } = require("express/lib/response");
-const jwt= require("jsonwebtoken");
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/images");
@@ -19,7 +18,7 @@ const itemController = {
     try {
       let query = req.query.query;
       const items = await Item.find({
-        name: { $regex: query, $options: 'i' }
+        name: { $regex: query, $options: "i" },
       });
       res.status(200).send(items);
     } catch (error) {
@@ -31,9 +30,7 @@ const itemController = {
   getAllItems: async (req, res) => {
     try {
       const items = await Item.find();
-      
       // res.render("item.ejs", { items });
-      
     } catch (error) {
       res.status(500).send({ message: "Error fetching items" });
     }
@@ -41,48 +38,38 @@ const itemController = {
 
   showPro: async (req, res) => {
     try {
-      const loginCookie = req.cookies.loginCookie;
-      if (!loginCookie) {
-        return res.status(401).json({ message: "No authentication token found" });
-      }
+      const items = await Item.find();
+      // const itemToDelete = await Item.findOne({ stock: 0 });
+      // await Item.deleteOne({ stock: 0 });
+      console.log("a ready");
 
-      // Decode the JWT token
-      const decoded = jwt.verify(loginCookie, "mysecret2");
-      if (!decoded.address) {
-        return res.status(400).json({ message: "User address not found in token" });
-      }
-
-      // Get user's city from the address
-      const userCity = decoded.address.split(',').pop().trim();
-
-      // Find items where the user's city matches any city in the item's city array (case insensitive)
-      const items = await Item.find({
-        city: { 
-          $regex: new RegExp('^' + userCity + '$', 'i') 
-        }
-      });
-
-      if (items.length === 0) {
-        return res.status(200).json({ 
-          message: "No items found in your city", 
-          userCity: userCity 
-        });
-      }
-
-      res.status(200).json({
-        message: "Items found successfully",
-        userCity: userCity,
-        items: items
-      });
-
+      res.send(items);
     } catch (error) {
-      console.error("Error in showPro:", error);
-      if (error.name === 'JsonWebTokenError') {
-        return res.status(401).json({ message: "Invalid token" });
-      }
-      res.status(500).json({ message: "Error fetching products", error: error.message });
+      res.status(500).send({ message: "Error fetching products" });
     }
   },
+
+  // addProduct: async (req, res) => {
+  //   try {
+  //     const data = {
+  //       name: req.body.product_name,
+  //       category: req.body.product_category,
+  //       price: req.body.product_price,
+  //       image: req.file.path,
+  //     };
+  //     await Item.insertMany(data);
+  //     res.status(201).json({
+  //       message: "Added successfully.",
+  //       imagePath: data.image,
+  //     });
+  //   } catch (error) {
+  //     res.status(500).json({
+  //       message: "Error uploading file",
+  //       error: error.message,
+  //     });
+  //   }
+  // },
+
   deleteProduct: async (req, res) => {
     try {
       const { id } = req.params;
@@ -94,74 +81,71 @@ const itemController = {
   },
 
   //controller
- searchItems: async (req, res) => {
-  try {
-    let query = req.query.query;
-    const items = await Item.find({
-      name: { $regex: query, $options: "i" },
-    });
-    res.status(200).send(items);
-  } catch (error) {
-    console.error("Error searching items:", error);
-    res.status(500).send({ message: "Internal server error" });
-  }
-},
+  searchItems: async (req, res) => {
+    try {
+      let query = req.query.query;
+      const items = await Item.find({
+        name: { $regex: query, $options: "i" },
+      });
+      res.status(200).send(items);
+    } catch (error) {
+      console.error("Error searching items:", error);
+      res.status(500).send({ message: "Internal server error" });
+    }
+  },
 
-addProduct: async (req, res) => {
-  try {
-    const data = {
-      name: req.body.productName,
-      category: req.body.category,
-      price: req.body.price,
-      stock: req.body.stock,
-      description: req.body.description,
-      city: req.body.cityArray,
-    };
-    // res.status(201).json({
+  addProduct: async (req, res) => {
+    try {
+      const data = {
+        name: req.body.productName,
+        category: req.body.category,
+        price: req.body.price,
+        stock: req.body.stock,
+        description: req.body.description,
+        city: req.body.cityArray,
+      };
+      // res.status(201).json({
       //   message: "Added successfully.",
       //   imagePath: data.image,
       // });
-      
+
       const imagelocalpath = req.files?.image[0].path;
-      
-      if(!imagelocalpath) {
+
+      if (!imagelocalpath) {
         return res.status(400).json({
-          message: "Image is required"
+          message: "Image is required",
         });
-      } 
-      
+      }
+
       const image = await uploadOnCloudinary(imagelocalpath);
 
-      if(!image) {
+      if (!image) {
         return res.status(400).json({
-          message: "error uploading image on cloudinary"
+          message: "error uploading image on cloudinary",
         });
       }
       const item = await Item.create({
         ...data,
         image: image.url,
-      })
+      });
 
-      if(!item) {
+      if (!item) {
         return res.status(400).json({
-          message: "Error adding product"
+          message: "Error adding product",
         });
       }
 
       return res.status(201).json({
         message: "Product added successfully",
-        item
+        item,
       });
-
-  } catch (error) {
-    res.status(500).json({
-      message: "Error uploading file",
-      error: error.message,
-    });
-  }
-},
+    } catch (error) {
+      res.status(500).json({
+        message: "Error uploading file",
+        error: error.message,
+      });
+    }
+  },
 };
-
-
 
 module.exports = itemController;

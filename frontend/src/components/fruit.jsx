@@ -35,7 +35,6 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 export default function Fruit() {
   const [myData, setMyData] = useState([]);
-  const [userCity, setUserCity] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -88,34 +87,23 @@ export default function Fruit() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/item/showPro", {
-        withCredentials: true,
-      })
+      .get("http://localhost:8080/item/showPro")
       .then((response) => {
-        const { items, userCity, message } = response.data;
-        setMyData(items || []);
-        setUserCity(userCity);
-
-        if (items && Array.isArray(items)) {
-          setFilteredFruits(
-            items.filter((item) => item.category === "fruit" && item.stock > 0)
-          );
-        }
-
+        setMyData(response.data);
+        setFilteredFruits(
+          response.data.filter(
+            (item) => item.category === "fruit" && item.stock > 0
+          )
+        );
         setIsLoading(false);
       })
       .catch((err) => {
-        setError(err.response?.data?.message || err.message);
+        setError(err.message);
         setIsLoading(false);
       });
   }, []);
 
   useEffect(() => {
-    if (!Array.isArray(myData)) {
-      setFilteredFruits([]);
-      return;
-    }
-
     const fruits = myData.filter(
       (item) =>
         item.category === "fruit" &&
@@ -159,15 +147,7 @@ export default function Fruit() {
   return (
     <Box sx={{ bgcolor: "#fff", minHeight: "100vh", py: 3 }}>
       <Container maxWidth="xl">
-        {userCity && (
-          <Typography
-            variant="subtitle1"
-            sx={{ mb: 2, color: "text.secondary" }}
-          >
-            Showing products available in {userCity}
-          </Typography>
-        )}
-
+        {/* Enhanced Search Section */}
         <Paper
           elevation={0}
           sx={{
@@ -228,6 +208,7 @@ export default function Fruit() {
           </Grid>
         </Paper>
 
+        {/* Product Grid */}
         {filteredFruits.length === 0 ? (
           <Paper sx={{ p: 4, textAlign: "center", bgcolor: "#f8f9fa" }}>
             <Typography variant="h6" color="textSecondary">
@@ -352,6 +333,7 @@ export default function Fruit() {
           </Grid>
         )}
 
+        {/* Product Detail Dialog */}
         <Dialog
           open={openDialog}
           onClose={() => setOpenDialog(false)}

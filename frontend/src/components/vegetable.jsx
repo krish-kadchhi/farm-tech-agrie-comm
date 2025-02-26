@@ -35,7 +35,6 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 export default function Vegetable() {
   const [myData, setMyData] = useState([]);
-  const [userCity, setUserCity] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,7 +73,7 @@ export default function Vegetable() {
       image: vegetable.image,
     };
     try {
-      await axios.post("http://localhost:8080/cart/addCart", data, {
+      const res = await axios.post("http://localhost:8080/cart/addCart", data, {
         withCredentials: true,
       });
       toast.success("Item added to cart");
@@ -86,45 +85,37 @@ export default function Vegetable() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/item/showPro", {
-        withCredentials: true,
-      })
+      .get("http://localhost:8080/item/showPro")
       .then((response) => {
-        const { items, userCity } = response.data;
-        setMyData(items || []);
-        setUserCity(userCity);
-        if (items && Array.isArray(items)) {
-          setFilteredVegetables(
-            items.filter(
-              (item) => item.category === "vegetable" && item.stock > 0
-            )
-          );
-        }
+        setMyData(response.data);
+        setFilteredVegetables(
+          response.data.filter(
+            (item) => item.category === "vegetable" && item.stock > 0
+          )
+        );
         setIsLoading(false);
       })
       .catch((err) => {
-        setError(err.response?.data?.message || err.message);
+        setError(err.message);
         setIsLoading(false);
       });
   }, []);
 
   useEffect(() => {
-    if (!Array.isArray(myData)) {
-      setFilteredVegetables([]);
-      return;
-    }
     const vegetables = myData.filter(
       (item) =>
         item.category === "vegetable" &&
         item.stock > 0 &&
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
     let sortedVegetables = [...vegetables];
     if (sortBy === "price-low") {
       sortedVegetables.sort((a, b) => a.price - b.price);
     } else if (sortBy === "price-high") {
       sortedVegetables.sort((a, b) => b.price - a.price);
     }
+
     setFilteredVegetables(sortedVegetables);
   }, [searchQuery, sortBy, myData]);
 
