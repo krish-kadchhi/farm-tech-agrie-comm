@@ -11,11 +11,17 @@ import {
   Divider,
   CircularProgress,
   Snackbar,
-  Alert
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { green } from "@mui/material/colors";
 
 // Mock function to fetch user data - replace with your actual API call
@@ -46,6 +52,21 @@ const updateUserData = async (userData) => {
   });
 };
 
+// Logout function
+const logoutUser = async () => {
+  // Simulate API call for logout
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Clear any stored tokens/data
+      localStorage.removeItem("userId");
+      localStorage.removeItem("token");
+      // Add any other items that need to be cleared
+      
+      resolve({ success: true });
+    }, 500);
+  });
+};
+
 function ProfilePage() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
@@ -53,6 +74,8 @@ function ProfilePage() {
   const [editMode, setEditMode] = useState(false);
   const [updatedData, setUpdatedData] = useState({});
   const [notification, setNotification] = useState({ open: false, message: "", severity: "success" });
+  const [logoutDialog, setLogoutDialog] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   // Fetch user data on component mount
   useEffect(() => {
@@ -123,6 +146,41 @@ function ProfilePage() {
     setNotification(prev => ({ ...prev, open: false }));
   };
 
+  const handleLogoutClick = () => {
+    setLogoutDialog(true);
+  };
+
+  const handleLogoutCancel = () => {
+    setLogoutDialog(false);
+  };
+
+  const handleLogoutConfirm = async () => {
+    setLoggingOut(true);
+    try {
+      const result = await logoutUser();
+      if (result.success) {
+        setNotification({
+          open: true,
+          message: "Logged out successfully",
+          severity: "success"
+        });
+        // Short delay to show the success message before redirecting
+        setTimeout(() => {
+          navigate("/login");
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      setNotification({
+        open: true,
+        message: "Failed to logout. Please try again.",
+        severity: "error"
+      });
+      setLoggingOut(false);
+      setLogoutDialog(false);
+    }
+  };
+
   if (loading && !userData) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "80vh" }}>
@@ -134,42 +192,60 @@ function ProfilePage() {
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", px: 3, py: 5 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        {/* Header with title and buttons */}
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
           <Typography variant="h4" sx={{ color: green[700], fontWeight: "bold" }}>
             Customer Profile
           </Typography>
-          <Button 
-          variant="contained" 
-          sx={{ 
-            mt: 2, 
-            mb: 2,
-            backgroundColor: green[600], 
-            "&:hover": { backgroundColor: green[700] } 
-          }} 
-          onClick={() => navigate("/orders")}
-        >
-          Order History
-        </Button>
-          {!editMode ? (
+          <Box sx={{ display: "flex", gap: 2 }}>
             <Button 
               variant="contained" 
-              startIcon={<EditIcon />} 
-              onClick={handleEdit}
-              sx={{ backgroundColor: green[600], "&:hover": { backgroundColor: green[700] } }}
+              sx={{ 
+                backgroundColor: green[600], 
+                "&:hover": { backgroundColor: green[700] } 
+              }} 
+              onClick={() => navigate("/orders")}
             >
-              Edit Profile
+              Order History
             </Button>
             
-          ) : (
+            {!editMode ? (
+              <Button 
+                variant="contained" 
+                startIcon={<EditIcon />} 
+                onClick={handleEdit}
+                sx={{ backgroundColor: green[600], "&:hover": { backgroundColor: green[700] } }}
+              >
+                Edit Profile
+              </Button>
+            ) : (
+              <Button 
+                variant="contained" 
+                startIcon={<SaveIcon />} 
+                onClick={handleSave}
+                sx={{ backgroundColor: green[600], "&:hover": { backgroundColor: green[700] } }}
+              >
+                Save Changes
+              </Button>
+            )}
+            
             <Button 
-              variant="contained" 
-              startIcon={<SaveIcon />} 
-              onClick={handleSave}
-              sx={{ backgroundColor: green[600], "&:hover": { backgroundColor: green[700] } }}
+              variant="outlined" 
+              startIcon={<LogoutIcon />} 
+              onClick={handleLogoutClick}
+              sx={{ 
+                borderColor: "error.main", 
+                color: "error.main",
+                "&:hover": { 
+                  backgroundColor: "error.light", 
+                  borderColor: "error.dark",
+                  color: "white"
+                } 
+              }}
             >
-              Save Changes
+              Logout
             </Button>
-          )}
+          </Box>
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
@@ -258,6 +334,37 @@ function ProfilePage() {
         </Box>
       </Paper>
 
+      {/* Logout confirmation dialog */}
+      <Dialog
+        open={logoutDialog}
+        onClose={handleLogoutCancel}
+        aria-labelledby="logout-dialog-title"
+      >
+        <DialogTitle id="logout-dialog-title">
+          {"Confirm Logout"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to logout? You will need to sign in again to access your account.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogoutCancel} color="primary">
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleLogoutConfirm} 
+            color="error" 
+            variant="contained"
+            disabled={loggingOut}
+            startIcon={loggingOut ? <CircularProgress size={20} color="inherit" /> : <LogoutIcon />}
+          >
+            {loggingOut ? "Logging out..." : "Logout"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Notifications */}
       <Snackbar 
         open={notification.open} 
         autoHideDuration={6000} 
