@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "sonner";
+import { toast } from 'sonner';
 import {
   Container,
   Typography,
@@ -26,16 +26,15 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import SortIcon from "@mui/icons-material/Sort";
-import CloseIcon from "@mui/icons-material/Close";
-import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import SortIcon from '@mui/icons-material/Sort';
+import CloseIcon from '@mui/icons-material/Close';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 export default function Grain() {
   const [myData, setMyData] = useState([]);
-  const [userCity, setUserCity] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,9 +72,7 @@ export default function Grain() {
       image: grain.image,
     };
     try {
-      await axios.post("http://localhost:8080/cart/addCart", data, {
-        withCredentials: true,
-      });
+      const res = await axios.post("http://localhost:8080/cart/addCart", data, { withCredentials: true });
       toast.success("Item added to cart");
     } catch (err) {
       toast.error("Failed to add item to cart");
@@ -85,43 +82,32 @@ export default function Grain() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/item/showPro", {
-        withCredentials: true,
-      })
+      .get("http://localhost:8080/item/showPro")
       .then((response) => {
-        const { items, userCity } = response.data;
-        setMyData(items || []);
-        setUserCity(userCity);
-        if (items && Array.isArray(items)) {
-          setFilteredGrains(
-            items.filter((item) => item.category === "grain" && item.stock > 0)
-          );
-        }
+        setMyData(response.data);
+        setFilteredGrains(response.data.filter(item => item.category === "grain" && item.stock > 0));
         setIsLoading(false);
       })
       .catch((err) => {
-        setError(err.response?.data?.message || err.message);
+        setError(err.message);
         setIsLoading(false);
       });
   }, []);
 
   useEffect(() => {
-    if (!Array.isArray(myData)) {
-      setFilteredGrains([]);
-      return;
-    }
-    const grains = myData.filter(
-      (item) =>
-        item.category === "grain" &&
-        item.stock > 0 &&
-        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const grains = myData.filter(item => 
+      item.category === "grain" && 
+      item.stock > 0 &&
+      item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
     let sortedGrains = [...grains];
     if (sortBy === "price-low") {
       sortedGrains.sort((a, b) => a.price - b.price);
     } else if (sortBy === "price-high") {
       sortedGrains.sort((a, b) => b.price - a.price);
     }
+
     setFilteredGrains(sortedGrains);
   }, [searchQuery, sortBy, myData]);
 

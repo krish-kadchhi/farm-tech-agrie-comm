@@ -232,13 +232,30 @@ export default function Login() {
                 }}
               />
 
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
               <FormControlLabel
-                control={
-                  <Checkbox checked={showPassword} onChange={() => setShowPassword(!showPassword)} color="primary" />
-                }
-                label="Show Password"
-                sx={{ mt: 1 }}
-              />
+                  control={
+                    <Checkbox checked={showPassword} onChange={() => setShowPassword(!showPassword)} color="primary" />
+                  }
+                  label="Show Password"
+                  sx={{ mt: 0 }}
+                />
+                <Typography 
+                  component="a" 
+                  href="/forgot-password" 
+                  color="primary" 
+                  sx={{ 
+                    textDecoration: "none", 
+                    "&:hover": { 
+                      textDecoration: "underline" 
+                    } 
+                  }}
+                >
+                  Forgot Password?
+                </Typography>
+
+                
+              </Box>
 
               <Button
                 type="submit"

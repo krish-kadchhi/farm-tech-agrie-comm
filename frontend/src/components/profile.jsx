@@ -328,6 +328,7 @@ function ProfilePage() {
               color: green[700],
               "&:hover": { borderColor: green[800], backgroundColor: green[50] } 
             }}
+            onClick={() => navigate("/forgot-password")}
           >
             Change Password
           </Button>

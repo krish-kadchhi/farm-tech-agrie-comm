@@ -177,7 +177,7 @@ function Orders() {
   const handleSubmitRating = async () => {
     try {
       // This would be an API call to save the rating
-      // await axios.post(`http://localhost:8080/orders/${selectedOrder._id}/rate`, {
+      // await axios.post(http://localhost:8080/orders/${selectedOrder._id}/rate, {
       //   rating: ratingValue,
       //   comment: ratingComment
       // });

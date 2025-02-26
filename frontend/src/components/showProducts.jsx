@@ -20,18 +20,42 @@ import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined
 export default function ProductShow() {
   const [myData, setData] = useState([]);
   const navigate = useNavigate();
-  const token = Cookies.get("loginCookie");
 
-  // Redirect to signup if no token is found
-  useEffect(() => {
-    if (!token) {
-      console.log("No token found, redirecting...");
-      navigate("/signup");
-    }
-  }, [token, navigate]);
+  const categories = [
+    {
+      title: "Fresh Fruits",
+      description:
+        "Fresh fruits sourced directly from local farms. Rich in vitamins and natural goodness.",
+      image: "/public/pexels-janetrangdoan-1132047.jpg",
+      link: "/fruit",
+      color: "#66bb6a",
+    },
+    {
+      title: "Fresh Vegetables",
+      description:
+        "Organic vegetables harvested daily for your healthy lifestyle. Farm-fresh and pesticide-free.",
+      image: "/public/front-view-vegetable.jpg",
+      link: "/vegetable",
+      color: "#66bb6a",
+    },
+    {
+      title: "Organic Grains",
+      description:
+        "Premium quality grains from certified organic farms. Nutritious and naturally processed.",
+      image: "/public/alex-block-ADDSk5wigwI-unsplash.jpg",
+      link: "/grain",
+      color: "#66bb6a",
+    },
+  ];
 
-  // Fetch products from API
   useEffect(() => {
+    const checkAuth = async () => {
+      const token = Cookies.get("loginCookie");
+      if (!token) {
+        navigate("/signup");
+      }
+    };
+
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:8080/item/showPro", {
@@ -44,35 +68,9 @@ export default function ProductShow() {
       }
     };
 
+    checkAuth();
     fetchProducts();
-  }, []);
-
-  const categories = [
-    {
-      title: "Fresh Fruits",
-      description:
-        "Fresh fruits sourced directly from local farms. Rich in vitamins and natural goodness.",
-      image: "/pexels-janetrangdoan-1132047.jpg",
-      link: "/fruit",
-      color: "#66bb6a",
-    },
-    {
-      title: "Fresh Vegetables",
-      description:
-        "Organic vegetables harvested daily for your healthy lifestyle. Farm-fresh and pesticide-free.",
-      image: "/front-view-vegetable.jpg",
-      link: "/vegetable",
-      color: "#66bb6a",
-    },
-    {
-      title: "Organic Grains",
-      description:
-        "Premium quality grains from certified organic farms. Nutritious and naturally processed.",
-      image: "/alex-block-ADDSk5wigwI-unsplash.jpg",
-      link: "/grain",
-      color: "#66bb6a",
-    },
-  ];
+  }, [navigate]);
 
   return (
     <Box sx={{ bgcolor: "#f8f9fa", minHeight: "100vh", py: 6 }}>
@@ -101,7 +99,6 @@ export default function ProductShow() {
             right to your doorstep
           </Typography>
         </Box>
-
         <Grid container spacing={4}>
           {categories.map((category, index) => (
             <Grid item xs={12} md={4} key={index}>
@@ -151,7 +148,6 @@ export default function ProductShow() {
                     {category.description}
                   </Typography>
                   <Divider sx={{ mb: 3 }} />
-
                   <Box
                     sx={{
                       display: "flex",
@@ -166,7 +162,9 @@ export default function ProductShow() {
                         gap: 1,
                       }}
                     >
-                      <LocalShippingOutlinedIcon sx={{ color: "text.secondary" }} />
+                      <LocalShippingOutlinedIcon
+                        sx={{ color: "text.secondary" }}
+                      />
                       <Typography variant="body2" color="text.secondary">
                         Free Delivery
                       </Typography>
