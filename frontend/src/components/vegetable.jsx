@@ -82,65 +82,68 @@ export default function Vegetable() {
       console.error("Error adding to cart:", err);
     }
   }
+useEffect(() => {
+ axios
+     .get("http://localhost:8080/item/showPro", { withCredentials: true })
+     .then((response) => {
+       console.log("API Response:", response.data);
+       if (Array.isArray(response.data) && response.data.length > 0) {
+         setMyData([...response.data]); // ✅ Ensures React detects changes
+       } else {
+         console.error("Empty or invalid data received:", response.data);
+       }
+     })
+     .catch((err) => {
+       console.error("Error fetching products:", err);
+       setError(err.message);
+     })
+     .finally(() => {
+       setIsLoading(false);
+     });
+ }, []);
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/item/showPro")
-      .then((response) => {
-        setMyData(response.data);
-        setFilteredVegetables(
-          response.data.filter(
-            (item) => item.category === "vegetable" && item.stock > 0
-          )
-        );
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setIsLoading(false);
-      });
-  }, []);
+ // Update Filtered Grains
+ useEffect(() => {
+   console.log("Updating filteredVegetables myData:", myData);
+   if (myData.length > 0) {
+     const vegetables = myData.filter(
+       (item) => item.category.toLowerCase() === "vegetable"
+     ); // ✅ Fixed filtering
 
-  useEffect(() => {
-    const vegetables = myData.filter(
-      (item) =>
-        item.category === "vegetable" &&
-        item.stock > 0 &&
-        item.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+     let sortedVegetables = [...vegetables];
+     if (sortBy === "price-low") {
+       sortedVegetables.sort((a, b) => a.price - b.price);
+     } else if (sortBy === "price-high") {
+       sortedVegetables.sort((a, b) => b.price - a.price);
+     }
 
-    let sortedVegetables = [...vegetables];
-    if (sortBy === "price-low") {
-      sortedVegetables.sort((a, b) => a.price - b.price);
-    } else if (sortBy === "price-high") {
-      sortedVegetables.sort((a, b) => b.price - a.price);
-    }
+     setFilteredVegetables(sortedVegetables);
+     console.log("Filtered Grains:", sortedVegetables);
+   }
+ }, [searchQuery, sortBy, myData]); // ✅ Dependencies updated
 
-    setFilteredVegetables(sortedVegetables);
-  }, [searchQuery, sortBy, myData]);
+ if (isLoading) {
+   return (
+     <Box
+       display="flex"
+       justifyContent="center"
+       alignItems="center"
+       minHeight="60vh"
+     >
+       <CircularProgress size={40} />
+     </Box>
+   );
+ }
 
-  if (isLoading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="60vh"
-      >
-        <CircularProgress size={40} />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container sx={{ py: 4 }}>
-        <Alert severity="error" sx={{ maxWidth: 600, mx: "auto" }}>
-          Error: {error}
-        </Alert>
-      </Container>
-    );
-  }
+ if (error) {
+   return (
+     <Container sx={{ py: 4 }}>
+       <Alert severity="error" sx={{ maxWidth: 600, mx: "auto" }}>
+         Error: {error}
+       </Alert>
+     </Container>
+   );
+ }
 
   return (
     <Box sx={{ bgcolor: "#fff", minHeight: "100vh", py: 3 }}>

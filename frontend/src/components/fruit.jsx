@@ -87,39 +87,43 @@ export default function Fruit() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/item/showPro")
+      .get("http://localhost:8080/item/showPro", { withCredentials: true })
       .then((response) => {
-        setMyData(response.data);
-        setFilteredFruits(
-          response.data.filter(
-            (item) => item.category === "fruit" && item.stock > 0
-          )
-        );
-        setIsLoading(false);
+        console.log("API Response:", response.data);
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setMyData([...response.data]); // ✅ Ensures React detects changes
+        } else {
+          console.error("Empty or invalid data received:", response.data);
+        }
       })
       .catch((err) => {
+        console.error("Error fetching products:", err);
         setError(err.message);
+      })
+      .finally(() => {
         setIsLoading(false);
       });
   }, []);
 
+  // Update Filtered Grains
   useEffect(() => {
-    const fruits = myData.filter(
-      (item) =>
-        item.category === "fruit" &&
-        item.stock > 0 &&
-        item.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    console.log("Updating filteredFruits myData:", myData);
+    if (myData.length > 0) {
+      const fruits = myData.filter(
+        (item) => item.category.toLowerCase() === "fruit"
+      ); // ✅ Fixed filtering
 
-    let sortedFruits = [...fruits];
-    if (sortBy === "price-low") {
-      sortedFruits.sort((a, b) => a.price - b.price);
-    } else if (sortBy === "price-high") {
-      sortedFruits.sort((a, b) => b.price - a.price);
+      let sortedFruits = [...fruits];
+      if (sortBy === "price-low") {
+        sortedFruits.sort((a, b) => a.price - b.price);
+      } else if (sortBy === "price-high") {
+        sortedFruits.sort((a, b) => b.price - a.price);
+      }
+
+      setFilteredFruits(sortedFruits);
+      console.log("Filtered Fruits:", sortedFruits);
     }
-
-    setFilteredFruits(sortedFruits);
-  }, [searchQuery, sortBy, myData]);
+  }, [searchQuery, sortBy, myData]); // ✅ Dependencies updated
 
   if (isLoading) {
     return (
@@ -143,6 +147,7 @@ export default function Fruit() {
       </Container>
     );
   }
+
 
   return (
     <Box sx={{ bgcolor: "#fff", minHeight: "100vh", py: 3 }}>
