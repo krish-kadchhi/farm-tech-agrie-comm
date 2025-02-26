@@ -15,6 +15,8 @@ import AddProduct from "./components/addProducts.jsx";
 import Grain from "./components/grains.jsx";
 import Vegetable from "./components/vegetable.jsx";
 import VerifyOtp from "./components/verifyOtp.jsx";
+import ForgotPassword from "./components/ForgotPassword.jsx";
+import ResetPassword from "./components/ResetPassword.jsx";
 import { Toaster } from 'sonner';
 
 import "./index.css";
@@ -42,6 +44,8 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/checkout" element={<Checkout />} />
             {/* <Route path="/order-confirm" element={<OrderConfirm />} /> */}
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/admin" element={<AdminNavbar />} />
             <Route path="/addproduct" element={<AddProduct />} />
             <Route path="/verifyOtp" element={<VerifyOtp />} />
