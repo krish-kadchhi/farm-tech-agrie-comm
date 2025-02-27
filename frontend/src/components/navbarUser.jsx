@@ -21,11 +21,9 @@ import { green } from "@mui/material/colors";
 const drawerWidth = 150;
 const navItems = [
   { label: "Home", path: "/" },
-  { label: "products", path: "/products" },
-  { label: "Profile", path: "/profile" },
-  // { label: "Sign Up", path: "/signup" },
-  // { label: "Contact", path: "/contact" },
+  { label: "Products", path: "/products" },
   { label: "Cart", path: "/showcart" },
+  { label: "Profile", path: "/profile", icon: <AccountCircleIcon /> },
 ];
 
 function Navbar(props) {
@@ -38,22 +36,24 @@ function Navbar(props) {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      {/* <Typography variant="h6" sx={{ my: 2, color: green[700] }}>
-        //For Logo
-      </Typography> */}
+      <Typography variant="h6" sx={{ my: 2, color: green[700] }}>
+        FarmTech
+      </Typography>
       <Divider />
       <List>
         {navItems.map((item) => (
-          <ListItem key={item.label} disablePadding>
+          <ListItem key={item.path} disablePadding>
             <ListItemButton
-              sx={{ textAlign: "left" }}
+              sx={{ textAlign: "center" }}
               component={Link}
               to={item.path}
             >
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{ style: { color: green[600] } }}
-              />
+              {item.icon && (
+                <Box sx={{ mr: 1, display: "flex", alignItems: "center" }}>
+                  {React.cloneElement(item.icon, { sx: { fontSize: "1.5rem" } })}
+                </Box>
+              )}
+              <ListItemText primary={item.label} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -84,30 +84,43 @@ function Navbar(props) {
           <Typography
             variant="h6"
             component="div"
-            sx={{ fontSize:45, flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            sx={{ fontSize: 45, flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
             FarmTech
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block"} }}>
-            {navItems.map((item) => (
-              <Button
-                key={item.label}
-                sx={{
-                  color: "white",
-                  "&:hover": { backgroundColor: green[700] },
-                  fontSize: "18px",
-                  marginRight: "15px",
-                }}
-                component={Link}
-                to={item.path}
-              >
-                {item.label}
-              </Button>
-            ))}
+            {navItems.map((item) => 
+              item.icon ? (
+                <IconButton
+                  key={item.path}
+                  sx={{
+                    color: "white",
+                    "&:hover": { backgroundColor: green[700] },
+                    marginRight: "10px",
+                  }}
+                  component={Link}
+                  to={item.path}
+                  aria-label={item.label}
+                >
+                  {React.cloneElement(item.icon, { sx: { fontSize: "1.75rem" } })}
+                </IconButton>
+              ) : (
+                <Button
+                  key={item.label}
+                  sx={{
+                    color: "white",
+                    "&:hover": { backgroundColor: green[700] },
+                    fontSize: "18px",
+                    marginRight: "15px",
+                  }}
+                  component={Link}
+                  to={item.path}
+                >
+                  {item.label}
+                </Button>
+              )
+            )}
           </Box>
-          <IconButton color="inherit" sx={{ ml: 2 }}>
-            <AccountCircleIcon fontSize="large" />
-          </IconButton>
         </Toolbar>
       </AppBar>
       <nav>
