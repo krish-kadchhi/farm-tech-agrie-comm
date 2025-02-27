@@ -21,6 +21,7 @@
     "axios": "^1.7.9",
     "cors": "^2.8.5",
     "decode-jwt": "^1.0.2",
+    "google-auth-library": "^9.15.1",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.469.0",
