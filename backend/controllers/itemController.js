@@ -1,6 +1,7 @@
 const Item = require("../models/item");
 const multer = require("multer");
 const uploadOnCloudinary = require("../utils/cloudinary");
+const jwt = require("jsonwebtoken");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -37,16 +38,40 @@ const itemController = {
   },
 
   showPro: async (req, res) => {
-    try {
-      const items = await Item.find();
-      // const itemToDelete = await Item.findOne({ stock: 0 });
-      // await Item.deleteOne({ stock: 0 });
-      console.log("a ready");
+   try {
+     // Get token from cookies
+     const token = req.cookies.loginCookie;
+     if (!token) {
+       return res
+         .status(401)
+         .json({ message: "Unauthorized - No token found" });
+     }
 
-      res.send(items);
-    } catch (error) {
-      res.status(500).send({ message: "Error fetching products" });
-    }
+     // Verify token
+     const decoded = jwt.verify(token, process.env.JWT_SECRET || "mysecret2");
+     console.log("Decoded Token:", decoded);
+
+     // Get user's city from decoded token
+     const city = decoded.address;
+     console.log(city);
+     
+     if (!city) {
+       return res.status(400).json({ message: "User city not found in token" });
+     }
+
+     // Fetch products for user's city
+     const items = await Item.find({
+       city: { $in: Array.isArray(city) ? city : [city] },
+     });
+     console.log(items);
+     
+     console.log("Products fetched:", items.length);
+
+     res.send(items);
+   } catch (error) {
+     console.error("Error fetching products:", error);
+     res.status(500).json({ message: "Error fetching products" });
+   }
   },
 
   // addProduct: async (req, res) => {

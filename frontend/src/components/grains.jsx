@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import {
   Container,
   Typography,
@@ -26,12 +26,12 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import SortIcon from '@mui/icons-material/Sort';
-import CloseIcon from '@mui/icons-material/Close';
-import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import SearchIcon from "@mui/icons-material/Search";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import SortIcon from "@mui/icons-material/Sort";
+import CloseIcon from "@mui/icons-material/Close";
+import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 export default function Grain() {
   const [myData, setMyData] = useState([]);
@@ -55,7 +55,8 @@ export default function Grain() {
         fat: "2.5g",
         vitamins: ["Vitamin B1", "Vitamin B3", "Iron", "Magnesium"],
       },
-      description: "Premium quality grains sourced from certified organic farms. Our grains are carefully selected and processed to maintain their nutritional value and natural goodness.",
+      description:
+        "Premium quality grains sourced from certified organic farms. Our grains are carefully selected and processed to maintain their nutritional value and natural goodness.",
       storage: "Store in a cool, dry place in an airtight container.",
       origin: "Local Farms, Punjab",
       seasonality: "Available year-round",
@@ -72,7 +73,10 @@ export default function Grain() {
       image: grain.image,
     };
     try {
-      const res = await axios.post("http://localhost:8080/cart/addCart", data, { withCredentials: true });
+      const res = await axios.post("http://localhost:8080/cart/addCart", data, {
+        withCredentials: true,
+      });
+      console.log("Cart Response:", res.data);
       toast.success("Item added to cart");
     } catch (err) {
       toast.error("Failed to add item to cart");
@@ -82,38 +86,52 @@ export default function Grain() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/item/showPro")
+      .get("http://localhost:8080/item/showPro", { withCredentials: true })
       .then((response) => {
-        setMyData(response.data);
-        setFilteredGrains(response.data.filter(item => item.category === "grain" && item.stock > 0));
-        setIsLoading(false);
+        console.log("API Response:", response.data);
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setMyData([...response.data]); // ✅ Ensures React detects changes
+        } else {
+          console.error("Empty or invalid data received:", response.data);
+        }
       })
       .catch((err) => {
+        console.error("Error fetching products:", err);
         setError(err.message);
+      })
+      .finally(() => {
         setIsLoading(false);
       });
   }, []);
 
+  // Update Filtered Grains
   useEffect(() => {
-    const grains = myData.filter(item => 
-      item.category === "grain" && 
-      item.stock > 0 &&
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    console.log("Updating filteredGrains. myData:", myData);
+    if (myData.length > 0) {
+      const grains = myData.filter(
+        (item) => item.category.toLowerCase() === "grain"
+      ); // ✅ Fixed filtering
 
-    let sortedGrains = [...grains];
-    if (sortBy === "price-low") {
-      sortedGrains.sort((a, b) => a.price - b.price);
-    } else if (sortBy === "price-high") {
-      sortedGrains.sort((a, b) => b.price - a.price);
+      let sortedGrains = [...grains];
+      if (sortBy === "price-low") {
+        sortedGrains.sort((a, b) => a.price - b.price);
+      } else if (sortBy === "price-high") {
+        sortedGrains.sort((a, b) => b.price - a.price);
+      }
+
+      setFilteredGrains(sortedGrains);
+      console.log("Filtered Grains:", sortedGrains);
     }
-
-    setFilteredGrains(sortedGrains);
-  }, [searchQuery, sortBy, myData]);
+  }, [searchQuery, sortBy, myData]); // ✅ Dependencies updated
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="60vh"
+      >
         <CircularProgress size={40} />
       </Box>
     );
@@ -128,30 +146,29 @@ export default function Grain() {
       </Container>
     );
   }
-
   return (
-    <Box sx={{ bgcolor: '#fff', minHeight: '100vh', py: 3 }}>
+    <Box sx={{ bgcolor: "#fff", minHeight: "100vh", py: 3 }}>
       <Container maxWidth="xl">
         {/* Enhanced Search Section */}
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: 2, 
-            mb: 4, 
-            backgroundColor: '#f8f9fa',
-            borderRadius: 2
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            mb: 4,
+            backgroundColor: "#f8f9fa",
+            borderRadius: 2,
           }}
         >
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={6}>
               <Paper
                 sx={{
-                  p: '2px 4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  width: '100%',
-                  border: '1px solid #e0e0e0',
-                  borderRadius: 2
+                  p: "2px 4px",
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  border: "1px solid #e0e0e0",
+                  borderRadius: 2,
                 }}
               >
                 <InputBase
@@ -161,14 +178,14 @@ export default function Grain() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   startAdornment={
                     <InputAdornment position="start">
-                      <SearchIcon sx={{ color: 'text.secondary' }} />
+                      <SearchIcon sx={{ color: "text.secondary" }} />
                     </InputAdornment>
                   }
                 />
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                 <FormControl size="small" sx={{ minWidth: 150 }}>
                   <Select
                     value={sortBy}
@@ -176,7 +193,7 @@ export default function Grain() {
                     displayEmpty
                     startAdornment={
                       <InputAdornment position="start">
-                        <SortIcon sx={{ color: 'text.secondary' }} />
+                        <SortIcon sx={{ color: "text.secondary" }} />
                       </InputAdornment>
                     }
                   >
@@ -195,7 +212,7 @@ export default function Grain() {
 
         {/* Product Grid */}
         {filteredGrains.length === 0 ? (
-          <Paper sx={{ p: 4, textAlign: 'center', bgcolor: '#f8f9fa' }}>
+          <Paper sx={{ p: 4, textAlign: "center", bgcolor: "#f8f9fa" }}>
             <Typography variant="h6" color="textSecondary">
               No grains found matching your search
             </Typography>
@@ -209,35 +226,35 @@ export default function Grain() {
                   onClick={() => handleCardClick(grain)}
                   sx={{
                     p: 2,
-                    height: '100%',
-                    border: '1px solid #f0f0f0',
+                    height: "100%",
+                    border: "1px solid #f0f0f0",
                     borderRadius: 2,
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                      transform: 'translateY(-4px)'
-                    }
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                      transform: "translateY(-4px)",
+                    },
                   }}
                 >
-                  <Box sx={{ position: 'relative' }}>
-                    <Box 
-                      sx={{ 
-                        position: 'absolute', 
-                        top: 8, 
-                        left: 8, 
+                  <Box sx={{ position: "relative" }}>
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 8,
+                        left: 8,
                         zIndex: 1,
-                        display: 'flex',
-                        gap: 0.5
+                        display: "flex",
+                        gap: 0.5,
                       }}
                     >
                       <Chip
                         icon={<AccessTimeIcon sx={{ fontSize: 16 }} />}
                         label="30 min"
                         size="small"
-                        sx={{ 
-                          bgcolor: 'rgba(255,255,255,0.9)',
-                          fontSize: '0.75rem'
+                        sx={{
+                          bgcolor: "rgba(255,255,255,0.9)",
+                          fontSize: "0.75rem",
                         }}
                       />
                     </Box>
@@ -245,42 +262,42 @@ export default function Grain() {
                       src={grain.image}
                       alt={grain.name}
                       style={{
-                        width: '100%',
-                        height: '220px',
-                        objectFit: 'contain',
-                        marginBottom: '16px'
+                        width: "100%",
+                        height: "220px",
+                        objectFit: "contain",
+                        marginBottom: "16px",
                       }}
                     />
                   </Box>
 
-                  <Typography 
-                    variant="h6" 
+                  <Typography
+                    variant="h6"
                     sx={{
                       fontWeight: 600,
-                      mb: 1
+                      mb: 1,
                     }}
                   >
                     {grain.name}
                   </Typography>
 
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      color: 'text.secondary',
-                      mb: 1
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      mb: 1,
                     }}
                   >
                     1 Kg
                   </Typography>
 
                   <Box sx={{ mb: 2 }}>
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
-                        color: 'text.secondary',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 0.5
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.5,
                       }}
                     >
                       <LocalShippingOutlinedIcon sx={{ fontSize: 16 }} />
@@ -288,7 +305,14 @@ export default function Grain() {
                     </Typography>
                   </Box>
 
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 'auto' }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mt: "auto",
+                    }}
+                  >
                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
                       ₹{grain.price}
                     </Typography>
@@ -296,10 +320,10 @@ export default function Grain() {
                       variant="contained"
                       onClick={(e) => addToCart(grain, e)}
                       sx={{
-                        bgcolor: '#43a047',
-                        '&:hover': {
-                          bgcolor: '#66bb6a',
-                        }
+                        bgcolor: "#43a047",
+                        "&:hover": {
+                          bgcolor: "#66bb6a",
+                        },
                       }}
                     >
                       Add to Cart
@@ -321,7 +345,11 @@ export default function Grain() {
           {selectedGrain && (
             <>
               <DialogTitle>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
                   <Typography variant="h5" component="h2">
                     {selectedGrain.name}
                   </Typography>
@@ -337,10 +365,10 @@ export default function Grain() {
                       src={selectedGrain.image}
                       alt={selectedGrain.name}
                       style={{
-                        width: '100%',
-                        height: 'auto',
-                        borderRadius: '8px',
-                        marginBottom: '16px'
+                        width: "100%",
+                        height: "auto",
+                        borderRadius: "8px",
+                        marginBottom: "16px",
                       }}
                     />
                     <Typography variant="h6" color="Black" gutterBottom>
@@ -350,9 +378,9 @@ export default function Grain() {
                       variant="contained"
                       fullWidth
                       sx={{
-                        bgcolor: '#43a047',
-                        '&:hover': { bgcolor: '#66bb6a' },
-                        mt: 2
+                        bgcolor: "#43a047",
+                        "&:hover": { bgcolor: "#66bb6a" },
+                        mt: 2,
                       }}
                       onClick={(e) => addToCart(selectedGrain, e)}
                     >
@@ -360,27 +388,44 @@ export default function Grain() {
                     </Button>
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <Typography variant="h6" gutterBottom>Product Details</Typography>
-                    <Typography paragraph>{selectedGrain.description}</Typography>
-                    
-                    <Typography variant="h6" gutterBottom>Nutritional Information</Typography>
+                    <Typography variant="h6" gutterBottom>
+                      Product Details
+                    </Typography>
+                    <Typography paragraph>
+                      {selectedGrain.description}
+                    </Typography>
+
+                    <Typography variant="h6" gutterBottom>
+                      Nutritional Information
+                    </Typography>
                     <Table size="small">
                       <TableBody>
-                        {Object.entries(selectedGrain.nutritionalInfo).map(([key, value]) => (
-                          key !== 'vitamins' && (
-                            <TableRow key={key}>
-                              <TableCell component="th" scope="row" sx={{ border: 'none', pl: 0 }}>
-                                {key.charAt(0).toUpperCase() + key.slice(1)}
-                              </TableCell>
-                              <TableCell align="right" sx={{ border: 'none' }}>{value}</TableCell>
-                            </TableRow>
-                          )
-                        ))}
+                        {Object.entries(selectedGrain.nutritionalInfo).map(
+                          ([key, value]) =>
+                            key !== "vitamins" && (
+                              <TableRow key={key}>
+                                <TableCell
+                                  component="th"
+                                  scope="row"
+                                  sx={{ border: "none", pl: 0 }}
+                                >
+                                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  sx={{ border: "none" }}
+                                >
+                                  {value}
+                                </TableCell>
+                              </TableRow>
+                            )
+                        )}
                       </TableBody>
                     </Table>
 
                     <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
-                      Key Vitamins & Minerals: {selectedGrain.nutritionalInfo.vitamins.join(", ")}
+                      Key Vitamins & Minerals:{" "}
+                      {selectedGrain.nutritionalInfo.vitamins.join(", ")}
                     </Typography>
 
                     <Divider sx={{ my: 2 }} />

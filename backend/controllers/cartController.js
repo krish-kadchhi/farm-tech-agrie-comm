@@ -12,7 +12,7 @@ const cartController = {
 
       const decoded = jwt.verify(token, "mysecret2");
       const userEmail = decoded.email;
-
+      console.log(userEmail)
       // Check item stock first
       const itemInDb = await Item.findOne({ name: req.body.item });
       if (!itemInDb || itemInDb.stock < 1) {
