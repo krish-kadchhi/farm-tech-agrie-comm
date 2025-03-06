@@ -8,7 +8,10 @@ const LayoutUser = ({ Children }) => {
   const [role, setRole] = useState("Customer"); // Default role is "user"
 
   useEffect(() => {
-    const token = Cookies.get("token");
+    const token = Cookies.get("loginCookie");
+    if(!token){
+      setRole("Customer");
+    }
 
     if (token) {
       try {
