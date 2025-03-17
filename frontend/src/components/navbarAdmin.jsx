@@ -21,6 +21,7 @@ import { green } from "@mui/material/colors";
 const drawerWidth = 150;
 const navItems = [
   { label: "Home", path: "/" },
+  { label: "Dashboard", path: "/dashboard" },
   { label: "products", path: "/products" },
   { label: "Add Product", path: "/addproduct" },
   { label: "Profile", path: "/profile", icon: <AccountCircleIcon /> },

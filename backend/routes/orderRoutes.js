@@ -2,6 +2,7 @@ const express = require('express');
 const { 
     getUserOrders, 
     getLatestOrder, 
+    getAllOrders,
     createOrder, 
     updateOrderStatus, 
     getOrderDetails, 
@@ -11,6 +12,7 @@ const {
 const router = express.Router();
 
 router.get('/user/:userId', getUserOrders);
+router.get('/all', getAllOrders);
 router.get('/latest/:userId', getLatestOrder);
 router.post('/create', createOrder);
 router.patch('/status/:orderId', updateOrderStatus);

@@ -1,5 +1,5 @@
 import Navbar from "./components/navbarUser.jsx";
-import Layout from "./components/fixLayouUsert.jsx";
+import Layout from "./components/fixLayoutUser.jsx";
 import Profile from "./components/profile.jsx";
 import Home from "./components/home.jsx";
 import ShowCart from "./components/showCart.jsx";
@@ -22,6 +22,7 @@ import { Toaster } from 'sonner';
 import "./index.css";
 import axios from "axios";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
+import AdminDashboard from "./components/AdminDashboard.jsx";
 export default function App() {
    axios.defaults.withCredentials = true;
   return (
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/admin" element={<AdminNavbar />} />
             <Route path="/addproduct" element={<AddProduct />} />
             <Route path="/verifyOtp" element={<VerifyOtp />} />
+            <Route path="/dashboard" element={<AdminDashboard />} />
           </Routes>
       </BrowserRouter>
       <Toaster richColors position='top-center' duration={1500} closeButton />
