@@ -7,7 +7,7 @@ import { jwtDecode } from "jwt-decode";
 const LayoutUser = ({ Children }) => {
   const [role, setRole] = useState("Customer"); // Default role is "user"
 
-  useEffect(() => {
+  useEffect(() => { 
     const token = Cookies.get("loginCookie");
     if(!token){
       setRole("Customer");

@@ -38,53 +38,56 @@ const itemController = {
   },
 
   showPro: async (req, res) => {
-  try {
-    // Get token from cookies
-    const token = req.cookies.loginCookie;
-    if (!token) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized - No token found" });
-    }
-
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "mysecret2");
-    console.log("Decoded Token:", decoded);
-
-    // Get user's city from decoded token
-    let city = decoded.address;
-    console.log("Original city data:", city);
     
-    if (!city) {
-      return res.status(400).json({ message: "User city not found in token" });
-    }
-
-    // Ensure city is always an array, even if it's a single string
-    if (!Array.isArray(city)) {
-      // If it's a comma-separated string, split it
-      if (typeof city === 'string' && city.includes(',')) {
-        city = city.split(',').map(c => c.trim());
-      } else {
-        // If it's just a single city string
-        city = [city];
+      try {
+        // Get district from query param if available
+        const selectedDistrict = req.query.district;
+        
+        // Get token from cookies
+        const token = req.cookies.loginCookie;
+        if (!token) {
+          return res
+            .status(401)
+            .json({ message: "Unauthorized - No token found" });
+        }
+    
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "mysecret2");
+        console.log("Decoded Token:", decoded);
+    
+        // If district is selected in the request, use that
+        // Otherwise use user's city from decoded token
+        let searchLocation;
+        
+        if (selectedDistrict) {
+          searchLocation = selectedDistrict;
+          console.log(`Finding products for selected district: ${selectedDistrict}`);
+        } else {
+          // Get user's city from decoded token
+          const city = decoded.address;
+          console.log(`User city from token: ${city}`);
+          
+          if (!city) {
+            return res.status(400).json({ message: "User city not found in token" });
+          }
+          
+          searchLocation = city;
+        }
+    
+        // Fetch products for the location (either selected district or user's city)
+        const items = await Item.find({
+          city: { $in: Array.isArray(searchLocation) ? searchLocation : [searchLocation] },
+        });
+        
+        console.log(`Products fetched for ${searchLocation}: ${items.length}`);
+    
+        res.send(items);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        res.status(500).json({ message: "Error fetching products" });
       }
-    }
-
-    console.log("Processed city array:", city);
-
-    // Fetch products for user's cities
-    const items = await Item.find({
-      city: { $in: city }
-    });
     
-    console.log("Products fetched:", items.length);
-
-    res.send(items);
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    res.status(500).json({ message: "Error fetching products" });
-  }
-},
+  },
 
   // addProduct: async (req, res) => {
   //   try {

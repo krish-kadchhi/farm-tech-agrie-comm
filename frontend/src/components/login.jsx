@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import axios from "axios"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   Button,
   TextField,
@@ -21,9 +21,15 @@ import {
   CircularProgress,
   Alert,
   Snackbar,
-} from "@mui/material"
-import { Visibility, VisibilityOff, Person, Email, Key } from "@mui/icons-material"
-import { ThemeProvider, createTheme } from "@mui/material/styles"
+} from "@mui/material";
+import {
+  Visibility,
+  VisibilityOff,
+  Person,
+  Email,
+  Key,
+} from "@mui/icons-material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // Custom theme (same as signup page)
 const theme = createTheme({
@@ -64,7 +70,7 @@ const theme = createTheme({
       },
     },
   },
-})
+});
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -72,58 +78,67 @@ export default function Login() {
     email: "",
     password: "",
     role: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [openSnackbar, setOpenSnackbar] = useState(false)
-  const navigate = useNavigate()
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const validateForm = () => {
-    if (!formData.username || !formData.email || !formData.password || !formData.role) {
-      setError("Please fill in all required fields")
-      return false
+    if (
+      !formData.username ||
+      !formData.email ||
+      !formData.password ||
+      !formData.role
+    ) {
+      setError("Please fill in all required fields");
+      return false;
     }
     if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      setError("Please enter a valid email address")
-      return false
+      setError("Please enter a valid email address");
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!validateForm()) {
-      setOpenSnackbar(true)
-      return
+      setOpenSnackbar(true);
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await axios.post("http://localhost:8080/auth/login", formData, {
-        withCredentials: true,
-      })
-      console.log("Login response:", response.data)
+      const response = await axios.post(
+        "http://localhost:8080/auth/login",
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("Login response:", response.data);
       if (formData.role === "Admin") {
-        navigate("/addProduct")
+        navigate("/home");
       } else {
-        navigate("/products")
+        navigate("/products");
       }
     } catch (err) {
-      setError(err.response?.data || "Login failed")
-      setOpenSnackbar(true)
+      setError(err.response?.data || "Login failed");
+      setOpenSnackbar(true);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -199,7 +214,12 @@ export default function Login() {
 
               <FormControl fullWidth margin="normal" required>
                 <InputLabel>Role</InputLabel>
-                <Select name="role" value={formData.role} onChange={handleChange} label="Role">
+                <Select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  label="Role"
+                >
                   <MenuItem value="Customer">Customer</MenuItem>
                   <MenuItem value="Farmer">Farmer</MenuItem>
                   <MenuItem value="Admin">Admin</MenuItem>
@@ -232,29 +252,38 @@ export default function Login() {
                 }}
               />
 
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-              <FormControlLabel
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                <FormControlLabel
                   control={
-                    <Checkbox checked={showPassword} onChange={() => setShowPassword(!showPassword)} color="primary" />
+                    <Checkbox
+                      checked={showPassword}
+                      onChange={() => setShowPassword(!showPassword)}
+                      color="primary"
+                    />
                   }
                   label="Show Password"
                   sx={{ mt: 0 }}
                 />
-                <Typography 
-                  component="a" 
-                  href="/forgot-password" 
-                  color="primary" 
-                  sx={{ 
-                    textDecoration: "none", 
-                    "&:hover": { 
-                      textDecoration: "underline" 
-                    } 
+                <Typography
+                  component="a"
+                  href="/forgot-password"
+                  color="primary"
+                  sx={{
+                    textDecoration: "none",
+                    "&:hover": {
+                      textDecoration: "underline",
+                    },
                   }}
                 >
                   Forgot Password?
                 </Typography>
-
-                
               </Box>
 
               <Button
@@ -270,7 +299,11 @@ export default function Login() {
                   fontWeight: 600,
                 }}
               >
-                {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+                {loading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  "Login"
+                )}
               </Button>
 
               <Typography variant="body1" align="center" sx={{ mt: 2 }}>
@@ -294,13 +327,20 @@ export default function Login() {
           </Paper>
         </Box>
 
-        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
-          <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: "100%" }}>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={6000}
+          onClose={() => setOpenSnackbar(false)}
+        >
+          <Alert
+            onClose={() => setOpenSnackbar(false)}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
             {error}
           </Alert>
         </Snackbar>
       </Container>
     </ThemeProvider>
-  )
+  );
 }
-

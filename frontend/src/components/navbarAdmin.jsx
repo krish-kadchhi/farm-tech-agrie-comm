@@ -24,7 +24,6 @@ const navItems = [
   { label: "products", path: "/products" },
   { label: "Add Product", path: "/addproduct" },
   { label: "Profile", path: "/profile", icon: <AccountCircleIcon /> },
-  // { label: "Add Cart", path: "/showcart" },
 ];
 export default function AdminNavbar(props) {
   const { window } = props;
