@@ -23,6 +23,8 @@ router.post("/add", upload.fields([{
 router.delete("/deleteProduct/:id", itemController.deleteProduct);
 router.get("/searchProduct", itemController.searchItems);
 router.post("/add", itemController.addProduct);
+router.get("/all-products", itemController.getAllProducts); // Add this route
+router.put("/edit/:id", itemController.editProduct); // Add this route
 
 module.exports = router;
 

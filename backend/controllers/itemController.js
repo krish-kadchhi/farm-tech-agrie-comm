@@ -186,6 +186,46 @@ const itemController = {
       });
     }
   },
+  getAllProducts: async (req, res) => {
+    try {
+      const items = await Item.find();
+      res.status(200).json(items);
+    } catch (error) {
+      console.error("Error fetching all products:", error);
+      res.status(500).json({ message: "Error fetching products" });
+    }
+  },
+  
+  // Edit product
+  editProduct: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = {
+        name: req.body.name,
+        category: req.body.category,
+        price: req.body.price,
+        description: req.body.description,
+        stock: req.body.stock,
+        city: req.body.city
+      };
+  
+      const updatedItem = await Item.findByIdAndUpdate(
+        id,
+        updates,
+        { new: true, runValidators: true }
+      );
+  
+      if (!updatedItem) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+  
+      res.status(200).json(updatedItem);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(500).json({ message: "Error updating product" });
+    }
+  },
+  
 };
 
 module.exports = itemController;
