@@ -320,64 +320,84 @@ If you did not request this, please ignore this email and your password will rem
         .json({ success: false, message: "Internal Server Error" });
     }
   },
-  editProfile: async (req, res) => {
-    try {
-      const token = req.cookies.loginCookie;
-      if (!token) {
-        return res.status(401).json({ 
-          success: false, 
-          message: "No token provided" 
-        });
-      }
+// ... existing code ...
 
-      // Verify token and get user info
-      const decoded = jwt.verify(token, process.env.COOKIE_SECRET || "mysecret2");
-      const userId = decoded._id;
-
-      // Get updated fields from request body
-      const updates = {
-        name: req.body.name,
-        email: req.body.email,
-        phone: req.body.phone,
-        address: req.body.address
-      };
-
-      // Update user in database
-      const updatedUser = await User.findByIdAndUpdate(
-        userId,
-        updates,
-        { new: true, runValidators: true }
-      );
-
-      if (!updatedUser) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found"
-        });
-      }
-      console.log(updatedUser);
-      
-
-      res.status(200).json({
-        success: true,
-        message: "Profile updated successfully",
-        user: {
-          name: updatedUser.name,
-          email: updatedUser.email,
-          phone: updatedUser.phone,
-          address: updatedUser.address
-        }
-      });
-
-    } catch (error) {
-      console.error("Profile update error:", error);
-      res.status(500).json({
-        success: false,
-        message: "Error updating profile",
-        error: error.message
+editProfile: async (req, res) => {
+  try {
+    const token = req.cookies.loginCookie;
+    if (!token) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "No token provided" 
       });
     }
-  },
+
+    // Verify token and get user info
+    const decoded = jwt.verify(token, "mysecret2"); // Using the same secret as login
+    console.log(decoded);
+    
+    // Find user by email since we're using that in other places
+    const user = await User.findOne({ email: decoded.email });
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Update user fields
+    user.name = req.body.name;
+    user.email = req.body.email;
+    user.phone = req.body.phone;
+    user.address = req.body.address;
+
+    // Save the updated user
+    const updatedUser = await user.save();
+
+    // Create new token with updated information
+    const newToken = jwt.sign(
+      {
+        _id: updatedUser._id,
+        user_id: updatedUser.user_id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        role: updatedUser.role,
+        address: updatedUser.address
+      },
+      "mysecret2"
+    );
+
+    // Set the new token in cookies
+    res.cookie("loginCookie", newToken, {
+      httpOnly: false,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+
+    // Send success response with updated user data
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        name: updatedUser.name,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        address: updatedUser.address
+      }
+    });
+
+  } catch (error) {
+    console.error("Profile update error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error updating profile",
+      error: error.message
+    });
+  }
+},
+
+// ... rest of the existing code ...
 };
 
 module.exports = authController;
