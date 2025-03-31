@@ -38,78 +38,54 @@ const itemController = {
   },
 
   showPro: async (req, res) => {
-    
-      try {
-        // Get district from query param if available
-        const selectedDistrict = req.query.district;
-        
-        // Get token from cookies
-        const token = req.cookies.loginCookie;
-        if (!token) {
-          return res
-            .status(401)
-            .json({ message: "Unauthorized - No token found" });
-        }
-    
-        // Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || "mysecret2");
-        console.log("Decoded Token:", decoded);
-    
-        // If district is selected in the request, use that
-        // Otherwise use user's city from decoded token
-        let searchLocation;
-        
-        if (selectedDistrict) {
-          searchLocation = selectedDistrict;
-          console.log(`Finding products for selected district: ${selectedDistrict}`);
-        } else {
-          // Get user's city from decoded token
-          const city = decoded.address;
-          console.log(`User city from token: ${city}`);
-          
-          if (!city) {
-            return res.status(400).json({ message: "User city not found in token" });
-          }
-          
-          searchLocation = city;
-        }
-    
-        // Fetch products for the location (either selected district or user's city)
-        const items = await Item.find({
-          city: { $in: Array.isArray(searchLocation) ? searchLocation : [searchLocation] },
-        });
-        
-        console.log(`Products fetched for ${searchLocation}: ${items.length}`);
-    
-        res.send(items);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        res.status(500).json({ message: "Error fetching products" });
+    try {
+      // Get district from query param if available
+      const selectedDistrict = req.query.district;
+      
+      // Get token from cookies
+      const token = req.cookies.loginCookie;
+      if (!token) {
+        return res.status(401).json({ message: "Unauthorized - No token found" });
       }
-    
+  
+      // Verify token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || "mysecret2");
+      console.log("Decoded Token:", decoded);
+  
+      // If district is selected in the request, use that
+      // Otherwise use user's city from decoded token
+      let searchLocation;
+      
+      if (selectedDistrict) {
+        searchLocation = selectedDistrict;
+        console.log(`Finding products for selected district: ${selectedDistrict}`);
+      } else {
+        // Get user's city from decoded token
+        const city = decoded.address;
+        console.log(`User city from token: ${city}`);
+        
+        if (!city) {
+          return res.status(400).json({ message: "User city not found in token" });
+        }
+        
+        searchLocation = city;
+      }
+  
+      // Fetch products for the location where stock > 0
+      const items = await Item.find({
+        city: { $in: Array.isArray(searchLocation) ? searchLocation : [searchLocation] },
+        stock: { $gt: 0 }, // Ensures only products with stock > 0 are shown
+      });
+  
+      console.log(`Products fetched for ${searchLocation} with stock > 0: ${items.length}`);
+  
+      res.send(items);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      res.status(500).json({ message: "Error fetching products" });
+    }
   },
-
-  // addProduct: async (req, res) => {
-  //   try {
-  //     const data = {
-  //       name: req.body.product_name,
-  //       category: req.body.product_category,
-  //       price: req.body.product_price,
-  //       image: req.file.path,
-  //     };
-  //     await Item.insertMany(data);
-  //     res.status(201).json({
-  //       message: "Added successfully.",
-  //       imagePath: data.image,
-  //     });
-  //   } catch (error) {
-  //     res.status(500).json({
-  //       message: "Error uploading file",
-  //       error: error.message,
-  //     });
-  //   }
-  // },
-
+  
   deleteProduct: async (req, res) => {
     try {
       const { id } = req.params;

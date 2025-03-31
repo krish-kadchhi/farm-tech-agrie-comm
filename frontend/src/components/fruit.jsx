@@ -100,21 +100,6 @@ function Fruit() {
       console.error("Error adding to cart:", err);
     }
   }
-
-  // Function to fetch user's address from token
-  // const fetchUserAddress = async () => {
-  //   try {
-  //     const response = await axios.get("http://localhost:8080/user/profile", {
-  //       withCredentials: true,
-  //     });
-  //     if (response.data && response.data.address) {
-  //       setUserAddress(response.data.address);
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching user profile:", err);
-  //   }
-  // };
-
   useEffect(() => {
       const fetchUserData = async () => {
         try {
