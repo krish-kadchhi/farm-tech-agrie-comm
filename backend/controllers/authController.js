@@ -320,6 +320,64 @@ If you did not request this, please ignore this email and your password will rem
         .json({ success: false, message: "Internal Server Error" });
     }
   },
+  editProfile: async (req, res) => {
+    try {
+      const token = req.cookies.loginCookie;
+      if (!token) {
+        return res.status(401).json({ 
+          success: false, 
+          message: "No token provided" 
+        });
+      }
+
+      // Verify token and get user info
+      const decoded = jwt.verify(token, process.env.COOKIE_SECRET || "mysecret2");
+      const userId = decoded._id;
+
+      // Get updated fields from request body
+      const updates = {
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+        address: req.body.address
+      };
+
+      // Update user in database
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        updates,
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found"
+        });
+      }
+      console.log(updatedUser);
+      
+
+      res.status(200).json({
+        success: true,
+        message: "Profile updated successfully",
+        user: {
+          name: updatedUser.name,
+          email: updatedUser.email,
+          phone: updatedUser.phone,
+          address: updatedUser.address
+        }
+      });
+
+    } catch (error) {
+      console.error("Profile update error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error updating profile",
+        error: error.message
+      });
+    }
+  },
 };
 
 module.exports = authController;

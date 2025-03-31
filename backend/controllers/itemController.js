@@ -38,7 +38,8 @@ const itemController = {
   },
 
   showPro: async (req, res) => {
-    
+      console.log("hii showpro");
+      
       try {
         // Get district from query param if available
         const selectedDistrict = req.query.district;
