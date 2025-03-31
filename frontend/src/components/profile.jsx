@@ -23,20 +23,24 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { green } from "@mui/material/colors";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 // Mock function to fetch user data - replace with your actual API call
 const fetchUserData = async (userId) => {
+ 
   // Simulate API call
   return new Promise((resolve) => {
+     const token = Cookies.get("loginCookie");
+     const decoded = jwtDecode(token);
+     console.log(decoded);
     setTimeout(() => {
       resolve({
-        id: userId,
-        name: "John Doe",
-        email: "john.doe@example.com",
-        phone: "555-123-4567",
-        address: "123 Farm Road, Agricultural City",
-        joinDate: "2023-05-15",
-        orders: 12
+        id: decoded.user_id,
+        name: decoded.name,
+        email: decoded.email,
+        phone: decoded.phone,
+        address: decoded.address,
       });
     }, 1000);
   });
@@ -58,8 +62,7 @@ const logoutUser = async () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       // Clear any stored tokens/data
-      localStorage.removeItem("userId");
-      localStorage.removeItem("token");
+    Cookies.remove("loginCookie");
       // Add any other items that need to be cleared
       
       resolve({ success: true });

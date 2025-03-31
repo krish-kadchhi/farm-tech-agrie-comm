@@ -63,6 +63,7 @@ const authController = {
           name: user.name,
           email: user.email,
           role: user.role,
+          phone: user.phone,
           password: user.password,
           address: user.address,
         },
@@ -87,6 +88,7 @@ const authController = {
         name: req.body.username,
         email: req.body.email,
         role: req.body.role,
+        phone: req.body.phone,
         password: req.body.password,
       };
       if (data.role === "Admin") {
@@ -125,6 +127,7 @@ const authController = {
               name: data.name,
               password: data.password,
               email: data.email,
+              phone: user.phone,
               role: data.role,
               address: user.address,
             },

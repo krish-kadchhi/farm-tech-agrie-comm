@@ -18,14 +18,15 @@ import Button from "@mui/material/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { green } from "@mui/material/colors";
 
+
 const drawerWidth = 150;
 const navItems = [
   { label: "Home", path: "/" },
   { label: "Dashboard", path: "/dashboard" },
   { label: "products", path: "/products" },
   { label: "Add Product", path: "/addproduct" },
+  { label: "Edit products", path: "/editproducts" },
   { label: "Profile", path: "/profile", icon: <AccountCircleIcon /> },
-  // { label: "Add Cart", path: "/showcart" },
 ];
 export default function AdminNavbar(props) {
   const { window } = props;

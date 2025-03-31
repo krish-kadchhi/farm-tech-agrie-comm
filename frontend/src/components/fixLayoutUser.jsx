@@ -1,34 +1,45 @@
+// farm-tech/frontend/src/components/fixLayouUsert.jsx
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Navbar from "./navbarUser";
 import AdminNavbar from "./navbarAdmin";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
-const LayoutUser = ({ Children }) => {
-  const [role, setRole] = useState("Customer"); // Default role is "user"
+const LayoutUser = ({ children }) => {
+  const [userRole, setUserRole] = useState("Customer");
 
   useEffect(() => {
-    const token = Cookies.get("token");
-
-    if (token) {
-      try {
-        const decoded = jwtDecode(token); // Decode the token
-        setRole(decoded.role); // Update the role based on the decoded token
-      } catch (error) {
-        console.error("Invalid token", error);
-        // Handle invalid token (e.g., clear the token and redirect to login)
-        Cookies.remove("token");
-        setRole("Customer"); // Fallback to default role if token is invalid
+    const checkUserRole = () => {
+      const token = Cookies.get("loginCookie");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          setUserRole(decoded.role || "Customer");
+        } catch (error) {
+          console.error("Invalid token", error);
+          Cookies.remove("loginCookie");
+          setUserRole("Customer");
+        }
+      } else {
+        setUserRole("Customer");
       }
-    }
-    // If no token is found, the role remains "user" by default
-  }, []);
+    };
+
+    // Check role when component mounts
+    checkUserRole();
+
+    // Set up an interval to check the token periodically
+    const intervalId = setInterval(checkUserRole, 1000);
+
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []); // Add navigate to the dependency array
 
   return (
     <>
-      {/* Conditionally render the appropriate navbar */}
-      {role === "Admin" ? <AdminNavbar /> : <Navbar />}
-      <main>{Children}</main>
+      {userRole === "Admin" ? <AdminNavbar /> : <Navbar />}
+      <main>{children}</main>
     </>
   );
 };
