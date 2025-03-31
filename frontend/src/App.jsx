@@ -17,6 +17,7 @@ import Vegetable from "./components/vegetable.jsx";
 import VerifyOtp from "./components/verifyOtp.jsx";
 import ForgotPassword from "./components/ForgotPassword.jsx";
 import ResetPassword from "./components/ResetPassword.jsx";
+import FarmerDashboard from "./components/FarmerDashboard.jsx";
 import { Toaster } from 'sonner';
 
 import "./index.css";
@@ -51,6 +52,7 @@ export default function App() {
             <Route path="/addproduct" element={<AddProduct />} />
             <Route path="/verifyOtp" element={<VerifyOtp />} />
             <Route path="/dashboard" element={<AdminDashboard />} />
+            <Route path="/Fdashboard" element={<FarmerDashboard />} />
           </Routes>
       </BrowserRouter>
       <Toaster richColors position='top-center' duration={1500} closeButton />
