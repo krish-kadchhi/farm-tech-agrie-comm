@@ -62,21 +62,10 @@ function Fruit() {
   const handleCardClick = (fruit) => {
     setSelectedFruit({
       ...fruit,
-      nutritionalInfo: {
-        calories: "52 kcal",
-        protein: "0.3g",
-        carbohydrates: "13.8g",
-        fiber: "2.4g",
-        sugar: "10.4g",
-        fat: "0.2g",
-        vitamins: ["Vitamin C", "Vitamin B6", "Potassium"],
-      },
+  
       description:
-        "Fresh and delicious fruit, handpicked from the best orchards. Our fruits are naturally ripened and carefully selected to ensure the highest quality.",
-      storage:
-        "Store in a cool, dry place. Once ripe, refrigerate to extend freshness.",
-      origin: "Local Farms, Maharashtra",
-      seasonality: "Available year-round, best during summer months",
+        fruit.description ||"Fresh and delicious fruit, handpicked from the best orchards. Our fruits are naturally ripened and carefully selected to ensure the highest quality.",
+      
     });
     setOpenDialog(true);
   };
@@ -541,12 +530,9 @@ function Fruit() {
                       {selectedFruit.description}
                     </Typography>
 
-                    <Typography variant="h6" gutterBottom>
-                      Nutritional Information
-                    </Typography>
                     <Table size="small">
                       <TableBody>
-                        {Object.entries(selectedFruit.nutritionalInfo).map(
+                        {/* {Object.entries(selectedFruit.nutritionalInfo).map(
                           ([key, value]) =>
                             key !== "vitamins" && (
                               <TableRow key={key}>
@@ -565,18 +551,14 @@ function Fruit() {
                                 </TableCell>
                               </TableRow>
                             )
-                        )}
+                        )} */}
                       </TableBody>
                     </Table>
 
-                    <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
-                      Key Vitamins:{" "}
-                      {selectedFruit.nutritionalInfo.vitamins.join(", ")}
-                    </Typography>
-
+                   
                     <Divider sx={{ my: 2 }} />
 
-                    <Typography variant="subtitle1" gutterBottom>
+                    {/* <Typography variant="subtitle1" gutterBottom>
                       <strong>Storage:</strong> {selectedFruit.storage}
                     </Typography>
                     <Typography variant="subtitle1" gutterBottom>
@@ -584,7 +566,7 @@ function Fruit() {
                     </Typography>
                     <Typography variant="subtitle1" gutterBottom>
                       <strong>Seasonality:</strong> {selectedFruit.seasonality}
-                    </Typography>
+                    </Typography> */}
                   </Grid>
                 </Grid>
               </DialogContent>
