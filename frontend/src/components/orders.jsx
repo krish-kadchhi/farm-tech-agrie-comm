@@ -78,8 +78,8 @@ function Orders() {
         // Add mock shipping data to each order for demo purposes
         const ordersWithShippingData = response.data.orders.map(order => ({
           ...order,
-          shippingTimeline: getShippingTimeline(order.orderStatus),
-          estimatedDelivery: getEstimatedDelivery(order.orderDate),
+          // shippingTimeline: getShippingTimeline(order.orderStatus),
+          // estimatedDelivery: getEstimatedDelivery(order.orderDate),
           rating: order.rating || null
         }));
 
@@ -98,35 +98,35 @@ function Orders() {
   // Helper functions for mock shipping data
   const getShippingTimeline = (status) => {
     switch (status) {
-      case 'Delivered':
-        return [
-          { label: 'Order Placed', completed: true, date: '2 days ago' },
-          { label: 'Processing', completed: true, date: '1 day ago' },
-          { label: 'Shipped', completed: true, date: '1 day ago' },
-          { label: 'Out for Delivery', completed: true, date: 'Today' },
-          { label: 'Delivered', completed: true, date: 'Today' }
-        ];
-      case 'Processing':
-        return [
-          { label: 'Order Placed', completed: true, date: 'Today' },
-          { label: 'Processing', completed: true, date: 'Today' },
-          { label: 'Shipped', completed: false, date: 'Pending' },
-          { label: 'Out for Delivery', completed: false, date: 'Pending' },
-          { label: 'Delivered', completed: false, date: 'Pending' }
-        ];
-      case 'Cancelled':
-        return [
-          { label: 'Order Placed', completed: true, date: '3 days ago' },
-          { label: 'Cancelled', completed: true, date: '2 days ago' }
-        ];
-      default:
-        return [
-          { label: 'Order Placed', completed: true, date: 'Today' },
-          { label: 'Processing', completed: false, date: 'Pending' },
-          { label: 'Shipped', completed: false, date: 'Pending' },
-          { label: 'Out for Delivery', completed: false, date: 'Pending' },
-          { label: 'Delivered', completed: false, date: 'Pending' }
-        ];
+      // case 'Delivered':
+      //   return [
+      //     { label: 'Order Placed', completed: true, date: '2 days ago' },
+      //     { label: 'Processing', completed: true, date: '1 day ago' },
+      //     { label: 'Shipped', completed: true, date: '1 day ago' },
+      //     { label: 'Out for Delivery', completed: true, date: 'Today' },
+      //     { label: 'Delivered', completed: true, date: 'Today' }
+      //   ];
+      // case 'Processing':
+      //   return [
+      //     { label: 'Order Placed', completed: true, date: 'Today' },
+      //     { label: 'Processing', completed: true, date: 'Today' },
+      //     { label: 'Shipped', completed: false, date: 'Pending' },
+      //     { label: 'Out for Delivery', completed: false, date: 'Pending' },
+      //     { label: 'Delivered', completed: false, date: 'Pending' }
+      //   ];
+      // case 'Cancelled':
+      //   return [
+      //     { label: 'Order Placed', completed: true, date: '3 days ago' },
+      //     { label: 'Cancelled', completed: true, date: '2 days ago' }
+      //   ];
+      // default:
+      //   return [
+      //     { label: 'Order Placed', completed: true, date: 'Today' },
+      //     { label: 'Processing', completed: false, date: 'Pending' },
+      //     { label: 'Shipped', completed: false, date: 'Pending' },
+      //     { label: 'Out for Delivery', completed: false, date: 'Pending' },
+      //     { label: 'Delivered', completed: false, date: 'Pending' }
+      //   ];
     }
   };
 
@@ -145,8 +145,8 @@ function Orders() {
     switch (status) {
       case 'Delivered':
         return 'success';
-      case 'Processing':
-        return 'info';
+      // case 'Processing':
+      //   return 'info';
       case 'Cancelled':
         return 'error';
       default:
@@ -275,12 +275,12 @@ function Orders() {
                     <Typography variant="h6" color="success" gutterBottom>
                       ₹{order.totalAmount.toLocaleString('en-IN')}
                     </Typography>
-                    <Chip
+                    {/* <Chip
                       label={order.orderStatus}
                       color= "default"
                       size="small"
                       sx={{ fontWeight: 'medium' }}
-                    />
+                    /> */}
                   </Box>
                 </Box>
 
@@ -370,7 +370,7 @@ function Orders() {
         <DialogContent dividers>
           {selectedOrder && (
             <>
-              <Box sx={{ mb: 3 }}>
+              {/* <Box sx={{ mb: 3 }}>
                 <Typography variant="subtitle1" gutterBottom>
                   Order Status
                 </Typography>
@@ -379,7 +379,7 @@ function Orders() {
                   color="default"
                   sx={{ fontWeight: 'medium' }}
                 />
-              </Box>
+              </Box> */}
 
               <Box sx={{ mb: 3 }}>
                 <Typography variant="subtitle1" gutterBottom>
@@ -391,11 +391,11 @@ function Orders() {
                 </Box>
               </Box>
 
-              <Typography variant="subtitle1" gutterBottom>
+              {/* <Typography variant="subtitle1" gutterBottom>
                 Shipment Timeline
-              </Typography>
+              </Typography> */}
               <Stepper orientation="vertical" sx={{ mb: 2 }}>
-                {selectedOrder.shippingTimeline.map((step, index) => (
+                {/* {selectedOrder.shippingTimeline.map((step, index) => (
                   <Step key={index} active={step.completed}>
                     <StepLabel>
                       <Typography variant="body1">{step.label}</Typography>
@@ -405,7 +405,7 @@ function Orders() {
                       </Typography>
                     </StepLabel>
                   </Step>
-                ))}
+                ))} */}
               </Stepper>
 
               <Divider sx={{ my: 2 }} />
