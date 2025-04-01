@@ -128,7 +128,7 @@ export default function Login() {
       );
       console.log("Login response:", response.data);
       if (formData.role === "Admin") {
-        navigate("/home");
+        navigate("/");
       } else {
         navigate("/products");
       }
