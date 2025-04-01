@@ -138,7 +138,7 @@ export default function Cart() {
     setCartItems((prevItems) =>
       prevItems.map((item) => {
         if (item.id === id) {
-          const itemStock = maxItem[item.item] || 999999;
+          const itemStock = maxItem[item.item];
           const parsedQuantity = parseInt(newQuantity) || 1;
           return {
             ...item,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -115,20 +116,30 @@ function ProfilePage() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const result = await updateUserData(updatedData);
-      if (result.success) {
-        setUserData(updatedData);
+      const response = await axios.put(
+        "http://localhost:8080/auth/edit-profile",
+        updatedData,
+        {
+          withCredentials: true
+        }
+      );
+  
+      if (response.data.success) {
+        setUserData(response.data.user);
         setNotification({
           open: true,
-          message: result.message,
+          message: response.data.message,
           severity: "success"
         });
+        
+        // Dispatch event to update products
+        window.dispatchEvent(new Event('profileUpdated'));
       }
     } catch (error) {
       console.error("Error updating profile:", error);
       setNotification({
         open: true,
-        message: "Failed to update profile",
+        message: error.response?.data?.message || "Failed to update profile",
         severity: "error"
       });
     } finally {
