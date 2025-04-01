@@ -325,6 +325,7 @@ If you did not request this, please ignore this email and your password will rem
     try {
       const users = await User.find().sort({ createdAt: -1 });
       res.status(200).json({ success: true, users });
+      
     } catch (error) {
       console.error("Get all users error:", error);
       res.status(500).json({ success: false, message: "Internal Server Error" });
