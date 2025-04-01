@@ -30,12 +30,22 @@ export default function AddProduct() {
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [description, setDescription] = useState("");
-  const [city, setCity] = useState("");
+  const [district, setDistrict] = useState(""); // Changed from city to district
   const [category, setCategory] = useState("");
   const [cameraActive, setCameraActive] = useState(false);
   
   // Category options
   const categoryOptions = ["fruit", "vegetable", "grain"];
+  
+  // Gujarat districts
+  const gujaratDistricts = [
+    "Ahmedabad", "Amreli", "Anand", "Aravalli", "Banaskantha", "Bharuch", 
+    "Bhavnagar", "Botad", "Chhota Udaipur", "Dahod", "Dang", "Devbhoomi Dwarka", 
+    "Gandhinagar", "Gir Somnath", "Jamnagar", "Junagadh", "Kheda", "Kutch", 
+    "Mahisagar", "Mehsana", "Morbi", "Narmada", "Navsari", "Panchmahal", 
+    "Patan", "Porbandar", "Rajkot", "Sabarkantha", "Surat", "Surendranagar", 
+    "Tapi", "Vadodara", "Valsad"
+  ];
   
   // New state for base64 image
   const [imageBase64, setImageBase64] = useState("");
@@ -156,12 +166,11 @@ export default function AddProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!productName || !price || !category || !stock || !description || !city || !imageFile) {
+    if (!productName || !price || !category || !stock || !description || !district || !imageFile) {
       alert("Please fill in all required fields");
       return;
     }
 
-    let cityArray = city.split(",");
     const formData = new FormData();
     formData.append("image", imageFile);
     formData.append("productName", productName);
@@ -169,7 +178,7 @@ export default function AddProduct() {
     formData.append("category", category);
     formData.append("stock", stock);
     formData.append("description", description);
-    formData.append("cityArray", cityArray);
+    formData.append("cityArray", [district]); // Using district as a single-item array
 
     try {
       const response = await axios.post(
@@ -250,15 +259,23 @@ export default function AddProduct() {
               </FormControl>
             </Grid>
             
+            {/* District Dropdown - Replacing City TextField */}
             <Grid item xs={12}>
-              <TextField 
-                fullWidth 
-                label="City (comma separated)" 
-                value={city} 
-                onChange={(e) => setCity(e.target.value)} 
-                required 
-                
-              />
+              <FormControl fullWidth required>
+                <InputLabel id="district-label">District</InputLabel>
+                <Select
+                  labelId="district-label"
+                  value={district}
+                  label="District"
+                  onChange={(e) => setDistrict(e.target.value)}
+                >
+                  {gujaratDistricts.map((district) => (
+                    <MenuItem key={district} value={district}>
+                      {district}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             
             <Grid item xs={12}>

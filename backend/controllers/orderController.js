@@ -29,6 +29,25 @@ const orderController = {
     }
   },
 
+  getAllOrders: async (req, res) => {
+    try {
+      const orders = await Order.find().sort({ orderDate: -1 }).lean();
+  
+      if (!orders || orders.length === 0) {
+        console.warn("No orders found in the database.");
+        return res.status(200).json({ success: true, orders: [] });
+      }
+  
+      console.log("Fetched orders from database:", orders);
+      res.status(200).json({ success: true, orders });
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      res.status(500).json({ success: false, message: "Error fetching orders", error: error.message });
+    }
+  },
+  
+     
+
   // Get latest order for a user
   getLatestOrder: async (req, res) => {
     try {

@@ -8,6 +8,8 @@ router.post("/login", authController.login);
 router.post("/verifyOtp", authController.verifyOtp);
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/reset-password/:token", authController.resetPassword);
+router.get("/allusers", authController.getAllUsers);    
+//router.post("/checkAdmin", authController.checkAdmin);
 router.put("/edit-profile", authController.editProfile);
 // router.get("/checkAdmin", authController.checkAdmin);
 
