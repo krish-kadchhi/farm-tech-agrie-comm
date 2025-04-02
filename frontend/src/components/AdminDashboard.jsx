@@ -502,7 +502,7 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
             <Paper elevation={3} sx={{ p: 3, borderRadius: 2, height: 400 }}>
               <Typography variant="h6" gutterBottom fontWeight="medium">
                 Order Status
-              </Typography>
+              </Typography> 
               <Divider sx={{ mb: 2 }} />
               <Box sx={{ height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Pie data={orderStatusChartData} options={chartOptions} />
@@ -538,8 +538,8 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
                   <TableCell sx={{ fontWeight: 'bold' }}>User ID</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Total Amount</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Order Date</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+                  {/* <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -555,7 +555,7 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
                     <TableCell>{order.userId}</TableCell>
                     <TableCell>₹{order.totalAmount.toFixed(2)}</TableCell>
                     <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <Chip 
                         label={order.orderStatus} 
                         size="small" 
@@ -565,8 +565,8 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
                           fontWeight: 'medium'
                         }} 
                       />
-                    </TableCell>
-                    <TableCell>
+                    </TableCell> */}
+                    {/* <TableCell>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth size="small">
                           <Select
@@ -586,7 +586,7 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
                           </Select>
                         </FormControl>
                       </Box>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))}
               </TableBody>
