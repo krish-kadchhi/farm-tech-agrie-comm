@@ -51,6 +51,7 @@ export default function ProductShow() {
   useEffect(() => {
     const checkAuth = async () => {
       const token = Cookies.get("loginCookie");
+      console.log("Token:", token); 
       if (!token) {
         navigate("/signup");
       }

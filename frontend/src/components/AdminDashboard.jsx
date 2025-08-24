@@ -1,22 +1,45 @@
 // AdminDashboard.js
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { 
-  Container, Grid, Paper, Typography, Box, 
-  Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Button, TextField, 
-  MenuItem, Select, FormControl, InputLabel,
-  Card, CardContent, Tabs, Tab, Avatar, Chip,
-  Divider, CircularProgress, Alert, Skeleton,
-  useTheme, alpha, Dialog
-} from '@mui/material';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Card,
+  CardContent,
+  Tabs,
+  Tab,
+  Avatar,
+  Chip,
+  Divider,
+  CircularProgress,
+  Alert,
+  Skeleton,
+  useTheme,
+  alpha,
+  Dialog,
+} from "@mui/material";
 import {
   Dashboard as DashboardIcon,
   ShoppingCart as OrdersIcon,
   Person as UserIcon,
   Inventory as ProductIcon,
-  TrendingUp as TrendingUpIcon
-} from '@mui/icons-material';
+  TrendingUp as TrendingUpIcon,
+} from "@mui/icons-material";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -28,8 +51,8 @@ import {
   ArcElement,
   PointElement,
   LineElement,
-} from 'chart.js';
-import { Bar, Pie, Line } from 'react-chartjs-2';
+} from "chart.js";
+import { Bar, Pie, Line } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
@@ -47,7 +70,7 @@ function AdminDashboard() {
   const theme = useTheme();
   const [orders, setOrders] = useState([]);
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState('');
+  const [selectedUser, setSelectedUser] = useState("");
   const [userOrders, setUserOrders] = useState([]);
   const [productDemand, setProductDemand] = useState([]);
   const [orderStatusStats, setOrderStatusStats] = useState({});
@@ -56,7 +79,10 @@ function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedOrderItems, setSelectedOrderItems] = useState([]);
-const [openItemsDialog, setOpenItemsDialog] = useState(false);
+  const [revenueFilter, setRevenueFilter] = useState("total"); // 'total' or 'monthly'
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [openItemsDialog, setOpenItemsDialog] = useState(false);
 
   useEffect(() => {
     // Fetch all orders and users
@@ -83,37 +109,79 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
     }
   };
 
+  // Calculate filtered revenue
+  const calculateFilteredRevenue = () => {
+    if (revenueFilter === "total") {
+      return orders
+        .reduce((sum, order) => sum + order.totalAmount, 0)
+        .toFixed(2);
+    } else {
+      return orders
+        .filter((order) => {
+          const orderDate = new Date(order.orderDate);
+          return (
+            orderDate.getMonth() === currentMonth &&
+            orderDate.getFullYear() === currentYear
+          );
+        })
+        .reduce((sum, order) => sum + order.totalAmount, 0)
+        .toFixed(2);
+    }
+  };
+  // Month names array for display
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
   const fetchOrders = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/orders/all');
-      
-      if (!response.data || !response.data.success || !Array.isArray(response.data.orders)) {
+      const response = await axios.get("http://localhost:8080/orders/all");
+
+      if (
+        !response.data ||
+        !response.data.success ||
+        !Array.isArray(response.data.orders)
+      ) {
         console.error("Invalid response format:", response.data);
         setOrders([]);
         return;
       }
-  
+
       console.log("Fetched orders:", response.data.orders);
       setOrders(response.data.orders);
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error("Error fetching orders:", error);
       setOrders([]);
       throw error;
     }
   };
-  
+
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/auth/allusers');
-      
-      if (response.data && response.data.success && Array.isArray(response.data.users)) {
+      const response = await axios.get("http://localhost:8080/auth/allusers");
+
+      if (
+        response.data &&
+        response.data.success &&
+        Array.isArray(response.data.users)
+      ) {
         setUsers(response.data.users);
       } else {
-        console.error('Invalid user data structure:', response.data);
+        console.error("Invalid user data structure:", response.data);
         setUsers([]); // Fallback to empty array
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error("Error fetching users:", error);
       setUsers([]);
       throw error;
     }
@@ -122,18 +190,20 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
   const handleUserChange = async (event) => {
     const userId = event.target.value;
     setSelectedUser(userId);
-  
+
     try {
-      const response = await axios.get(`http://localhost:8080/orders/user/${userId}`);
-      
+      const response = await axios.get(
+        `http://localhost:8080/orders/user/${userId}`
+      );
+
       if (response.data && Array.isArray(response.data.orders)) {
         setUserOrders(response.data.orders);
       } else {
-        console.error('Unexpected response format:', response.data);
+        console.error("Unexpected response format:", response.data);
         setUserOrders([]); // Fallback to empty array
       }
     } catch (error) {
-      console.error('Error fetching user orders:', error);
+      console.error("Error fetching user orders:", error);
       setUserOrders([]); // Handle errors gracefully
     }
   };
@@ -142,64 +212,65 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
     setSelectedOrderItems(items);
     setOpenItemsDialog(true);
   };
-  
+
   const handleCloseItemsDialog = () => {
     setOpenItemsDialog(false);
   };
-  
+
   const calculateProductDemand = () => {
     if (!orders || orders.length === 0) {
       console.warn("No orders found for product demand calculation.");
       setProductDemand([]);
       return;
     }
-    
+
     // Add debugging to understand your data structure
     console.log("First order sample:", orders[0]);
-    
+
     const productCounts = {};
-    
-    orders.forEach(order => {
+
+    orders.forEach((order) => {
       // Check if items exists and is an array
       if (!order.items || !Array.isArray(order.items)) {
         console.warn("Order items are not an array:", order);
         return;
       }
-      
-      order.items.forEach(item => {
+
+      order.items.forEach((item) => {
         // Check the actual structure of your item object
         console.log("Item structure:", item);
-        
+
         // Try different property names that might contain the product name
-        const productId = item.item || item.productId || item.product || item.name || item._id;
-        
+        const productId =
+          item.item || item.productId || item.product || item.name || item._id;
+
         if (!productId) {
           console.warn("Cannot identify product in item:", item);
           return;
         }
-        
+
         const quantity = item.quantity || 1;
         productCounts[productId] = (productCounts[productId] || 0) + quantity;
       });
     });
-    
+
     const sortedProducts = Object.entries(productCounts)
       .map(([product, count]) => ({ product, count }))
       .sort((a, b) => b.count - a.count);
-    
+
     console.log("Calculated product demand:", sortedProducts);
     setProductDemand(sortedProducts);
   };
 
   const calculateOrderStatusStats = () => {
     const statusCounts = {
-      'Pending': 0,
-      'Processing': 0,
-      'Shipped': 0,
-      'Delivered': 0
+      Pending: 0,
+      Processing: 0,
+      Shipped: 0,
+      Delivered: 0,
     };
 
-    orders.forEach(order => {
+    orders.forEach((order) => {
       statusCounts[order.orderStatus]++;
     });
 
@@ -209,8 +280,8 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
   const calculateRevenueData = () => {
     // Group orders by date and calculate total revenue
     const revenueByDate = {};
-    
-    orders.forEach(order => {
+
+    orders.forEach((order) => {
       const date = new Date(order.orderDate).toLocaleDateString();
       if (revenueByDate[date]) {
         revenueByDate[date] += order.totalAmount;
@@ -228,7 +299,7 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
       // Refresh orders
       fetchOrders();
     } catch (error) {
-      console.error('Error updating order status:', error);
+      console.error("Error updating order status:", error);
     }
   };
 
@@ -239,21 +310,26 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
   // Get status color
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Pending': return theme.palette.warning.main;
-      case 'Processing': return theme.palette.info.main;
-      case 'Shipped': return theme.palette.primary.main;
-      case 'Delivered': return theme.palette.success.main;
-      default: return theme.palette.grey[500];
+      case "Pending":
+        return theme.palette.warning.main;
+      case "Processing":
+        return theme.palette.info.main;
+      case "Shipped":
+        return theme.palette.primary.main;
+      case "Delivered":
+        return theme.palette.success.main;
+      default:
+        return theme.palette.grey[500];
     }
   };
 
   // Prepare chart data with improved styling
   const productDemandChartData = {
-    labels: productDemand.slice(0, 10).map(item => item.product),
+    labels: productDemand.slice(0, 10).map((item) => item.product),
     datasets: [
       {
-        label: 'Quantity Ordered',
-        data: productDemand.slice(0, 10).map(item => item.count),
+        label: "Quantity Ordered",
+        data: productDemand.slice(0, 10).map((item) => item.count),
         backgroundColor: [
           alpha(theme.palette.primary.main, 0.7),
           alpha(theme.palette.secondary.main, 0.7),
@@ -276,7 +352,7 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
     labels: Object.keys(orderStatusStats),
     datasets: [
       {
-        label: 'Order Count',
+        label: "Order Count",
         data: Object.values(orderStatusStats),
         backgroundColor: [
           alpha(theme.palette.warning.main, 0.7),
@@ -294,7 +370,7 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
     labels: Object.keys(revenueData),
     datasets: [
       {
-        label: 'Revenue',
+        label: "Revenue",
         data: Object.values(revenueData),
         fill: true,
         backgroundColor: alpha(theme.palette.success.main, 0.1),
@@ -313,7 +389,7 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'bottom',
+        position: "bottom",
         labels: {
           font: {
             family: theme.typography.fontFamily,
@@ -324,7 +400,7 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
         backgroundColor: alpha(theme.palette.grey[900], 0.8),
         titleFont: {
           family: theme.typography.fontFamily,
-          weight: 'bold',
+          weight: "bold",
         },
         bodyFont: {
           family: theme.typography.fontFamily,
@@ -337,7 +413,10 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
 
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4, textAlign: 'center', py: 10 }}>
+      <Container
+        maxWidth="lg"
+        sx={{ mt: 4, mb: 4, textAlign: "center", py: 10 }}
+      >
         <CircularProgress size={60} />
         <Typography variant="h6" sx={{ mt: 2 }}>
           Loading dashboard data...
@@ -361,24 +440,33 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-        <DashboardIcon sx={{ mr: 2, fontSize: 40, color: theme.palette.primary.main }} />
-        <Typography variant="h4" component="h1" fontWeight="bold" color="primary">
+      <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
+        <DashboardIcon
+          sx={{ mr: 2, fontSize: 40, color: theme.palette.primary.main }}
+        />
+        <Typography
+          variant="h4"
+          component="h1"
+          fontWeight="bold"
+          color="primary"
+        >
           Admin Dashboard
         </Typography>
       </Box>
 
-      <Box sx={{ 
-        borderBottom: 1, 
-        borderColor: 'divider', 
-        mb: 4,
-        bgcolor: alpha(theme.palette.primary.main, 0.05),
-        borderRadius: 2,
-        boxShadow: 1,
-        px: 2,
-      }}>
-        <Tabs 
-          value={tabValue} 
+      <Box
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+          mb: 4,
+          bgcolor: alpha(theme.palette.primary.main, 0.05),
+          borderRadius: 2,
+          boxShadow: 1,
+          px: 2,
+        }}
+      >
+        <Tabs
+          value={tabValue}
           onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
@@ -388,7 +476,11 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
           <Tab icon={<DashboardIcon />} label="Overview" iconPosition="start" />
           <Tab icon={<OrdersIcon />} label="Orders" iconPosition="start" />
           <Tab icon={<UserIcon />} label="User Orders" iconPosition="start" />
-          <Tab icon={<ProductIcon />} label="Product Demand" iconPosition="start" />
+          <Tab
+            icon={<ProductIcon />}
+            label="Product Demand"
+            iconPosition="start"
+          />
         </Tabs>
       </Box>
 
@@ -396,93 +488,178 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
       {tabValue === 0 && (
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={3}>
-            <Paper 
-              elevation={3} 
-              sx={{ 
-                p: 3, 
-                display: 'flex', 
-                flexDirection: 'column', 
+            <Paper
+              elevation={3}
+              sx={{
+                p: 3,
+                display: "flex",
+                flexDirection: "column",
                 borderRadius: 2,
-                transition: 'transform 0.2s',
-                '&:hover': { transform: 'translateY(-5px)' },
+                transition: "transform 0.2s",
+                "&:hover": { transform: "translateY(-5px)" },
                 borderLeft: `5px solid ${theme.palette.primary.main}`,
               }}
             >
-              <Typography variant="subtitle1" color="text.secondary">Total Orders</Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                Total Orders
+              </Typography>
               <Typography variant="h4" fontWeight="bold" sx={{ mt: 1 }}>
                 {orders.length}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                <TrendingUpIcon fontSize="small" color="primary" sx={{ verticalAlign: 'text-bottom', mr: 0.5 }} />
-                {orders.length > 0 ? 'Active orders' : 'No orders yet'}
+                <TrendingUpIcon
+                  fontSize="small"
+                  color="primary"
+                  sx={{ verticalAlign: "text-bottom", mr: 0.5 }}
+                />
+                {orders.length > 0 ? "Active orders" : "No orders yet"}
               </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} md={6} lg={3}>
-            <Paper 
-              elevation={3} 
-              sx={{ 
-                p: 3, 
-                display: 'flex', 
-                flexDirection: 'column', 
+            <Paper
+              elevation={3}
+              sx={{
+                p: 3,
+                display: "flex",
+                flexDirection: "column",
                 borderRadius: 2,
-                transition: 'transform 0.2s',
-                '&:hover': { transform: 'translateY(-5px)' },
+                transition: "transform 0.2s",
+                "&:hover": { transform: "translateY(-5px)" },
                 borderLeft: `5px solid ${theme.palette.success.main}`,
               }}
             >
-              <Typography variant="subtitle1" color="text.secondary">Total Revenue</Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 1,
+                }}
+              >
+                <Typography variant="subtitle1" color="text.secondary">
+                  {revenueFilter === "total"
+                    ? "Total Revenue"
+                    : "Monthly Revenue"}
+                </Typography>
+                <Select
+                  value={revenueFilter}
+                  onChange={(e) => setRevenueFilter(e.target.value)}
+                  size="small"
+                  sx={{ minWidth: 100 }}
+                >
+                  <MenuItem value="total">Total</MenuItem>
+                  <MenuItem value="monthly">Monthly</MenuItem>
+                </Select>
+              </Box>
+
+              {revenueFilter === "monthly" && (
+                <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+                  <Select
+                    value={currentMonth}
+                    onChange={(e) => setCurrentMonth(e.target.value)}
+                    size="small"
+                    sx={{ flex: 2 }}
+                  >
+                    {monthNames.map((month, index) => (
+                      <MenuItem key={index} value={index}>
+                        {month}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <Select
+                    value={currentYear}
+                    onChange={(e) => setCurrentYear(e.target.value)}
+                    size="small"
+                    sx={{ flex: 1 }}
+                  >
+                    {Array.from(
+                      new Set(
+                        orders.map((order) =>
+                          new Date(order.orderDate).getFullYear()
+                        )
+                      )
+                    )
+                      .sort()
+                      .map((year) => (
+                        <MenuItem key={year} value={year}>
+                          {year}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </Box>
+              )}
+
               <Typography variant="h4" fontWeight="bold" sx={{ mt: 1 }}>
-                ₹{orders.reduce((sum, order) => sum + order.totalAmount, 0).toFixed(2)}
+                ₹{calculateFilteredRevenue()}
               </Typography>
+
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                <TrendingUpIcon fontSize="small" color="success" sx={{ verticalAlign: 'text-bottom', mr: 0.5 }} />
-                Overall earnings
+                <TrendingUpIcon
+                  fontSize="small"
+                  color="success"
+                  sx={{ verticalAlign: "text-bottom", mr: 0.5 }}
+                />
+                {revenueFilter === "total"
+                  ? "Overall earnings"
+                  : `${monthNames[currentMonth]} ${currentYear}`}
               </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} md={6} lg={3}>
-            <Paper 
-              elevation={3} 
-              sx={{ 
-                p: 3, 
-                display: 'flex', 
-                flexDirection: 'column', 
+            <Paper
+              elevation={3}
+              sx={{
+                p: 3,
+                display: "flex",
+                flexDirection: "column",
                 borderRadius: 2,
-                transition: 'transform 0.2s',
-                '&:hover': { transform: 'translateY(-5px)' },
+                transition: "transform 0.2s",
+                "&:hover": { transform: "translateY(-5px)" },
                 borderLeft: `5px solid ${theme.palette.info.main}`,
               }}
             >
-              <Typography variant="subtitle1" color="text.secondary">Total Users</Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                Total Users
+              </Typography>
               <Typography variant="h4" fontWeight="bold" sx={{ mt: 1 }}>
                 {users.length}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                <TrendingUpIcon fontSize="small" color="info" sx={{ verticalAlign: 'text-bottom', mr: 0.5 }} />
+                <TrendingUpIcon
+                  fontSize="small"
+                  color="info"
+                  sx={{ verticalAlign: "text-bottom", mr: 0.5 }}
+                />
                 Registered accounts
               </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} md={6} lg={3}>
-            <Paper 
-              elevation={3} 
-              sx={{ 
-                p: 3, 
-                display: 'flex', 
-                flexDirection: 'column', 
+            <Paper
+              elevation={3}
+              sx={{
+                p: 3,
+                display: "flex",
+                flexDirection: "column",
                 borderRadius: 2,
-                transition: 'transform 0.2s',
-                '&:hover': { transform: 'translateY(-5px)' },
+                transition: "transform 0.2s",
+                "&:hover": { transform: "translateY(-5px)" },
                 borderLeft: `5px solid ${theme.palette.warning.main}`,
               }}
             >
-              <Typography variant="subtitle1" color="text.secondary">Pending Orders</Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                Pending Orders
+              </Typography>
               <Typography variant="h4" fontWeight="bold" sx={{ mt: 1 }}>
-                {orderStatusStats['Pending'] || 0}
+                {orderStatusStats["Pending"] || 0}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                <TrendingUpIcon fontSize="small" color="warning" sx={{ verticalAlign: 'text-bottom', mr: 0.5 }} />
+                <TrendingUpIcon
+                  fontSize="small"
+                  color="warning"
+                  sx={{ verticalAlign: "text-bottom", mr: 0.5 }}
+                />
                 Require attention
               </Typography>
             </Paper>
@@ -502,9 +679,16 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
             <Paper elevation={3} sx={{ p: 3, borderRadius: 2, height: 400 }}>
               <Typography variant="h6" gutterBottom fontWeight="medium">
                 Order Status
-              </Typography> 
+              </Typography>
               <Divider sx={{ mb: 2 }} />
-              <Box sx={{ height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Box
+                sx={{
+                  height: 320,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <Pie data={orderStatusChartData} options={chartOptions} />
               </Box>
             </Paper>
@@ -534,27 +718,33 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
             <Table sx={{ minWidth: 650 }}>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Order ID</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>User ID</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Total Amount</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Order Date</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Order ID</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>User ID</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>
+                    Total Amount
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Order Date</TableCell>
                   {/* <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {orders.map((order) => (
-                  <TableRow 
+                  <TableRow
                     key={order._id}
-                    sx={{ 
-                      '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05) },
-                      transition: 'background-color 0.2s'
+                    sx={{
+                      "&:hover": {
+                        bgcolor: alpha(theme.palette.primary.main, 0.05),
+                      },
+                      transition: "background-color 0.2s",
                     }}
                   >
                     <TableCell>{order.orderId}</TableCell>
                     <TableCell>{order.userId}</TableCell>
                     <TableCell>₹{order.totalAmount.toFixed(2)}</TableCell>
-                    <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {new Date(order.orderDate).toLocaleDateString()}
+                    </TableCell>
                     {/* <TableCell>
                       <Chip 
                         label={order.orderStatus} 
@@ -610,25 +800,27 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
                 value={selectedUser}
                 onChange={handleUserChange}
                 label="Select User"
-                sx={{ 
+                sx={{
                   bgcolor: alpha(theme.palette.background.paper, 0.9),
-                  '& .MuiOutlinedInput-notchedOutline': {
+                  "& .MuiOutlinedInput-notchedOutline": {
                     borderColor: alpha(theme.palette.primary.main, 0.2),
-                  }
+                  },
                 }}
               >
                 {users.map((user) => (
                   <MenuItem key={user._id} value={user._id}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Avatar 
-                        sx={{ 
-                          width: 24, 
-                          height: 24, 
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Avatar
+                        sx={{
+                          width: 24,
+                          height: 24,
                           mr: 1,
-                          bgcolor: alpha(theme.palette.primary.main, 0.8)
+                          bgcolor: alpha(theme.palette.primary.main, 0.8),
                         }}
                       >
-                        {(user.name && user.name[0]) || (user.email && user.email[0]) || 'U'}
+                        {(user.name && user.name[0]) ||
+                          (user.email && user.email[0]) ||
+                          "U"}
                       </Avatar>
                       {user.name || user.email || user._id}
                     </Box>
@@ -637,53 +829,65 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
               </Select>
             </FormControl>
           </Box>
-          
+
           {selectedUser && (
             <TableContainer>
               <Table sx={{ minWidth: 650 }}>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Order ID</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Total Amount</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Order Date</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Items</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Order ID</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Total Amount
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      Order Date
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Items</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {Array.isArray(userOrders) && userOrders.map((order) => (
-                    <TableRow 
-                      key={order._id}
-                      sx={{ 
-                        '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05) },
-                        transition: 'background-color 0.2s'
-                      }}
-                    >
-                      <TableCell>{order.orderId}</TableCell>
-                      <TableCell>₹{order.totalAmount.toFixed(2)}</TableCell>
-                      <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={order.orderStatus} 
-                          size="small" 
-                          sx={{ 
-                            bgcolor: alpha(getStatusColor(order.orderStatus), 0.1),
-                            color: getStatusColor(order.orderStatus),
-                            fontWeight: 'medium'
-                          }} 
-                        />
-                      </TableCell>
-                      <TableCell>
-                      <Button 
-                        size="small" 
-                        variant="outlined"
-                        onClick={() => handleOpenItemsDialog(order.items)}
+                  {Array.isArray(userOrders) &&
+                    userOrders.map((order) => (
+                      <TableRow
+                        key={order._id}
+                        sx={{
+                          "&:hover": {
+                            bgcolor: alpha(theme.palette.primary.main, 0.05),
+                          },
+                          transition: "background-color 0.2s",
+                        }}
                       >
-                        View Items
-                      </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        <TableCell>{order.orderId}</TableCell>
+                        <TableCell>₹{order.totalAmount.toFixed(2)}</TableCell>
+                        <TableCell>
+                          {new Date(order.orderDate).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={order.orderStatus}
+                            size="small"
+                            sx={{
+                              bgcolor: alpha(
+                                getStatusColor(order.orderStatus),
+                                0.1
+                              ),
+                              color: getStatusColor(order.orderStatus),
+                              fontWeight: "medium",
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={() => handleOpenItemsDialog(order.items)}
+                          >
+                            View Items
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -698,7 +902,7 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
             Product Demand Analysis
           </Typography>
           <Divider sx={{ mb: 3 }} />
-          
+
           {productDemand.length > 0 ? (
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
@@ -707,43 +911,69 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
                 </Box>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Typography variant="subtitle1" gutterBottom fontWeight="medium">
+                <Typography
+                  variant="subtitle1"
+                  gutterBottom
+                  fontWeight="medium"
+                >
                   Detailed Product Demand
                 </Typography>
-                <TableContainer sx={{ maxHeight: 350, overflowY: 'auto' }}>
+                <TableContainer sx={{ maxHeight: 350, overflowY: "auto" }}>
                   <Table stickyHeader>
                     <TableHead>
                       <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Product</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Units Sold</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>% of Total</TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>
+                          Product
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>
+                          Units Sold
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>
+                          % of Total
+                        </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {productDemand.map((item, index) => {
-                        const totalDemand = productDemand.reduce((sum, i) => sum + i.count, 0);
-                        const percentage = ((item.count / totalDemand) * 100).toFixed(1);
-                        
+                        const totalDemand = productDemand.reduce(
+                          (sum, i) => sum + i.count,
+                          0
+                        );
+                        const percentage = (
+                          (item.count / totalDemand) *
+                          100
+                        ).toFixed(1);
+
                         return (
-                          <TableRow 
+                          <TableRow
                             key={index}
-                            sx={{ 
-                              '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05) },
-                              transition: 'background-color 0.2s'
+                            sx={{
+                              "&:hover": {
+                                bgcolor: alpha(
+                                  theme.palette.primary.main,
+                                  0.05
+                                ),
+                              },
+                              transition: "background-color 0.2s",
                             }}
                           >
                             <TableCell>{item.product}</TableCell>
                             <TableCell>{item.count}</TableCell>
                             <TableCell>
-                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Box
+                                sx={{ display: "flex", alignItems: "center" }}
+                              >
                                 <Box
                                   sx={{
                                     width: `${percentage}%`,
                                     height: 8,
-                                    maxWidth: '100%',
-                                    bgcolor: alpha(theme.palette.primary.main, 0.7),
+                                    maxWidth: "100%",
+                                    bgcolor: alpha(
+                                      theme.palette.primary.main,
+                                      0.7
+                                    ),
                                     borderRadius: 1,
-                                    mr: 1
+                                    mr: 1,
                                   }}
                                 />
                                 {percentage}%
@@ -758,8 +988,14 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
               </Grid>
             </Grid>
           ) : (
-            <Box sx={{ textAlign: 'center', py: 5 }}>
-              <ProductIcon sx={{ fontSize: 60, color: alpha(theme.palette.text.secondary, 0.5), mb: 2 }} />
+            <Box sx={{ textAlign: "center", py: 5 }}>
+              <ProductIcon
+                sx={{
+                  fontSize: 60,
+                  color: alpha(theme.palette.text.secondary, 0.5),
+                  mb: 2,
+                }}
+              />
               <Typography variant="h6" color="text.secondary">
                 No product demand data available
               </Typography>
@@ -772,57 +1008,56 @@ const [openItemsDialog, setOpenItemsDialog] = useState(false);
       )}
 
       {/* Items Dialog */}
-<Dialog
-  open={openItemsDialog}
-  onClose={handleCloseItemsDialog}
-  maxWidth="sm"
-  fullWidth
->
-  <Box sx={{ p: 3 }}>
-    <Typography variant="h6" gutterBottom fontWeight="medium">
-      Order Items
-    </Typography>
-    <Divider sx={{ mb: 2 }} />
-    
-    {selectedOrderItems.length > 0 ? (
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Item</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Price</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Quantity</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Total</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {selectedOrderItems.map((item, index) => (
-              <TableRow key={item._id || index}>
-                <TableCell>{item.item}</TableCell>
-                <TableCell>₹{item.price.toFixed(2)}</TableCell>
-                <TableCell>{item.quantity}</TableCell>
-                <TableCell>₹{(item.price * item.quantity).toFixed(2)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    ) : (
-      <Typography variant="body1" sx={{ textAlign: 'center', py: 2 }}>
-        No items available for this order.
-      </Typography>
-    )}
-    
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-      <Button 
-        variant="contained" 
-        onClick={handleCloseItemsDialog}
+      <Dialog
+        open={openItemsDialog}
+        onClose={handleCloseItemsDialog}
+        maxWidth="sm"
+        fullWidth
       >
-        Close
-      </Button>
-    </Box>
-  </Box>
-</Dialog>
+        <Box sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom fontWeight="medium">
+            Order Items
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+
+          {selectedOrderItems.length > 0 ? (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Item</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Price</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Quantity</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {selectedOrderItems.map((item, index) => (
+                    <TableRow key={item._id || index}>
+                      <TableCell>{item.item}</TableCell>
+                      <TableCell>₹{item.price.toFixed(2)}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell>
+                        ₹{(item.price * item.quantity).toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <Typography variant="body1" sx={{ textAlign: "center", py: 2 }}>
+              No items available for this order.
+            </Typography>
+          )}
+
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+            <Button variant="contained" onClick={handleCloseItemsDialog}>
+              Close
+            </Button>
+          </Box>
+        </Box>
+      </Dialog>
     </Container>
   );
 }
