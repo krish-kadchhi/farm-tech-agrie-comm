@@ -2,10 +2,10 @@ const express = require("express");
 const app = express();
 const port = 8080;
 const mongoose = require("mongoose");
-const Item = require("./models/item.js");
-const Cart = require("./models/cart.js");
-const User = require("./models/user.js");
-const Order = require("./models/order.js");
+const Item = require("../models/item.js");
+const Cart = require("../models/cart.js");
+const User = require("../models/user.js");
+const Order = require("../models/order.js");
 const ejsMate = require("ejs-mate");
 const path = require("path");
 const { render, cookie } = require("express/lib/response.js");
@@ -18,6 +18,7 @@ const { v4: uuidv4 } = require("uuid");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
+const serverless = require("serverless-http");
 dotenv.config();
 app.use(
   cors({
@@ -62,11 +63,11 @@ async function main() {
 
 app.use(express.static("public")); // Serve static files
 
-const authRoutes = require("./routes/authRoutes");
-const itemRoutes = require("./routes/itemRoutes");
-const cartRoutes = require("./routes/cartRoutes");
-const paymentRoutes = require("./routes/paymentRoutes");
-const orderRoutes = require("./routes/orderRoutes");
+const authRoutes = require("../routes/authRoutes.js");
+const itemRoutes = require("../routes/itemRoutes.js");
+const cartRoutes = require("../routes/cartRoutes.js");
+const paymentRoutes = require("../routes/paymentRoutes.js");
+const orderRoutes = require("../routes/orderRoutes.js");
 
 app.use("/auth", authRoutes);
 app.use("/item", itemRoutes);
@@ -74,6 +75,10 @@ app.use("/cart", cartRoutes);
 app.use("/payment", paymentRoutes);
 app.use("/orders", orderRoutes);
 
+
+app.get("/api/hello", (req, res) => {
+  res.json({ message: "Hello from backend!" });
+});
 app.listen(port, () => {
   console.log(`port is listing in ${port}`);
 });
