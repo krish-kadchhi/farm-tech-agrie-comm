@@ -77,6 +77,7 @@ app.use("/orders", orderRoutes);
 
 
 app.get("/api/hello", (req, res) => {
+  console.log("hello krish from vercel");
   res.json({ message: "Hello from backend!" });
 });
 app.listen(port, () => {
