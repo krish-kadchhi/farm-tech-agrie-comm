@@ -11,6 +11,7 @@ router.post("/reset-password/:token", authController.resetPassword);
 router.get("/allusers", authController.getAllUsers);    
 //router.post("/checkAdmin", authController.checkAdmin);
 router.put("/edit-profile", authController.editProfile);
+router.get("/profile", authController.profile);
 // router.get("/checkAdmin", authController.checkAdmin);
 
 module.exports = router;

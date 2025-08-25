@@ -333,6 +333,34 @@ If you did not request this, please ignore this email and your password will rem
       res.status(500).json({ success: false, message: "Internal Server Error" });
     }
   },
+  profile: async (req, res) => {
+    try {
+      const token = req.cookies.loginCookie;
+      if (!token) {
+        return res.status(401).json({ success: false, message: "Unauthorized" });
+      }
+      const decoded = jwt.verify(token, process.env.COOKIE_SECRET);
+      // Try to load fresh user data
+      const user = await User.findOne({ email: decoded.email });
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+      return res.status(200).json({
+        success: true,
+        user: {
+          _id: user._id,
+          user_id: user.user_id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          address: user.address,
+        },
+      });
+    } catch (error) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+  },
 // ... existing code ...
 
 editProfile: async (req, res) => {
