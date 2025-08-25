@@ -27,6 +27,7 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import AdminDashboard from "./components/AdminDashboard.jsx";
 export default function App() {
    axios.defaults.withCredentials = true;
+   axios.defaults.baseURL = "https://farm-tech-agrie-comm.onrender.com";
   return (
     <>
       <BrowserRouter>
