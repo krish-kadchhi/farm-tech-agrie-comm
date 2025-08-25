@@ -72,7 +72,9 @@ const authController = {
       );
 
       res.cookie("loginCookie", token, {
-        httpOnly: false,
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
         maxAge: 24 * 60 * 60 * 1000,
       });
       res.status(201).json({ message: "Signup successful" });
@@ -107,7 +109,7 @@ const authController = {
           },
           "mysecret2"
         );
-        res.cookie("loginCookie", token, { httpOnly: false });
+        res.cookie("loginCookie", token, { httpOnly: true ,sameSite: "None"});
         console.log(jwt.verify(token, "mysecret2").role);
 
         res.status(200).send("Login successful");
@@ -133,7 +135,7 @@ const authController = {
             },
             "mysecret2"
           );
-          res.cookie("loginCookie", token, { httpOnly: false });
+          res.cookie("loginCookie", token, { httpOnly: true,sameSite: "None"});
           console.log(jwt.verify(token, "mysecret2").role);
           console.log(user);
 
@@ -382,7 +384,8 @@ editProfile: async (req, res) => {
 
     // Set the new token in cookies
     res.cookie("loginCookie", newToken, {
-      httpOnly: false,
+      httpOnly: true,
+      sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 
