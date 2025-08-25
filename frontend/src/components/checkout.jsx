@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { useNavigate, useLocation } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import {
   Card,
   CardContent,
@@ -56,19 +54,17 @@ function Checkout() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = Cookies.get("loginCookie");
-        if (token) {
-          const decoded = jwtDecode(token);
-          setUserData(decoded);
+        const res = await axios.get("https://farm-tech-agrie-comm.onrender.com/auth/profile", { withCredentials: true });
+        if (res?.data?.user) {
+          setUserData(res.data.user);
         } else {
           navigate("/signup");
         }
       } catch (error) {
-        console.error("Error decoding token:", error);
+        console.error("Profile fetch error:", error);
         navigate("/signup");
       }
     };
-
     fetchUserData();
   }, [navigate]);
 
@@ -120,7 +116,7 @@ function Checkout() {
       setError(null);
       
       // Get user ID - combined approach from both code snippets
-      const user_id = userData?._id || userData?.id || userData?.userId;
+      const user_id = userData?._id || userData?.user_id || userData?.id;
       
       if (!user_id) {
         console.error("User ID not found!");
