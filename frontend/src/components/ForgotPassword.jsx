@@ -16,6 +16,7 @@ import {
 } from "@mui/material"
 import { Email } from "@mui/icons-material"
 import { ThemeProvider, createTheme } from "@mui/material/styles"
+import { Link as RouterLink } from "react-router-dom"
 
 // Use the same theme as in your Login component
 const theme = createTheme({
@@ -134,7 +135,8 @@ export default function ForgotPassword() {
                   If you don't see the email, please check your spam folder.
                 </Typography>
                 <Button
-                  href="/login"
+                  component={RouterLink}
+                  to="/login"
                   variant="outlined"
                   sx={{ mt: 3 }}
                 >
@@ -183,8 +185,8 @@ export default function ForgotPassword() {
 
                 <Typography variant="body1" align="center" sx={{ mt: 2 }}>
                   <Typography
-                    component="a"
-                    href="/login"
+                    component={RouterLink}
+                    to="/login"
                     color="primary"
                     sx={{
                       textDecoration: "none",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import axios from "axios";
 import {
   Button,
@@ -272,8 +272,8 @@ export default function Login() {
                   sx={{ mt: 0 }}
                 />
                 <Typography
-                  component="a"
-                  href="/forgot-password"
+                  component={RouterLink}
+                  to="/forgot-password"
                   color="primary"
                   sx={{
                     textDecoration: "none",
@@ -309,8 +309,8 @@ export default function Login() {
               <Typography variant="body1" align="center" sx={{ mt: 2 }}>
                 Don't have an account?{" "}
                 <Typography
-                  component="a"
-                  href="/signup"
+                  component={RouterLink}
+                  to="/signup"
                   color="primary"
                   sx={{
                     textDecoration: "none",

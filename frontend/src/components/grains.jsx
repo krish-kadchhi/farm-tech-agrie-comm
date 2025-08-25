@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+ 
 import { toast } from "sonner";
 import {
   Container,
@@ -101,21 +100,7 @@ export default function Grain() {
   }
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = Cookies.get("loginCookie");
-        if (token) {
-          const decoded = jwtDecode(token);
-          setUserAddress(decoded.address);
-        } else {
-          console.log("No address found");
-        }
-      } catch (error) {
-        console.error("Error while fetching address from token:", error);
-      }
-    };
-
-    fetchUserData();
+    setUserAddress("");
   }, []);
 
   // Function to fetch products based on location
