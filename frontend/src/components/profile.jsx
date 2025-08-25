@@ -163,18 +163,25 @@ function ProfilePage() {
   const handleLogoutConfirm = async () => {
     setLoggingOut(true);
     try {
-      const result = await logoutUser();
-      if (result.success) {
-        setNotification({
-          open: true,
-          message: "Logged out successfully",
-          severity: "success"
-        });
-        // Short delay to show the success message before redirecting
-        setTimeout(() => {
-          navigate("/login");
-        }, 1000);
-      }
+       // Clear any client-side auth state
+      localStorage.removeItem("userId");
+      localStorage.removeItem("role");
+      sessionStorage.clear();
+
+      // Best-effort: expire the auth cookie on the client
+      // Note: If the cookie is HttpOnly (it is on this backend), JS cannot reliably remove it.
+      // This line attempts to overwrite/expire it, but server-side logout is the definitive way.
+      document.cookie = "loginCookie=; Max-Age=0; path=/; SameSite=None; Secure";
+
+      setNotification({
+        open: true,
+        message: "Logged out successfully",
+        severity: "success"
+      });
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 500);
     } catch (error) {
       console.error("Logout error:", error);
       setNotification({
@@ -182,6 +189,7 @@ function ProfilePage() {
         message: "Failed to logout. Please try again.",
         severity: "error"
       });
+    } finally {
       setLoggingOut(false);
       setLogoutDialog(false);
     }
