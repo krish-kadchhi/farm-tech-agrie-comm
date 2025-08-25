@@ -24,23 +24,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { green } from "@mui/material/colors";
-import { jwtDecode } from "jwt-decode";
-
-// Mock function to fetch user data - replace with your actual API call
-const fetchUserData = async (userId) => {
  
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        id: "",
-        name: "",
-        email: "",
-        phone: "",
-        address: "",
-      });
-    }, 1000);
-  });
+
+// Fetch user via backend profile (cookie-based)
+const fetchUserData = async () => {
+  const res = await axios.get("https://farm-tech-agrie-comm.onrender.com/auth/profile", { withCredentials: true });
+  return res.data.user;
 };
 
 // Mock function to update user data - replace with your actual API call
@@ -55,12 +44,8 @@ const updateUserData = async (userData) => {
 
 // Logout function
 const logoutUser = async () => {
-  // Simulate API call for logout
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ success: true });
-    }, 500);
-  });
+  await axios.post("https://farm-tech-agrie-comm.onrender.com/auth/logout", {}, { withCredentials: true });
+  return { success: true };
 };
 
 function ProfilePage() {
@@ -73,32 +58,18 @@ function ProfilePage() {
   const [logoutDialog, setLogoutDialog] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  // Fetch user data on component mount
+  // Fetch user data on component mount (cookie-based)
   useEffect(() => {
-    // Get user ID from authentication context or localStorage
-    const userId = localStorage.getItem("userId") || "user123"; // Replace with your actual user ID source
-    
-    if (!userId) {
-      // Redirect to login if no user is found
-      navigate("/login");
-      return;
-    }
-    
-    fetchUserData(userId)
+    fetchUserData()
       .then(data => {
+        if (!data) { navigate("/login"); return; }
         setUserData(data);
         setUpdatedData(data);
-        setLoading(false);
       })
       .catch(error => {
-        console.error("Error fetching user data:", error);
-        setNotification({
-          open: true,
-          message: "Failed to load profile data",
-          severity: "error"
-        });
-        setLoading(false);
-      });
+        navigate("/login");
+      })
+      .finally(() => setLoading(false));
   }, [navigate]);
 
   const handleEdit = () => {
@@ -170,10 +141,7 @@ function ProfilePage() {
           message: "Logged out successfully",
           severity: "success"
         });
-        // Short delay to show the success message before redirecting
-        setTimeout(() => {
-          navigate("/login");
-        }, 1000);
+        navigate("/login");
       }
     } catch (error) {
       console.error("Logout error:", error);

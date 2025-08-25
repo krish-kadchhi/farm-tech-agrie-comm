@@ -3,38 +3,26 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Navbar from "./navbarUser";
 import AdminNavbar from "./navbarAdmin";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 const LayoutUser = ({ children }) => {
   const [userRole, setUserRole] = useState("Customer");
 
   useEffect(() => {
-    const checkUserRole = () => {
-      const token = Cookies.get("loginCookie");
-      if (token) {
-        try {
-          const decoded = jwtDecode(token);
-          setUserRole(decoded.role || "Customer");
-        } catch (error) {
-          console.error("Invalid token", error);
-          Cookies.remove("loginCookie");
-          setUserRole("Customer");
-        }
-      } else {
+    let timeoutId;
+    const checkRole = async () => {
+      try {
+        const res = await axios.get("https://farm-tech-agrie-comm.onrender.com/auth/profile", { withCredentials: true });
+        setUserRole(res?.data?.user?.role || "Customer");
+      } catch (e) {
         setUserRole("Customer");
+      } finally {
+        timeoutId = setTimeout(checkRole, 3000);
       }
     };
-
-    // Check role when component mounts
-    checkUserRole();
-
-    // Set up an interval to check the token periodically
-    const intervalId = setInterval(checkUserRole, 1000);
-
-    // Clean up interval on component unmount
-    return () => clearInterval(intervalId);
-  }, []); // Add navigate to the dependency array
+    checkRole();
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   return (
     <>
