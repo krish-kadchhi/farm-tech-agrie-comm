@@ -71,11 +71,12 @@ const authController = {
         { expiresIn: "24h" }
       );
 
-      res.cookie("loginCookie", token, {
-        httpOnly: true,
+      res.cookie("loginCookie", token, { 
+        httpOnly: false, 
+        sameSite: "None", 
         secure: true,
-        sameSite: "None",
-        maxAge: 24 * 60 * 60 * 1000,
+        path: "/", // Ensure cookie is accessible from all paths
+        domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined // Set domain for production
       });
       res.status(201).json({ message: "Signup successful" });
     } catch (error) {
@@ -109,7 +110,13 @@ const authController = {
           },
           process.env.COOKIE_SECRET
         );
-        res.cookie("loginCookie", token, { httpOnly: true ,sameSite: "None",secure: true});
+        res.cookie("loginCookie", token, { 
+          httpOnly: false, 
+          sameSite: "None", 
+          secure: true,
+          path: "/", // Ensure cookie is accessible from all paths
+          domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined // Set domain for production
+        });
         console.log(jwt.verify(token, process.env.COOKIE_SECRET).role);
 
         res.status(200).send("Login successful");
@@ -135,7 +142,13 @@ const authController = {
             },
             process.env.COOKIE_SECRET
           );
-          res.cookie("loginCookie", token, { httpOnly: true,secure: true,sameSite: "None"});
+          res.cookie("loginCookie", token, { 
+            httpOnly: false, 
+            secure: true, 
+            sameSite: "None",
+            path: "/", // Ensure cookie is accessible from all paths
+            domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined // Set domain for production
+          });
           console.log(jwt.verify(token, process.env.COOKIE_SECRET).role);
           console.log(user);
 
@@ -361,7 +374,20 @@ If you did not request this, please ignore this email and your password will rem
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
   },
-// ... existing code ...
+  logout: async (req, res) => {
+    try {
+      res.clearCookie("loginCookie", {
+        httpOnly: false, // Changed from true to false to match login settings
+        secure: true,
+        sameSite: "None",
+        path: "/", // Ensure cookie path matches login settings
+        domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined // Set domain for production
+      });
+      return res.status(200).json({ success: true, message: "Logged out" });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: "Logout failed" });
+    }
+  },
 
 editProfile: async (req, res) => {
   try {
@@ -412,9 +438,11 @@ editProfile: async (req, res) => {
 
     // Set the new token in cookies
     res.cookie("loginCookie", newToken, {
-      httpOnly: true,
-      secure:true,
+      httpOnly: false, // Changed from true to false to allow JavaScript access
+      secure: true,
       sameSite: "None",
+      path: "/", // Ensure cookie is accessible from all paths
+      domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined, // Set domain for production
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 
