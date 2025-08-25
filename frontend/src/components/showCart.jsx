@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import {
@@ -87,9 +86,7 @@ export default function Cart() {
   };
 
   useEffect(() => {
-    if (!Cookies.get("loginCookie")) {
-      navigate("/signup");
-    }
+    // Let API auth guard redirect on 401 instead of reading HttpOnly cookie
   }, [navigate]);
 
   useEffect(() => {
@@ -103,7 +100,7 @@ export default function Cart() {
   const fetchCartItems = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/cart/showCart");
+      const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/cart/showCart", { withCredentials: true });
       const itemsWithQuantity = response.data.map((item) => ({
         ...item,
         id: uuidv4(),
@@ -111,7 +108,7 @@ export default function Cart() {
       }));
       setCartItems(itemsWithQuantity);
 
-      const response2 = await axios.get("https://farm-tech-agrie-comm.onrender.com/cart/showItem");
+      const response2 = await axios.get("https://farm-tech-agrie-comm.onrender.com/cart/showItem", { withCredentials: true });
       setMaxItem(response2.data);
     } catch (error) {
       setAlert({

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate, Link as RouterLink } from "react-router-dom"
 import axios from "axios"
 import {
   Button,
@@ -180,7 +180,8 @@ export default function ResetPassword() {
                 The password reset link is invalid or has expired.
               </Typography>
               <Button
-                href="/forgot-password"
+                component={RouterLink}
+                to="/forgot-password"
                 variant="contained"
                 fullWidth
                 sx={{ mb: 2 }}
@@ -188,7 +189,8 @@ export default function ResetPassword() {
                 Request a new reset link
               </Button>
               <Button
-                href="/login"
+                component={RouterLink}
+                to="/login"
                 variant="outlined"
                 fullWidth
               >
@@ -244,7 +246,8 @@ export default function ResetPassword() {
                   Your password has been reset successfully. You will be redirected to the login page shortly.
                 </Typography>
                 <Button
-                  href="/login"
+                  component={RouterLink}
+                  to="/login"
                   variant="contained"
                   sx={{ mt: 1 }}
                 >

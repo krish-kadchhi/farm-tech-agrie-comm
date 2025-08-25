@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
 function VerifyOtp() {
@@ -11,19 +10,7 @@ function VerifyOtp() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = Cookies.get("loginCookie");
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                console.log("Decoded Token:", decoded);
-                setUserData(decoded);
-            } catch (error) {
-                console.error("Error decoding token:", error);
-                setError("Invalid session, please sign in again.");
-            }
-        } else {
-            setError("No token found, please sign in.");
-        }
+        // userId is sent back in OTP response path; we don't rely on cookie here
     }, []);
 
     const handleVerify = async () => {

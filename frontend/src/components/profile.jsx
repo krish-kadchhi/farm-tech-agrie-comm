@@ -24,7 +24,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { green } from "@mui/material/colors";
-import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
 // Mock function to fetch user data - replace with your actual API call
@@ -32,16 +31,13 @@ const fetchUserData = async (userId) => {
  
   // Simulate API call
   return new Promise((resolve) => {
-     const token = Cookies.get("loginCookie");
-     const decoded = jwtDecode(token);
-     console.log(decoded);
     setTimeout(() => {
       resolve({
-        id: decoded.user_id,
-        name: decoded.name,
-        email: decoded.email,
-        phone: decoded.phone,
-        address: decoded.address,
+        id: "",
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
       });
     }, 1000);
   });
@@ -62,10 +58,6 @@ const logoutUser = async () => {
   // Simulate API call for logout
   return new Promise((resolve) => {
     setTimeout(() => {
-      // Clear any stored tokens/data
-    Cookies.remove("loginCookie");
-      // Add any other items that need to be cleared
-      
       resolve({ success: true });
     }, 500);
   });

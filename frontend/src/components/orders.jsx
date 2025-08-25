@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
 import { jwtDecode } from "jwt-decode";
 import {
   Container,
@@ -62,14 +61,11 @@ function Orders() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = Cookies.get('loginCookie');
-        if (!token) {
-          navigate('/signup');
-          return;
-        }
-
-        const decoded = jwtDecode(token);
-        const userId = decoded._id;
+        // Expect backend to read cookie and also provide userId via a lightweight profile endpoint if needed
+        // For now, derive userId by calling a protected endpoint that returns current user
+        const profile = await axios.get("https://farm-tech-agrie-comm.onrender.com/auth/profile", { withCredentials: true }).catch(() => null);
+        const userId = profile?.data?.user?._id || profile?.data?.user?.user_id;
+        if (!userId) { navigate('/signup'); return; }
 
         const response = await axios.get(`https://farm-tech-agrie-comm.onrender.com/orders/user/${userId}`, {
           withCredentials: true
