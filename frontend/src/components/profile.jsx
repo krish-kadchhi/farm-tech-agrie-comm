@@ -117,7 +117,7 @@ function ProfilePage() {
     setLoading(true);
     try {
       const response = await axios.put(
-        "http://localhost:8080/auth/edit-profile",
+        "https://farm-tech-agrie-comm.onrender.com/auth/edit-profile",
         updatedData,
         {
           withCredentials: true

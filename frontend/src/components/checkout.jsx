@@ -78,7 +78,7 @@ function Checkout() {
 
   const fetchCartItems = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/cart/showCart", {
+      const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/cart/showCart", {
         withCredentials: true
       });
       
@@ -136,7 +136,7 @@ function Checkout() {
 
       // Create order
       const orderResponse = await axios.post(
-        "http://localhost:8080/payment/checkout",
+        "https://farm-tech-agrie-comm.onrender.com/payment/checkout",
         {
           amount: total,
           cartItems,
@@ -177,7 +177,7 @@ function Checkout() {
             
             // Fixed typo in URL from second code snippet
             const verificationResponse = await axios.post(
-              "http://localhost:8080/payment/verify-payment", 
+              "https://farm-tech-agrie-comm.onrender.com/payment/verify-payment", 
               paymentData,
               { withCredentials: true }
             );

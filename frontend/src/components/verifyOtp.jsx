@@ -35,7 +35,7 @@ function VerifyOtp() {
         try {
             console.log("Sending User ID:", userData.userId);
             const response = await axios.post(
-                "http://localhost:8080/auth/verifyOtp",
+                "https://farm-tech-agrie-comm.onrender.com/auth/verifyOtp",
                 { userId: userData.userId, otp },
                 { headers: { "Content-Type": "application/json" } }
             );

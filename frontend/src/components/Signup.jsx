@@ -114,7 +114,7 @@ export default function Signup() {
 
     setLoading(true)
     try {
-      const response = await axios.post("http://localhost:8080/auth/signup", formData)
+      const response = await axios.post("https://farm-tech-agrie-comm.onrender.com/auth/signup", formData)
       console.log(response.data)
       setTimeout(() => {
         navigate("/verifyOtp")

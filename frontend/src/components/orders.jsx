@@ -71,7 +71,7 @@ function Orders() {
         const decoded = jwtDecode(token);
         const userId = decoded._id;
 
-        const response = await axios.get(`http://localhost:8080/orders/user/${userId}`, {
+        const response = await axios.get(`https://farm-tech-agrie-comm.onrender.com/orders/user/${userId}`, {
           withCredentials: true
         });
 

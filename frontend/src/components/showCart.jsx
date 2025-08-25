@@ -103,7 +103,7 @@ export default function Cart() {
   const fetchCartItems = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8080/cart/showCart");
+      const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/cart/showCart");
       const itemsWithQuantity = response.data.map((item) => ({
         ...item,
         id: uuidv4(),
@@ -111,7 +111,7 @@ export default function Cart() {
       }));
       setCartItems(itemsWithQuantity);
 
-      const response2 = await axios.get("http://localhost:8080/cart/showItem");
+      const response2 = await axios.get("https://farm-tech-agrie-comm.onrender.com/cart/showItem");
       setMaxItem(response2.data);
     } catch (error) {
       setAlert({
@@ -177,7 +177,7 @@ export default function Cart() {
 
   const handleRemoveItem = async (item) => {
     try {
-      await axios.post("http://localhost:8080/cart/deleteCart", {
+      await axios.post("https://farm-tech-agrie-comm.onrender.com/cart/deleteCart", {
         item: item.item,
       });
       fetchCartItems();

@@ -59,7 +59,7 @@ export default function ProductShow() {
 
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/item/showPro", {
+        const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/item/showPro", {
           withCredentials: true,
         });
         setData(response.data);

@@ -120,7 +120,7 @@ export default function Login() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:8080/auth/login",
+        "https://farm-tech-agrie-comm.onrender.com/auth/login",
         formData,
         {
           withCredentials: true,

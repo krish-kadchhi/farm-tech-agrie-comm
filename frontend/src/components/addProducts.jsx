@@ -182,7 +182,7 @@ export default function AddProduct() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/item/add",
+        "https://farm-tech-agrie-comm.onrender.com/item/add",
         formData,
         {
           withCredentials: true,

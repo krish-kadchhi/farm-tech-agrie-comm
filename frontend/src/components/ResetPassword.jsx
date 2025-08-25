@@ -112,7 +112,7 @@ export default function ResetPassword() {
 
     setLoading(true)
     try {
-        await axios.post(`http://localhost:8080/auth/reset-password/${token}`, {
+        await axios.post(`https://farm-tech-agrie-comm.onrender.com/auth/reset-password/${token}`, {
             newPassword: password
           })
       setSuccess(true)
