@@ -169,7 +169,7 @@ function ProfilePage() {
       localStorage.removeItem("role");
       sessionStorage.clear();
 
-      // Clear the loginCookie using js-cookie (more reliable than document.cookie)
+      // Clear the loginCookie using js-cookie (now works since httpOnly: false)
       Cookies.remove("loginCookie", { 
         path: "/", 
         sameSite: "None", 

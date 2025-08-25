@@ -128,8 +128,23 @@ export default function Login() {
       );
       console.log("Login response:", response.data);
       
+      // Debug: Check if cookie was set
+      setTimeout(() => {
+        const token = document.cookie;
+        console.log("Cookies after login:", token);
+        // Try to parse the loginCookie manually
+        const cookies = document.cookie.split(';');
+        const loginCookie = cookies.find(cookie => cookie.trim().startsWith('loginCookie='));
+        console.log("Manual loginCookie check:", loginCookie);
+      }, 100);
+      
       // Dispatch event to notify layout component about auth change
       window.dispatchEvent(new Event('authChanged'));
+      
+      // Add a small delay and dispatch again to ensure role detection
+      setTimeout(() => {
+        window.dispatchEvent(new Event('authChanged'));
+      }, 100);
       
       if (formData.role === "Admin") {
         navigate("/");
