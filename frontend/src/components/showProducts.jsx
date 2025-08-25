@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import axios from "axios";
 import { toast } from "sonner";
 import {
@@ -49,14 +48,6 @@ export default function ProductShow() {
   ];
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = Cookies.get("loginCookie");
-      console.log("Token:", token); 
-      if (!token) {
-        navigate("/signup");
-      }
-    };
-
     const fetchProducts = async () => {
       try {
         const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/item/showPro", {
@@ -64,12 +55,14 @@ export default function ProductShow() {
         });
         setData(response.data);
       } catch (error) {
+        if (error?.response?.status === 401) {
+          navigate("/signup");
+          return;
+        }
         console.error("Error fetching products:", error);
         toast.error("Failed to fetch products");
       }
     };
-
-    checkAuth();
     fetchProducts();
   }, [navigate]);
 
