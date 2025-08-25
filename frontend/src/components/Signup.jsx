@@ -114,7 +114,9 @@ export default function Signup() {
 
     setLoading(true)
     try {
-      const response = await axios.post("https://farm-tech-agrie-comm.onrender.com/auth/signup", formData)
+      const response = await axios.post("https://farm-tech-agrie-comm.onrender.com/auth/signup", formData,{
+          withCredentials: true,
+        })
       console.log(response.data)
       setTimeout(() => {
         navigate("/verifyOtp")
