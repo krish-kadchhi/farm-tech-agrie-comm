@@ -68,7 +68,7 @@ const EditProducts = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('https://farm-tech-agrie-comm.onrender.com/item/all-products');
+      const response = await axios.get('https://farm-tech-agrie-comm.onrender.com/item/all-products', { withCredentials: true });
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -114,7 +114,7 @@ const EditProducts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://farm-tech-agrie-comm.onrender.com/item/edit/${selectedProduct._id}`, editForm);
+      await axios.put(`https://farm-tech-agrie-comm.onrender.com/item/edit/${selectedProduct._id}`, editForm, { withCredentials: true });
       setOpenDialog(false);
       fetchProducts();
       toast.success('Product updated successfully');

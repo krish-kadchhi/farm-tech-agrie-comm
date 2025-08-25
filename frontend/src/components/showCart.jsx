@@ -174,9 +174,11 @@ export default function Cart() {
 
   const handleRemoveItem = async (item) => {
     try {
-      await axios.post("https://farm-tech-agrie-comm.onrender.com/cart/deleteCart", {
-        item: item.item,
-      });
+      await axios.post(
+        "https://farm-tech-agrie-comm.onrender.com/cart/deleteCart",
+        { item: item.item },
+        { withCredentials: true }
+      );
       fetchCartItems();
       setAlert({
         open: true,

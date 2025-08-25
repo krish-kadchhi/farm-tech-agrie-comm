@@ -145,7 +145,7 @@ function AdminDashboard() {
   ];
   const fetchOrders = async () => {
     try {
-      const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/orders/all");
+      const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/orders/all", { withCredentials: true });
 
       if (
         !response.data ||
@@ -168,7 +168,7 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/auth/allusers");
+      const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/auth/allusers", { withCredentials: true });
 
       if (
         response.data &&
@@ -193,7 +193,8 @@ function AdminDashboard() {
 
     try {
       const response = await axios.get(
-        `https://farm-tech-agrie-comm.onrender.com/orders/user/${userId}`
+        `https://farm-tech-agrie-comm.onrender.com/orders/user/${userId}`,
+        { withCredentials: true }
       );
 
       if (response.data && Array.isArray(response.data.orders)) {

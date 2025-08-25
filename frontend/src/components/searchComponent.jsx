@@ -18,7 +18,8 @@ const SearchComponent = () => {
   const fetchResults = async (searchQuery) => {
    try {
      const response = await axios.get(
-       `https://farm-tech-agrie-comm.onrender.com/item/searchProduct?query=${searchQuery}`
+       `https://farm-tech-agrie-comm.onrender.com/item/searchProduct?query=${searchQuery}`,
+       { withCredentials: true }
      );
 
      // Filter for "fruit" category (case-insensitive)
@@ -40,9 +41,7 @@ const SearchComponent = () => {
     };
 
     try {
-      await axios.post("https://farm-tech-agrie-comm.onrender.com/cart/addCart", data, {
-        withCredentials: true, // For sending cookies
-      });
+      await axios.post("https://farm-tech-agrie-comm.onrender.com/cart/addCart", data, { withCredentials: true });
       console.log("Item added to cart successfully");
     } catch (err) {
       console.error("Error adding to cart:", err);
