@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import axios from "axios"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link as RouterLink } from "react-router-dom"
 import {
   Button,
   TextField,
@@ -299,8 +299,8 @@ export default function Signup() {
               <Typography variant="body1" align="center" sx={{ mt: 2 }}>
                 Already have an account?{" "}
                 <Typography
-                  component="a"
-                  href="/login"
+                  component={RouterLink}
+                  to="/login"
                   color="primary"
                   sx={{
                     textDecoration: "none",
