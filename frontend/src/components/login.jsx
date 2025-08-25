@@ -127,6 +127,10 @@ export default function Login() {
         }
       );
       console.log("Login response:", response.data);
+      
+      // Dispatch event to notify layout component about auth change
+      window.dispatchEvent(new Event('authChanged'));
+      
       if (formData.role === "Admin") {
         navigate("/");
       } else {

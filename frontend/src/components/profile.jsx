@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import {
   Box,
   Typography,
@@ -163,15 +164,23 @@ function ProfilePage() {
   const handleLogoutConfirm = async () => {
     setLoggingOut(true);
     try {
-       // Clear any client-side auth state
+      // Clear any client-side auth state
       localStorage.removeItem("userId");
       localStorage.removeItem("role");
       sessionStorage.clear();
 
-      // Best-effort: expire the auth cookie on the client
-      // Note: If the cookie is HttpOnly (it is on this backend), JS cannot reliably remove it.
-      // This line attempts to overwrite/expire it, but server-side logout is the definitive way.
+      // Clear the loginCookie using js-cookie (more reliable than document.cookie)
+      Cookies.remove("loginCookie", { 
+        path: "/", 
+        sameSite: "None", 
+        secure: true 
+      });
+
+      // Also try to clear via document.cookie as backup
       document.cookie = "loginCookie=; Max-Age=0; path=/; SameSite=None; Secure";
+
+      // Dispatch event to notify layout component about auth change
+      window.dispatchEvent(new Event('authChanged'));
 
       setNotification({
         open: true,
