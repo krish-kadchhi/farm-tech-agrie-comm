@@ -109,7 +109,7 @@ const authController = {
           },
           "mysecret2"
         );
-        res.cookie("loginCookie", token, { httpOnly: true ,sameSite: "None"});
+        res.cookie("loginCookie", token, { httpOnly: true ,sameSite: "None",secure: true});
         console.log(jwt.verify(token, "mysecret2").role);
 
         res.status(200).send("Login successful");
@@ -135,7 +135,7 @@ const authController = {
             },
             "mysecret2"
           );
-          res.cookie("loginCookie", token, { httpOnly: true,sameSite: "None"});
+          res.cookie("loginCookie", token, { httpOnly: true,secure: true,sameSite: "None"});
           console.log(jwt.verify(token, "mysecret2").role);
           console.log(user);
 
@@ -385,6 +385,7 @@ editProfile: async (req, res) => {
     // Set the new token in cookies
     res.cookie("loginCookie", newToken, {
       httpOnly: true,
+      secure:true,
       sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });

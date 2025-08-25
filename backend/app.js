@@ -20,13 +20,20 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 
 dotenv.config();
-app.use(
-  cors({
-    origin: ["http://localhost:5173","https://farm-tech-agrie-comm-frontend.onrender.com"], // Or an array of allowed origins
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "UPDATE"], // This allows cookies to be sent with requests.
-  })
-);
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "https://farm-tech-agrie-comm-frontend.onrender.com"
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
+// ✅ Explicitly handle preflight requests
+app.options("*", cors(corsOptions));
 
 app.use(cookieParser());
 app.set("view engine", "ejs");
