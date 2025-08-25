@@ -20,6 +20,7 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 
 dotenv.config();
+app.set("trust proxy", 1);
 const corsOptions = {
   origin: [
     "http://localhost:5173",
@@ -28,6 +29,7 @@ const corsOptions = {
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));

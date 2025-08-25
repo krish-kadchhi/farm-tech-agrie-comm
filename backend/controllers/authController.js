@@ -107,10 +107,10 @@ const authController = {
             role: data.role,
             address: admin.address,
           },
-          "mysecret2"
+          process.env.COOKIE_SECRET
         );
         res.cookie("loginCookie", token, { httpOnly: true ,sameSite: "None",secure: true});
-        console.log(jwt.verify(token, "mysecret2").role);
+        console.log(jwt.verify(token, process.env.COOKIE_SECRET).role);
 
         res.status(200).send("Login successful");
       } else {
@@ -133,10 +133,10 @@ const authController = {
               role: data.role,
               address: user.address,
             },
-            "mysecret2"
+            process.env.COOKIE_SECRET
           );
           res.cookie("loginCookie", token, { httpOnly: true,secure: true,sameSite: "None"});
-          console.log(jwt.verify(token, "mysecret2").role);
+          console.log(jwt.verify(token, process.env.COOKIE_SECRET).role);
           console.log(user);
 
           res.status(200).json({ message: "Login successful", user });
@@ -346,7 +346,7 @@ editProfile: async (req, res) => {
     }
 
     // Verify token and get user info
-    const decoded = jwt.verify(token, "mysecret2"); // Using the same secret as login
+    const decoded = jwt.verify(token, process.env.COOKIE_SECRET); // Using the same secret as login
     console.log(decoded);
     
     // Find user by email since we're using that in other places
@@ -379,7 +379,7 @@ editProfile: async (req, res) => {
         role: updatedUser.role,
         address: updatedUser.address
       },
-      "mysecret2"
+      process.env.COOKIE_SECRET
     );
 
     // Set the new token in cookies
