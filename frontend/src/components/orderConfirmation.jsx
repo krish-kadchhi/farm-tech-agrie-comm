@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
- 
+import Cookies from 'js-cookie';
+import { jwtDecode } from "jwt-decode";
 import { 
   Container,
   Paper,
@@ -62,12 +63,19 @@ function OrderConfirmation() {
   useEffect(() => {
     const fetchLatestOrder = async () => {
       try {
-        const profile = await axios.get("https://farm-tech-agrie-comm.onrender.com/auth/profile", { withCredentials: true });
-        const userId = profile?.data?.user?._id || profile?.data?.user?.user_id;
-        if (!userId) { navigate('/signup'); return; }
+        const token = Cookies.get('loginCookie');
+        if (!token) {
+          navigate('/signup');
+          return;
+        }
+
+        const decoded = jwtDecode(token);
+        const userId = decoded._id;
+
         const response = await axios.get(`https://farm-tech-agrie-comm.onrender.com/orders/latest/${userId}`, {
           withCredentials: true
         });
+
         setOrderDetails(response.data.order);
         setLoading(false);
       } catch (error) {
@@ -76,6 +84,7 @@ function OrderConfirmation() {
         setLoading(false);
       }
     };
+
     fetchLatestOrder();
   }, [navigate]);
 

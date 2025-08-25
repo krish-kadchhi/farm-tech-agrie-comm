@@ -272,8 +272,8 @@ export default function Login() {
                   sx={{ mt: 0 }}
                 />
                 <Typography
-                  component={RouterLink}
-                  to="/forgot-password"
+                  component="a"
+                  href="/forgot-password"
                   color="primary"
                   sx={{
                     textDecoration: "none",
@@ -309,8 +309,8 @@ export default function Login() {
               <Typography variant="body1" align="center" sx={{ mt: 2 }}>
                 Don't have an account?{" "}
                 <Typography
-                  component={RouterLink}
-                  to="/signup"
+                  component="a"
+                  href="/signup"
                   color="primary"
                   sx={{
                     textDecoration: "none",

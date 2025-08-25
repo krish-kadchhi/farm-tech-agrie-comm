@@ -89,8 +89,23 @@ function Fruit() {
     }
   }
   useEffect(() => {
-      setUserAddress("");
-    }, []);
+      const fetchUserData = async () => {
+        try {
+          const token = Cookies.get("loginCookie");
+          if (token) {
+            const decoded = jwtDecode(token);
+            setUserAddress(decoded.address);
+          } else {
+            console.log("No address found")
+          }
+        } catch (error) {
+          console.error("Error while fetching address from token:", error);
+          
+        }
+      };
+  
+      fetchUserData();
+    }, );
 
   // Function to fetch products based on location
   const fetchProducts = async (location = null) => {
