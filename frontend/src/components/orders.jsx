@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
@@ -66,8 +66,8 @@ function Orders() {
         // For now, derive userId by calling a protected endpoint that returns current user
         const profile = await axios.get(API_ENDPOINTS.AUTH.PROFILE, { withCredentials: true }).catch(() => null);
         const userId = profile?.data?.user?._id || profile?.data?.user?.user_id;
-        if (!userId) { navigate('/signup'); return; }
-
+        // if (!userId) { navigate('/signup'); return; }console.log(userId)
+        console.log("userId from order my friend",userId)
         const response = await axios.get(`${API_BASE_URL}/orders/user/${userId}`, {
           withCredentials: true
         });
