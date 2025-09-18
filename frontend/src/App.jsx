@@ -23,10 +23,12 @@ import { Toaster } from 'sonner';
 
 import "./index.css";
 import axios from "axios";
+import API_BASE_URL from "./config/api";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import AdminDashboard from "./components/AdminDashboard.jsx";
 export default function App() {
    axios.defaults.withCredentials = true;
+   axios.defaults.baseURL = API_BASE_URL;
   return (
     <>
       <BrowserRouter>
