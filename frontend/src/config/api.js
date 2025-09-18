@@ -4,7 +4,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 
   (import.meta.env.DEV 
     ? 'http://localhost:8080'  // Local development
-    : 'https://farm-tech-backend.onrender.com'  // Default production URL (Render)
+    : 'https://farm-tech-agrie-comm.onrender.com'  // Default production URL (Render)
   );
 
 // Log the API URL being used for debugging
