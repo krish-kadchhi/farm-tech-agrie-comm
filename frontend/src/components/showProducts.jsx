@@ -60,6 +60,11 @@ export default function ProductShow() {
           navigate("/signup");
           return;
         }
+        // If CORS/network error, route to signup as first-step fallback
+        if (!error.response) {
+          navigate("/signup");
+          return;
+        }
         console.error("Error fetching products:", error);
         toast.error("Failed to fetch products");
       }
