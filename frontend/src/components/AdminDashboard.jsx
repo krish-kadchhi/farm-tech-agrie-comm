@@ -53,7 +53,7 @@ import {
   LineElement,
 } from "chart.js";
 import { Bar, Pie, Line } from "react-chartjs-2";
-import { API_ENDPOINTS } from "../config/api";
+import API_BASE_URL from "../config/api";
 
 ChartJS.register(
   CategoryScale,
@@ -146,7 +146,7 @@ function AdminDashboard() {
   ];
   const fetchOrders = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/orders/all", { withCredentials: true });
+      const response = await axios.get(`${API_BASE_URL}/orders/all`, { withCredentials: true });
 
       if (
         !response.data ||
@@ -169,7 +169,7 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/auth/allusers", { withCredentials: true });
+      const response = await axios.get(`${API_BASE_URL}/auth/allusers`, { withCredentials: true });
 
       if (
         response.data &&
@@ -194,7 +194,7 @@ function AdminDashboard() {
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/orders/user/${userId}`,
+        `${API_BASE_URL}/orders/user/${userId}`,
         { withCredentials: true }
       );
 

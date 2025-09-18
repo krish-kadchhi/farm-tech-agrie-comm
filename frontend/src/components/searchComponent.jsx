@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import {
-import { API_ENDPOINTS } from "../config/api";
   Card,
   CardMedia,
   CardContent,
@@ -19,7 +19,7 @@ const SearchComponent = () => {
   const fetchResults = async (searchQuery) => {
    try {
      const response = await axios.get(
-       `http://localhost:8080/item/searchProduct?query=${searchQuery}`,
+       `${API_BASE_URL}/item/searchProduct?query=${searchQuery}`,
        { withCredentials: true }
      );
 
@@ -42,7 +42,7 @@ const SearchComponent = () => {
     };
 
     try {
-      await axios.post("http://localhost:8080/cart/addCart", data, { withCredentials: true });
+      await axios.post(`${API_BASE_URL}/cart/addCart`, data, { withCredentials: true });
       console.log("Item added to cart successfully");
     } catch (err) {
       console.error("Error adding to cart:", err);

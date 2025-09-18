@@ -27,7 +27,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { API_ENDPOINTS } from "../config/api";
+import API_BASE_URL from "../config/api";
 
 // TabPanel component for different sections
 function TabPanel({ children, value, index, ...other }) {
@@ -69,7 +69,7 @@ const EditProducts = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/item/all-products', { withCredentials: true });
+      const response = await axios.get(`${API_BASE_URL}/item/all-products`, { withCredentials: true });
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -115,7 +115,7 @@ const EditProducts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:8080/item/edit/${selectedProduct._id}`, editForm, { withCredentials: true });
+      await axios.put(`${API_BASE_URL}/item/edit/${selectedProduct._id}`, editForm, { withCredentials: true });
       setOpenDialog(false);
       fetchProducts();
       toast.success('Product updated successfully');

@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
-import { API_ENDPOINTS } from "../config/api";
+import API_BASE_URL from "../config/api";
 
 export default function ProductShow() {
   const [myData, setData] = useState([]);
@@ -51,7 +51,7 @@ export default function ProductShow() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/item/showPro", {
+        const response = await axios.get(`${API_BASE_URL}/item/showPro`, {
           withCredentials: true,
         });
         setData(response.data);

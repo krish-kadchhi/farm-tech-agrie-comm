@@ -20,7 +20,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { API_ENDPOINTS } from "../config/api";
+import API_BASE_URL from "../config/api";
 
 ChartJS.register(
   CategoryScale,
@@ -53,7 +53,7 @@ function FarmerProductDemand() {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get('http://localhost:8080/orders/all', { withCredentials: true });
+      const response = await axios.get(`${API_BASE_URL}/orders/all`, { withCredentials: true });
       
       if (!response.data || !response.data.success || !Array.isArray(response.data.orders)) {
         console.error("Invalid response format:", response.data);

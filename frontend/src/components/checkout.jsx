@@ -26,7 +26,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PaymentIcon from "@mui/icons-material/Payment";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import { API_ENDPOINTS } from "../config/api";
+import API_BASE_URL, { API_ENDPOINTS } from "../config/api";
 
 function Checkout() {
   const [cartItems, setCartItems] = useState([]);
@@ -75,7 +75,7 @@ function Checkout() {
 
   const fetchCartItems = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/cart/showCart", {
+      const response = await axios.get(`${API_BASE_URL}/cart/showCart`, {
         withCredentials: true
       });
       
@@ -133,7 +133,7 @@ function Checkout() {
 
       // Create order
       const orderResponse = await axios.post(
-        "http://localhost:8080/payment/checkout",
+        `${API_BASE_URL}/payment/checkout`,
         {
           amount: total,
           cartItems,
@@ -174,7 +174,7 @@ function Checkout() {
             
             // Fixed typo in URL from second code snippet
             const verificationResponse = await axios.post(
-              "API_ENDPOINTS.PAYMENT.VERIFY", 
+              API_ENDPOINTS.PAYMENT.VERIFY, 
               paymentData,
               { withCredentials: true }
             );
