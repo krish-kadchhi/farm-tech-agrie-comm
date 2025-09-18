@@ -31,6 +31,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import WarningIcon from "@mui/icons-material/Warning";
 import PaymentIcon from "@mui/icons-material/Payment";
+import { API_ENDPOINTS } from "../config/api";
 
 // Styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -100,7 +101,7 @@ export default function Cart() {
   const fetchCartItems = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/cart/showCart", { withCredentials: true });
+      const response = await axios.get("http://localhost:8080/cart/showCart", { withCredentials: true });
       const itemsWithQuantity = response.data.map((item) => ({
         ...item,
         id: uuidv4(),
@@ -108,7 +109,7 @@ export default function Cart() {
       }));
       setCartItems(itemsWithQuantity);
 
-      const response2 = await axios.get("https://farm-tech-agrie-comm.onrender.com/cart/showItem", { withCredentials: true });
+      const response2 = await axios.get("http://localhost:8080/cart/showItem", { withCredentials: true });
       setMaxItem(response2.data);
     } catch (error) {
       setAlert({
@@ -175,7 +176,7 @@ export default function Cart() {
   const handleRemoveItem = async (item) => {
     try {
       await axios.post(
-        "https://farm-tech-agrie-comm.onrender.com/cart/deleteCart",
+        "http://localhost:8080/cart/deleteCart",
         { item: item.item },
         { withCredentials: true }
       );

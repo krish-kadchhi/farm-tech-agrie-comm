@@ -24,11 +24,13 @@ app.set("trust proxy", 1);
 const corsOptions = {
   origin: [
     "http://localhost:5173",
-    "https://farm-tech-agrie-comm-frontend.onrender.com"
+    "https://farm-tech-agrie-comm-frontend.onrender.com",
+    "https://farm-tech-frontend.vercel.app",
+    "https://*.vercel.app"
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
   optionsSuccessStatus: 204,
 };
 
@@ -86,8 +88,11 @@ app.use("/orders", orderRoutes);
 
 
 
-app.listen(port, () => {
-  console.log(`port is listing in ${port}`);
-});
+// For Vercel deployment, don't start the server if this is a serverless function
+if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
+  app.listen(port, () => {
+    console.log(`port is listing in ${port}`);
+  });
+}
 
 module.exports = app;

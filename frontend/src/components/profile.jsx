@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_ENDPOINTS } from "../config/api";
 import Cookies from "js-cookie";
 import {
   Box,
@@ -110,7 +111,7 @@ function ProfilePage() {
     setLoading(true);
     try {
       const response = await axios.put(
-        "https://farm-tech-agrie-comm.onrender.com/auth/edit-profile",
+        API_ENDPOINTS.AUTH.EDIT_PROFILE,
         updatedData,
         {
           withCredentials: true

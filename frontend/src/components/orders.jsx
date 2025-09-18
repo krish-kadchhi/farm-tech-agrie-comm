@@ -33,6 +33,7 @@ import {
   IconButton
 } from '@mui/material';
 import {
+import { API_ENDPOINTS } from "../config/api";
   ShoppingBag as ShoppingIcon,
   LocalShipping as ShippingIcon,
   ArrowBack as ArrowBackIcon,
@@ -63,11 +64,11 @@ function Orders() {
       try {
         // Expect backend to read cookie and also provide userId via a lightweight profile endpoint if needed
         // For now, derive userId by calling a protected endpoint that returns current user
-        const profile = await axios.get("https://farm-tech-agrie-comm.onrender.com/auth/profile", { withCredentials: true }).catch(() => null);
+        const profile = await axios.get("API_ENDPOINTS.AUTH.PROFILE", { withCredentials: true }).catch(() => null);
         const userId = profile?.data?.user?._id || profile?.data?.user?.user_id;
         if (!userId) { navigate('/signup'); return; }
 
-        const response = await axios.get(`https://farm-tech-agrie-comm.onrender.com/orders/user/${userId}`, {
+        const response = await axios.get(`http://localhost:8080/orders/user/${userId}`, {
           withCredentials: true
         });
 

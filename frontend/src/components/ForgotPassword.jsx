@@ -16,6 +16,7 @@ import {
 } from "@mui/material"
 import { Email } from "@mui/icons-material"
 import { ThemeProvider, createTheme } from "@mui/material/styles"
+import { API_ENDPOINTS } from "../config/api";
 
 // Use the same theme as in your Login component
 const theme = createTheme({
@@ -76,7 +77,7 @@ export default function ForgotPassword() {
 
     setLoading(true)
     try {
-      const response = await axios.post("https://farm-tech-agrie-comm.onrender.com/auth/forgot-password", { email })
+      const response = await axios.post("API_ENDPOINTS.AUTH.FORGOT_PASSWORD", { email })
       setSuccess(true)
       setError("")
     } catch (err) {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import axios from "axios";
+import { API_ENDPOINTS } from "../config/api";
 import {
   Button,
   TextField,
@@ -120,7 +121,7 @@ export default function Login() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://farm-tech-agrie-comm.onrender.com/auth/login",
+        API_ENDPOINTS.AUTH.LOGIN,
         formData,
         {
           withCredentials: true,

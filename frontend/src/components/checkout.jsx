@@ -26,6 +26,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PaymentIcon from "@mui/icons-material/Payment";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import { API_ENDPOINTS } from "../config/api";
 
 function Checkout() {
   const [cartItems, setCartItems] = useState([]);
@@ -54,7 +55,7 @@ function Checkout() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await axios.get("https://farm-tech-agrie-comm.onrender.com/auth/profile", { withCredentials: true });
+        const res = await axios.get("API_ENDPOINTS.AUTH.PROFILE", { withCredentials: true });
         if (res?.data?.user) {
           setUserData(res.data.user);
         } else {
@@ -74,7 +75,7 @@ function Checkout() {
 
   const fetchCartItems = async () => {
     try {
-      const response = await axios.get("https://farm-tech-agrie-comm.onrender.com/cart/showCart", {
+      const response = await axios.get("http://localhost:8080/cart/showCart", {
         withCredentials: true
       });
       
@@ -132,7 +133,7 @@ function Checkout() {
 
       // Create order
       const orderResponse = await axios.post(
-        "https://farm-tech-agrie-comm.onrender.com/payment/checkout",
+        "http://localhost:8080/payment/checkout",
         {
           amount: total,
           cartItems,
@@ -173,7 +174,7 @@ function Checkout() {
             
             // Fixed typo in URL from second code snippet
             const verificationResponse = await axios.post(
-              "https://farm-tech-agrie-comm.onrender.com/payment/verify-payment", 
+              "API_ENDPOINTS.PAYMENT.VERIFY", 
               paymentData,
               { withCredentials: true }
             );

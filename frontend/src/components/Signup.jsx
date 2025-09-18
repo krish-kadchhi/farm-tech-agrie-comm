@@ -3,6 +3,7 @@
 import { useState } from "react"
 import axios from "axios"
 import { useNavigate, Link as RouterLink } from "react-router-dom"
+import { API_ENDPOINTS } from "../config/api"
 import {
   Button,
   TextField,
@@ -114,7 +115,7 @@ export default function Signup() {
 
     setLoading(true)
     try {
-      const response = await axios.post("https://farm-tech-agrie-comm.onrender.com/auth/signup", formData,{
+      const response = await axios.post(API_ENDPOINTS.AUTH.SIGNUP, formData,{
           withCredentials: true,
         })
       console.log(response.data)

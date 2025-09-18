@@ -21,6 +21,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import ImageIcon from "@mui/icons-material/Image";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { API_ENDPOINTS } from "../config/api";
 
 export default function AddProduct() {
   const navigate = useNavigate();
@@ -182,7 +183,7 @@ export default function AddProduct() {
 
     try {
       const response = await axios.post(
-        "https://farm-tech-agrie-comm.onrender.com/item/add",
+        "http://localhost:8080/item/add",
         formData,
         {
           withCredentials: true,

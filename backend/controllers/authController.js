@@ -75,8 +75,8 @@ const authController = {
         httpOnly: false, 
         sameSite: "None", 
         secure: true,
-        path: "/", // Ensure cookie is accessible from all paths
-        domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined // Set domain for production
+        path: "/",
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
       });
       res.status(201).json({ message: "Signup successful" });
     } catch (error) {
@@ -114,8 +114,8 @@ const authController = {
           httpOnly: false, 
           sameSite: "None", 
           secure: true,
-          path: "/", // Ensure cookie is accessible from all paths
-          domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined // Set domain for production
+          path: "/",
+          maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
         console.log(jwt.verify(token, process.env.COOKIE_SECRET).role);
 
@@ -146,8 +146,8 @@ const authController = {
             httpOnly: false, 
             secure: true, 
             sameSite: "None",
-            path: "/", // Ensure cookie is accessible from all paths
-            domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined // Set domain for production
+            path: "/",
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
           });
           console.log(jwt.verify(token, process.env.COOKIE_SECRET).role);
           console.log(user);
@@ -226,7 +226,8 @@ const authController = {
       await user.save({ validateBeforeSave: false });
 
       // Create reset URL
-      const resetUrl = `${"http://localhost:5173"}/reset-password/${resetToken}`;
+      const frontendUrl = process.env.FRONTEND_URL || "https://farm-tech-frontend.vercel.app";
+      const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
       // Send email with reset link
       const auth = nodemailer.createTransport({
@@ -377,11 +378,10 @@ If you did not request this, please ignore this email and your password will rem
   logout: async (req, res) => {
     try {
       res.clearCookie("loginCookie", {
-        httpOnly: false, // Changed from true to false to match login settings
+        httpOnly: false,
         secure: true,
         sameSite: "None",
-        path: "/", // Ensure cookie path matches login settings
-        domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined // Set domain for production
+        path: "/"
       });
       return res.status(200).json({ success: true, message: "Logged out" });
     } catch (error) {
@@ -438,11 +438,10 @@ editProfile: async (req, res) => {
 
     // Set the new token in cookies
     res.cookie("loginCookie", newToken, {
-      httpOnly: false, // Changed from true to false to allow JavaScript access
+      httpOnly: false,
       secure: true,
       sameSite: "None",
-      path: "/", // Ensure cookie is accessible from all paths
-      domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined, // Set domain for production
+      path: "/",
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 

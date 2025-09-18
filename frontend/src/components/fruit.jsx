@@ -35,6 +35,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import { API_ENDPOINTS } from "../config/api";
 
 function Fruit() {
   const [myData, setMyData] = useState([]);
@@ -79,7 +80,7 @@ function Fruit() {
     };
 
     try {
-      const res = await axios.post("https://farm-tech-agrie-comm.onrender.com/cart/addCart", data, {
+      const res = await axios.post("http://localhost:8080/cart/addCart", data, {
         withCredentials: true,
       });
       toast.success("Item added to cart");
@@ -111,11 +112,11 @@ function Fruit() {
   const fetchProducts = async (location = null) => {
     setIsLoading(true);
     try {
-      let url = "https://farm-tech-agrie-comm.onrender.com/item/showPro";
+      let url = "http://localhost:8080/item/showPro";
       
       // If location is provided, add it as query parameter
       if (location) {
-        url = `https://farm-tech-agrie-comm.onrender.com/item/showPro?district=${location}`;
+        url = `http://localhost:8080/item/showPro?district=${location}`;
       }
       
       const response = await axios.get(url, { withCredentials: true });

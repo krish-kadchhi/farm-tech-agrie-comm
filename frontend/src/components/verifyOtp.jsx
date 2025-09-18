@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { API_ENDPOINTS } from "../config/api";
 
 function VerifyOtp() {
     const [otp, setOtp] = useState("");
@@ -22,7 +23,7 @@ function VerifyOtp() {
         try {
             console.log("Sending User ID:", userData.userId);
             const response = await axios.post(
-                "https://farm-tech-agrie-comm.onrender.com/auth/verifyOtp",
+                "http://localhost:8080/auth/verifyOtp",
                 { userId: userData.userId, otp },
                 { headers: { "Content-Type": "application/json" } }
             );
