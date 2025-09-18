@@ -23,8 +23,8 @@ import {
   createTheme,
   ThemeProvider
 } from '@mui/material';
+import API_BASE_URL from "../config/api";
 import {
-import { API_ENDPOINTS } from "../config/api";
   CheckCircle as CheckCircleIcon,
   LocalShipping as ShippingIcon,
   ShoppingBag as ShoppingIcon,
@@ -73,7 +73,7 @@ function OrderConfirmation() {
         const decoded = jwtDecode(token);
         const userId = decoded._id;
 
-        const response = await axios.get(`http://localhost:8080/orders/latest/${userId}`, {
+        const response = await axios.get(`${API_BASE_URL}/orders/latest/${userId}`, {
           withCredentials: true
         });
 
