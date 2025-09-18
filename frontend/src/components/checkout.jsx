@@ -55,7 +55,7 @@ function Checkout() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await axios.get("API_ENDPOINTS.AUTH.PROFILE", { withCredentials: true });
+        const res = await axios.get(API_ENDPOINTS.AUTH.PROFILE, { withCredentials: true });
         if (res?.data?.user) {
           setUserData(res.data.user);
         } else {
