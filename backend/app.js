@@ -24,9 +24,11 @@ app.set("trust proxy", 1);
 const corsOptions = {
   origin: [
     "http://localhost:5173",
+    "https://farm-tech-frontend.onrender.com",
     "https://farm-tech-agrie-comm-frontend.onrender.com",
     "https://farm-tech-frontend.vercel.app",
-    "https://*.vercel.app"
+    "https://*.vercel.app",
+    "https://*.onrender.com"
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -88,11 +90,9 @@ app.use("/orders", orderRoutes);
 
 
 
-// For Vercel deployment, don't start the server if this is a serverless function
-if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
-  app.listen(port, () => {
-    console.log(`port is listing in ${port}`);
-  });
-}
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 module.exports = app;

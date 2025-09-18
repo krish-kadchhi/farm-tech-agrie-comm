@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: farm-tech-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: COOKIE_SECRET
+        sync: false
+      - key: MAILER_MAIL
+        sync: false
+      - key: MAILER_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        value: https://farm-tech-frontend.onrender.com

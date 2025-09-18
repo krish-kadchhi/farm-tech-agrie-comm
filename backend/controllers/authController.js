@@ -226,7 +226,7 @@ const authController = {
       await user.save({ validateBeforeSave: false });
 
       // Create reset URL
-      const frontendUrl = process.env.FRONTEND_URL || "https://farm-tech-frontend.vercel.app";
+      const frontendUrl = process.env.FRONTEND_URL || "https://farm-tech-frontend.onrender.com";
       const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
       // Send email with reset link

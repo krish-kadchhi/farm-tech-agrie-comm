@@ -1,9 +1,14 @@
 // API Configuration for different environments
+// To use deployed backend, set VITE_API_URL in your .env.local file
+// Example: VITE_API_URL=https://farm-tech-backend.onrender.com
 const API_BASE_URL = import.meta.env.VITE_API_URL || 
   (import.meta.env.DEV 
-    ? 'http://localhost:8080' 
-    : 'https://farm-tech-backend.vercel.app'
+    ? 'http://localhost:8080'  // Local development
+    : 'https://farm-tech-backend.onrender.com'  // Default production URL (Render)
   );
+
+// Log the API URL being used for debugging
+console.log('API Base URL:', API_BASE_URL);
 
 export const API_ENDPOINTS = {
   AUTH: {
