@@ -27,6 +27,8 @@ const corsOptions = {
     "https://farm-tech-frontend.onrender.com",
     "https://farm-tech-agrie-comm-frontend.onrender.com",
     "https://farm-tech-frontend.vercel.app",
+    "https://farm-tech-agrie-comm-1.onrender.com", // current frontend
+    "https://farm-tech-agrie-comm.onrender.com", // allow self-calls if needed
     "https://*.vercel.app",
     "https://*.onrender.com"
   ],
