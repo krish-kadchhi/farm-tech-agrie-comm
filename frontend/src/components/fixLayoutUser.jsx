@@ -1,42 +1,37 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { API_ENDPOINTS } from "../config/api";
 import Navbar from "./navbarUser";
 import AdminNavbar from "./navbarAdmin";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 
 const LayoutUser = ({ children }) => {
   const [userRole, setUserRole] = useState("Customer");
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    const checkUserRole = () => {
+    const checkUserRole = async () => {
       try {
-        // Try to get token from js-cookie first
-        let token = Cookies.get("loginCookie");
+        console.log("Fetching user role from backend...");
         
-        // If js-cookie fails, try reading from document.cookie directly
-        if (!token) {
-          const cookies = document.cookie.split(';');
-          const loginCookie = cookies.find(cookie => 
-            cookie.trim().startsWith('loginCookie=')
-          );
-          if (loginCookie) {
-            token = loginCookie.split('=')[1];
-          }
-        }
+        const response = await axios.get(API_ENDPOINTS.AUTH.PROFILE, {
+          withCredentials: true
+        });
         
-        if (!token) {
-          console.log("No login cookie found, setting role to Customer");
+        if (response.data.success && response.data.user) {
+          const roleFromServer = response.data.user.role || "Customer";
+          console.log("Role from backend:", roleFromServer);
+          console.log("Is Admin?", roleFromServer === "Admin");
+          setUserRole(roleFromServer);
+        } else {
+          console.log("No valid user data from backend, setting role to Customer");
           setUserRole("Customer");
-          return;
         }
-        
-        const decoded = jwtDecode(token);
-        const roleFromToken = decoded?.role || "Customer";
-        console.log("User role from token:", roleFromToken);
-        setUserRole(roleFromToken);
       } catch (error) {
-        console.error("Error decoding token:", error);
+        console.error("Error fetching user role from backend:", error);
+        console.log("Setting role to Customer due to error");
         setUserRole("Customer");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -44,6 +39,19 @@ const LayoutUser = ({ children }) => {
     checkUserRole();
   }, []);
 
+  console.log("Rendering with userRole:", userRole);
+  console.log("Will render AdminNavbar?", userRole === "Admin");
+  
+  // Show loading state while fetching user role
+  if (loading) {
+    return (
+      <>
+        <Navbar /> {/* Default to regular navbar while loading */}
+        <main>{children}</main>
+      </>
+    );
+  }
+  
   return (
     <>
       {userRole === "Admin" ? (
