@@ -166,15 +166,17 @@ function ProfilePage() {
       localStorage.removeItem("role");
       sessionStorage.clear();
 
-      // Clear the loginCookie using js-cookie (now works since httpOnly: false)
+      // Clear the loginCookie using js-cookie with proper settings
       Cookies.remove("loginCookie", { 
         path: "/", 
         sameSite: "None", 
         secure: true 
       });
 
-      // Also try to clear via document.cookie as backup
+      // Also try to clear via document.cookie as backup with multiple variations
       document.cookie = "loginCookie=; Max-Age=0; path=/; SameSite=None; Secure";
+      document.cookie = "loginCookie=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+      document.cookie = "loginCookie=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=None; Secure";
 
       // Dispatch event to notify layout component about auth change
       window.dispatchEvent(new Event('authChanged'));
@@ -186,7 +188,7 @@ function ProfilePage() {
       });
 
       setTimeout(() => {
-        navigate("/login");
+        navigate("/signup");
       }, 500);
     } catch (error) {
       console.error("Logout error:", error);

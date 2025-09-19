@@ -11,13 +11,24 @@ import { jwtDecode } from "jwt-decode";
 const LayoutUser = ({ children }) => {
   const [userRole, setUserRole] = useState("Customer");
   const navigate = useNavigate();
-  const checkUserRole = async () => {
+  
+  const checkUserRole = () => {
     try {
-      const res = await axios.get(API_ENDPOINTS.AUTH.PROFILE, { withCredentials: true });
-      const roleFromServer = res?.data?.user?.role || "Customer";
-      if (roleFromServer !== userRole) setUserRole(roleFromServer);
-    } catch (err) {
-      // Not logged in; ensure role is Customer and optionally route stays
+      const token = Cookies.get("loginCookie");
+      if (!token) {
+        if (userRole !== "Customer") setUserRole("Customer");
+        return;
+      }
+      
+      const decoded = jwtDecode(token);
+      const roleFromToken = decoded?.role || "Customer";
+      
+      if (roleFromToken !== userRole) {
+        setUserRole(roleFromToken);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      // If token is invalid, set role to Customer
       if (userRole !== "Customer") setUserRole("Customer");
     }
   };
