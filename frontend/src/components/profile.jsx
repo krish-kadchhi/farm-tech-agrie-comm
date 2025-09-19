@@ -28,23 +28,6 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { green } from "@mui/material/colors";
 import { jwtDecode } from "jwt-decode";
 
-// Function to fetch user data from API
-const fetchUserData = async (userId) => {
-  try {
-    const response = await axios.get(API_ENDPOINTS.AUTH.PROFILE, {
-      withCredentials: true
-    });
-    
-    if (response.data.success && response.data.user) {
-      return response.data.user;
-    } else {
-      throw new Error("Failed to fetch user data");
-    }
-  } catch (error) {
-    console.error("Error fetching user data from API:", error);
-    throw error;
-  }
-};
 
 // Mock function to update user data - replace with your actual API call
 const updateUserData = async (userData) => {
@@ -78,46 +61,42 @@ function ProfilePage() {
 
   // Fetch user data on component mount
   useEffect(() => {
-    // Get user ID from authentication context or localStorage
-    try {
-      const token = Cookies.get("loginCookie");
-      if (!token) {
-        console.log("No login cookie found, redirecting to login");
-        navigate("/login");
-        return;
-      }
-      
-      const decodedToken = jwtDecode(token);
-      const userId = decodedToken?.userId;
-      console.log("user id is this my friend", userId);
-      
-      if (!userId) {
-        console.log("No userId in token, redirecting to login");
-        navigate("/login");
-        return;
-      }
-      
-      fetchUserData(userId)
-        .then(data => {
-          setUserData(data);
-          setUpdatedData(data);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error("Error fetching user data:", error);
-          setNotification({
-            open: true,
-            message: "Failed to load profile data",
-            severity: "error"
-          });
-          setLoading(false);
+    const loadProfile = async () => {
+      try {
+        // Try to fetch profile directly from API - this will work if user is authenticated
+        const response = await axios.get(API_ENDPOINTS.AUTH.PROFILE, {
+          withCredentials: true
         });
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      console.log("Invalid or missing token, redirecting to login");
-      navigate("/login");
-      return;
-    }
+        
+        if (response.data.success && response.data.user) {
+          setUserData(response.data.user);
+          setUpdatedData(response.data.user);
+          setLoading(false);
+        } else {
+          console.log("No valid user data in response, redirecting to login");
+          navigate("/login");
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        
+        // If 401 or any auth error, redirect to login
+        if (error.response?.status === 401 || !error.response) {
+          console.log("Authentication failed, redirecting to login");
+          navigate("/login");
+          return;
+        }
+        
+        // For other errors, show error message but don't redirect
+        setNotification({
+          open: true,
+          message: "Failed to load profile data",
+          severity: "error"
+        });
+        setLoading(false);
+      }
+    };
+
+    loadProfile();
   }, [navigate]);
 
   const handleEdit = () => {
