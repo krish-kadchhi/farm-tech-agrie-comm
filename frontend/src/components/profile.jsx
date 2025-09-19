@@ -161,22 +161,37 @@ function ProfilePage() {
   const handleLogoutConfirm = async () => {
     setLoggingOut(true);
     try {
+      // First, call backend logout endpoint to clear server-side session
+      try {
+        await axios.post(API_ENDPOINTS.AUTH.LOGOUT, {}, {
+          withCredentials: true
+        });
+      } catch (backendError) {
+        console.log("Backend logout failed, continuing with client-side cleanup:", backendError);
+      }
+
       // Clear any client-side auth state
       localStorage.removeItem("userId");
       localStorage.removeItem("role");
       sessionStorage.clear();
 
-      // Clear the loginCookie using js-cookie with proper settings
+      // Clear the loginCookie using js-cookie with EXACT same settings as backend
       Cookies.remove("loginCookie", { 
         path: "/", 
         sameSite: "None", 
-        secure: true 
+        secure: true,
+        httpOnly: false
       });
 
-      // Also try to clear via document.cookie as backup with multiple variations
+      // Multiple variations to ensure cookie deletion
       document.cookie = "loginCookie=; Max-Age=0; path=/; SameSite=None; Secure";
-      document.cookie = "loginCookie=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
       document.cookie = "loginCookie=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=None; Secure";
+      document.cookie = "loginCookie=; Max-Age=-1; path=/; SameSite=None; Secure";
+      document.cookie = "loginCookie=; Max-Age=0; path=/";
+      document.cookie = "loginCookie=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+
+      // Debug: Check if cookie was actually removed
+      
 
       // Dispatch event to notify layout component about auth change
       window.dispatchEvent(new Event('authChanged'));
