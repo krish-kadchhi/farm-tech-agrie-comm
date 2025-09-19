@@ -78,8 +78,9 @@ function ProfilePage() {
   // Fetch user data on component mount
   useEffect(() => {
     // Get user ID from authentication context or localStorage
-    const userId = localStorage.getItem("userId") || "user123"; // Replace with your actual user ID source
-    
+    // const userId = localStorage.getItem("userId") || "user123"; // Replace with your actual user ID source
+    const userId = jwtDecode(Cookies.get("loginCookie")).userId;
+    console.log("user id is this my friend",userId);
     if (!userId) {
       // Redirect to login if no user is found
       navigate("/login");
