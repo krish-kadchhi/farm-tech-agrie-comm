@@ -28,21 +28,22 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { green } from "@mui/material/colors";
 import { jwtDecode } from "jwt-decode";
 
-// Mock function to fetch user data - replace with your actual API call
+// Function to fetch user data from API
 const fetchUserData = async (userId) => {
- 
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        id: "",
-        name: "",
-        email: "",
-        phone: "",
-        address: "",
-      });
-    }, 1000);
-  });
+  try {
+    const response = await axios.get(API_ENDPOINTS.AUTH.PROFILE, {
+      withCredentials: true
+    });
+    
+    if (response.data.success && response.data.user) {
+      return response.data.user;
+    } else {
+      throw new Error("Failed to fetch user data");
+    }
+  } catch (error) {
+    console.error("Error fetching user data from API:", error);
+    throw error;
+  }
 };
 
 // Mock function to update user data - replace with your actual API call
@@ -78,30 +79,45 @@ function ProfilePage() {
   // Fetch user data on component mount
   useEffect(() => {
     // Get user ID from authentication context or localStorage
-    // const userId = localStorage.getItem("userId") || "user123"; // Replace with your actual user ID source
-    const userId = jwtDecode(Cookies.get("loginCookie")).userId;
-    console.log("user id is this my friend",userId);
-    if (!userId) {
-      // Redirect to login if no user is found
+    try {
+      const token = Cookies.get("loginCookie");
+      if (!token) {
+        console.log("No login cookie found, redirecting to login");
+        navigate("/login");
+        return;
+      }
+      
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken?.userId;
+      console.log("user id is this my friend", userId);
+      
+      if (!userId) {
+        console.log("No userId in token, redirecting to login");
+        navigate("/login");
+        return;
+      }
+      
+      fetchUserData(userId)
+        .then(data => {
+          setUserData(data);
+          setUpdatedData(data);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error("Error fetching user data:", error);
+          setNotification({
+            open: true,
+            message: "Failed to load profile data",
+            severity: "error"
+          });
+          setLoading(false);
+        });
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      console.log("Invalid or missing token, redirecting to login");
       navigate("/login");
       return;
     }
-    
-    fetchUserData(userId)
-      .then(data => {
-        setUserData(data);
-        setUpdatedData(data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error("Error fetching user data:", error);
-        setNotification({
-          open: true,
-          message: "Failed to load profile data",
-          severity: "error"
-        });
-        setLoading(false);
-      });
   }, [navigate]);
 
   const handleEdit = () => {
