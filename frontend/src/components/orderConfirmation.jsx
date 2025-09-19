@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
-import { jwtDecode } from "jwt-decode";
 import { 
   Container,
   Paper,
@@ -64,23 +62,39 @@ function OrderConfirmation() {
   useEffect(() => {
     const fetchLatestOrder = async () => {
       try {
-        const token = Cookies.get('loginCookie');
-        if (!token) {
+        // First get user profile to verify authentication and get userId
+        const profileResponse = await axios.get(`${API_BASE_URL}/auth/profile`, {
+          withCredentials: true
+        });
+
+        if (!profileResponse.data.success || !profileResponse.data.user) {
+          console.log('No valid user found, redirecting to signup');
           navigate('/signup');
           return;
         }
 
-        const decoded = jwtDecode(token);
-        const userId = decoded._id;
+        const userId = profileResponse.data.user._id;
 
         const response = await axios.get(`${API_BASE_URL}/orders/latest/${userId}`, {
           withCredentials: true
         });
 
-        setOrderDetails(response.data.order);
+        if (response.data.order) {
+          setOrderDetails(response.data.order);
+        } else {
+          setError('No recent order found');
+        }
         setLoading(false);
       } catch (error) {
         console.error('Error fetching order:', error);
+        
+        // If 401 or any auth error, redirect to signup
+        if (error.response?.status === 401 || !error.response) {
+          console.log('Authentication failed, redirecting to signup');
+          navigate('/signup');
+          return;
+        }
+        
         setError('Failed to load order details');
         setLoading(false);
       }
