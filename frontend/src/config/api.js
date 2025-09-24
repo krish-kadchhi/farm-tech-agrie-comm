@@ -2,7 +2,7 @@
 // To use deployed backend, set VITE_API_URL in your .env.local file
 // Example: VITE_API_URL=https://farm-tech-backend.onrender.com
 const API_BASE_URL = 'https://farm-tech-agrie-comm.onrender.com'
-
+  //  const API_BASE_URL = 'http://localhost:8080'
 // Log the API URL being used for debugging
 console.log('API Base URL:', API_BASE_URL);
 

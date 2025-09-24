@@ -1,64 +1,44 @@
+// farm-tech/frontend/src/components/fixLayouUsert.jsx
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { API_ENDPOINTS } from "../config/api";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Navbar from "./navbarUser";
 import AdminNavbar from "./navbarAdmin";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const LayoutUser = ({ children }) => {
   const [userRole, setUserRole] = useState("Customer");
-  const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
-    const checkUserRole = async () => {
-      try {
-        console.log("Fetching user role from backend...");
-        
-        const response = await axios.get(API_ENDPOINTS.AUTH.PROFILE, {
-          withCredentials: true
-        });
-        
-        if (response.data.success && response.data.user) {
-          const roleFromServer = response.data.user.role || "Customer";
-          console.log("Role from backend:", roleFromServer);
-          console.log("Is Admin?", roleFromServer === "Admin");
-          setUserRole(roleFromServer);
-        } else {
-          console.log("No valid user data from backend, setting role to Customer");
+    const checkUserRole = () => {
+      const token = Cookies.get("loginCookie");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          setUserRole(decoded.role || "Customer");
+        } catch (error) {
+          console.error("Invalid token", error);
+          Cookies.remove("loginCookie");
           setUserRole("Customer");
         }
-      } catch (error) {
-        console.error("Error fetching user role from backend:", error);
-        console.log("Setting role to Customer due to error");
+      } else {
         setUserRole("Customer");
-      } finally {
-        setLoading(false);
       }
     };
 
-    // Check role on component mount
+    // Check role when component mounts
     checkUserRole();
-  }, []);
 
-  console.log("Rendering with userRole:", userRole);
-  console.log("Will render AdminNavbar?", userRole === "Admin");
-  
-  // Show loading state while fetching user role
-  if (loading) {
-    return (
-      <>
-        <Navbar /> {/* Default to regular navbar while loading */}
-        <main>{children}</main>
-      </>
-    );
-  }
-  
+    // Set up an interval to check the token periodically
+    const intervalId = setInterval(checkUserRole, 1000);
+
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []); // Add navigate to the dependency array
+
   return (
     <>
-      {userRole === "Admin" ? (
-        <AdminNavbar />
-      ) : (
-        <Navbar />
-      )}
+      {userRole === "Admin" ? <AdminNavbar /> : <Navbar />}
       <main>{children}</main>
     </>
   );
