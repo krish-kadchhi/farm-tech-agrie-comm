@@ -1,10 +1,9 @@
-// farm-tech/frontend/src/components/fixLayouUsert.jsx
+// farm-tech/frontend/src/components/fixLayoutUser.jsx
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Navbar from "./navbarUser";
 import AdminNavbar from "./navbarAdmin";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode"; // Correct import
 
 const LayoutUser = ({ children }) => {
   const [userRole, setUserRole] = useState("Customer");
@@ -26,15 +25,8 @@ const LayoutUser = ({ children }) => {
       }
     };
 
-    // Check role when component mounts
-    checkUserRole();
-
-    // Set up an interval to check the token periodically
-    const intervalId = setInterval(checkUserRole, 1000);
-
-    // Clean up interval on component unmount
-    return () => clearInterval(intervalId);
-  }, []); // Add navigate to the dependency array
+    checkUserRole(); // Check role once when component mounts
+  }, []);
 
   return (
     <>
