@@ -1,9 +1,8 @@
-// farm-tech/frontend/src/components/fixLayoutUser.jsx
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./navbarUser";
 import AdminNavbar from "./navbarAdmin";
 import Cookies from "js-cookie";
-import jwtDecode from "jwt-decode"; // Correct import
+import * as jwtDecode from "jwt-decode"; // Works with Rollup/Vite
 
 const LayoutUser = ({ children }) => {
   const [userRole, setUserRole] = useState("Customer");
@@ -13,10 +12,9 @@ const LayoutUser = ({ children }) => {
       const token = Cookies.get("loginCookie");
       if (token) {
         try {
-          const decoded = jwtDecode(token);
+          const decoded = jwtDecode.default(token); // note `.default` with `* as jwtDecode`
           setUserRole(decoded.role || "Customer");
-        } catch (error) {
-          console.error("Invalid token", error);
+        } catch {
           Cookies.remove("loginCookie");
           setUserRole("Customer");
         }
@@ -24,8 +22,7 @@ const LayoutUser = ({ children }) => {
         setUserRole("Customer");
       }
     };
-
-    checkUserRole(); // Check role once when component mounts
+    checkUserRole();
   }, []);
 
   return (
