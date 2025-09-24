@@ -1,5 +1,5 @@
 // farm-tech/frontend/src/components/fixLayoutUser.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./navbarUser";
 import AdminNavbar from "./navbarAdmin";
 import Cookies from "js-cookie";
